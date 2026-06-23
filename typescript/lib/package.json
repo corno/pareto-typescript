@@ -1,0 +1,35 @@
+{
+  "name": "pareto-typescript",
+  "version": "0.1.0",
+  "author": "Corno",
+  "license": "Apache-2.0",
+  "description": "library to parse Typescript, implemented in Pareto",
+  "keywords": [],
+  "homepage": "https://github.com/corno/pareto-typescript#readme",
+  "bugs": {
+    "url": "https://github.com/corno/pareto-typescript/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/corno/pareto-typescript.git"
+  },
+  "main": "./dist/index.js",
+  "types": "dist/index.d.ts",
+  "module": "./dist/index.js",
+  "bin": {},
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "documentation"
+  ],
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "dependencies": {
+    "pareto-core": "^0.1.0",
+    "pareto-fountain-pen": "^0.4.73",
+    "pareto-resources": "^0.2.0",
+    "pareto-stream": "^0.1.0"
+  }
+}

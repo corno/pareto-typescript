@@ -1,0 +1,52 @@
+{
+  "name": "astn-app",
+  "version": "0.0.1",
+  "author": "Corno",
+  "license": "Apache-2.0",
+  "description": "The TypeScript app for parsing and formatting ASTN (Abstract Syntax Tree Notation) - a human-editable data format for structured content",
+  "keywords": [
+    "astn",
+    "parser",
+    "formatter",
+    "abstract-syntax-tree",
+    "data-format",
+    "typescript",
+    "lexer",
+    "structured-data",
+    "configuration",
+    "serialization"
+  ],
+  "bugs": {
+    "url": "https://github.com/corno/astn/issues"
+  },
+  "homepage": "https://github.com/corno/astn#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/corno/astn.git"
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "bin": {
+    "astn-validate": "./dist/bin/validate_astn.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "documentation"
+  ],
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^26.0.0"
+  },
+  "dependencies": {
+    "lib": "file:../lib",
+    "pareto-host-nodejs": "^0.2.0",
+    "typescript": "^6.0.0"
+  },
+  "bundleDependencies": [
+    "lib"
+  ]
+}
