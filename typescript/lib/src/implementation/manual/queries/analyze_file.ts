@@ -1,4 +1,5 @@
 import * as p_ from 'pareto-core/dist/implementation/query'
+import * as p_temp from 'pareto-core/dist/implementation/transformer'
 import p_super_query_result from 'pareto-core/dist/implementation/query/super_query_result'
 import p_text_from_list from 'pareto-core/dist/implementation/transformer/specials/text_from_list'
 
@@ -27,12 +28,23 @@ export const $$: interface_.functions.analyze_typescript_file = p_.query_functio
         ($): d_process_file_data.Error => sh.ph.literal("SFSFDF")
     )).refine(
         ($, abort) => {
-            // r_typed_ast_from_ast.Source_File(
-            //     $.ast.root,
-            //     ($) => abort()
-            // )
+            r_typed_ast_from_ast.Source_File(
+                $.ast.root,
+                ($) => abort(
+                    p_temp.from.state($.type).decide(
+                        ($) => {
+                            switch ($[0]) {
+                                case 'unexpected': return p_temp.ss($, ($) => sh.ph.literal("unexpected"))
+                                case 'missing': return p_temp.ss($, ($) => sh.ph.literal("missing"))
+                                case 'expected single token': return p_temp.ss($, ($) => sh.ph.literal("expected single token: " + $.kind))
+                                default: return p_temp.au($[0])
+                            }
+                        }
+                    )
+                )
+            )
             return $
-        } 
+        }
     ).transform(
         ($): d_process_file_data.Result => ({
             'data': t_prose_to_loc.Paragraph(

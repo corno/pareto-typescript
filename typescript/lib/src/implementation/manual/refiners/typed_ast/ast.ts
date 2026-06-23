@@ -52,12 +52,12 @@ export const Source_File: p_i.Refiner<
             ),
             () => abort({
                 'type': ['expected single token', {
-                    'kind': "SourceFile"
+                    'kind': "SyntaxList"
                 }]
             }),
             () => abort({
                 'type': ['missing', {
-                    'kind': "SourceFile"
+                    'kind': "SyntaxList"
                 }]
             })
         )
