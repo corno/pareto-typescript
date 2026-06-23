@@ -11,11 +11,12 @@ p_h.run_main_command(
     ($r) => c_command(
         null,
         {
-            'parse file': q_parse_file
+            'parse file': q_parse_file,
+            'read file': $r['filesystem unrestricted'].queries['read file'],
         },
         {
             'write to stdout': $r.stream.commands['write to stdout'],
-            'write to stderr': $r.stream.commands['write to stderr'],
+            'log error': $r.stream.commands['log error'],
         },
     ),
 )

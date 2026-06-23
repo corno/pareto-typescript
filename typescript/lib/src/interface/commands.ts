@@ -5,6 +5,7 @@ import * as d_main from "pareto-resources/dist/interface/data/temp_main"
 
 import * as queries_typescript_parser from "../modules/typescript_parser/interface/queries"
 import * as commands_stream from "pareto-stream/dist/interface/commands"
+import * as commands_resources from "pareto-resources/dist/interface/resources"
 
 export namespace commands {
 
@@ -19,10 +20,11 @@ export namespace procedures {
         null,
         {
             'parse file': queries_typescript_parser.queries.parse_file
+            'read file': commands_resources.filesystem_unrestricted.queries.read_file
         },
         {
             'write to stdout': commands_stream.commands.write_to_stdout
-            'write to stderr': commands_stream.commands.write_to_stderr
+            'log error': commands_stream.commands.log_error
         }
     >
 

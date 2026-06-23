@@ -27,6 +27,7 @@
     "node": ">=14.0.0"
   },
   "dependencies": {
+    "pareto-common": "^0.1.10",
     "pareto-core": "^0.1.0",
     "pareto-fountain-pen": "^0.4.73",
     "pareto-resources": "^0.2.0",
