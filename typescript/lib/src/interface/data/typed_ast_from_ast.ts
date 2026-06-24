@@ -10,13 +10,15 @@ export type Error = {
 }
 
 export type Error_Inner = {
-    'location': {
+    'location':
+    | ['end of document', null]
+    | ['location', {
         'line': number
         'column': number
-    }
+    }]
     'type':
     | ['unexpected', {
-        'kind': p_.Optional_Value<string>
+        'found kind': p_.Optional_Value<string>
         'expected': p_.Optional_Value<p_.List<string>>
     }]
     | ['missing', {
@@ -26,3 +28,5 @@ export type Error_Inner = {
         'kind': string
     }]
 }
+
+export type Expected = p_.List<string>

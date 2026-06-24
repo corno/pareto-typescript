@@ -35,43 +35,89 @@ export const Source_File_Inner: p_i.Refiner<
         () => $.kind === "SourceFile"
             ? p_.literal.not_set()
             : p_.literal.set({
-                'location': $.location,
+                'location': ['location', $.location],
                 'type': ['unexpected', {
-                    'kind': p_.literal.set($.kind),
+                    'found kind': p_.literal.set($.kind),
                     'expected': p_.literal.set(p_.literal.list(["Source File"]))
                 }]
             }),
-        () => p_iterate(
-            $.children,
-            null,
-            ($) => p_.literal.set<d_function.Error_Inner>({
-                'location': $.location,
+        () => p_iterate<
+            d_out.Source_File,
+            d_function.Error_Inner,
+            d_function.Expected,
+            d_in.Node,
+            null
+        >({
+            list: $.children,
+            end_info: null,
+            create_dangling_item_error: ($) => p_.literal.set<d_function.Error_Inner>({
+                'location': ['location', $.location],
                 'type': ['unexpected', {
-                    'kind': p_.literal.set($.kind),
+                    'found kind': p_.literal.set($.kind),
                     'expected': p_.literal.not_set()
                 }]
             }),
-            abort,
-            (iter) => {
+            create_expectation_error: (expected, found) => ({
+                'location': p_.from.state(found).decide(
+                    ($) => {
+                        switch ($[0]) {
+                            case 'item': return p_.ss($, ($) => ['location', $.location])
+                            case 'end': return p_.ss($, ($) => ['end of document', null])
+                            default: return p_.au($[0])
+                        }
+                    }
+                ),
+                'type': ['unexpected', {
+                    'found kind': p_.from.state(found).decide(
+                        ($) => {
+                            switch ($[0]) {
+                                case 'item': return p_.ss($, ($) => p_.literal.set($.kind))
+                                case 'end': return p_.ss($, ($) => p_.literal.not_set())
+                                default: return p_.au($[0])
+                            }
+                        }
+                    ),
+                    'expected': p_.literal.set(expected)
+                }]
+            }),
+            abort: abort,
+            assign: (iterator) => {
                 return {
-                    'statements': iter.expect({
-                        get_error: ($): d_function.Error_Inner => ({
-                            'location': p_.from.optional($).decide(
-                                ($) => $.location,
-                                () => $v_node.location,
-                            ),
+                    'statements': iterator.consume(
+                        ($) => Statements($, abort),
+                        () => abort({
+                            'location': ['end of document', null],
                             'type': ['unexpected', {
-                                'kind': p_.from.optional($).map(
-                                    ($) => $.kind,
-                                ),
-                                'expected': p_.literal.set(p_.literal.list(["SyntaxList"]))
+                                'found kind': p_.literal.not_set(),
+                                'expected': p_.literal.set(p_.literal.list(["Statements (SyntaxList)"]))
                             }]
-                        }),
-                        item: ($) => Statements($, abort),
-                    })
+                        })
+                    ),
+                    'end of file': iterator.consume(
+                        ($) => p_assert(
+                            abort,
+                            () => $.kind === "EndOfFileToken"
+                                ? p_.literal.not_set()
+                                : p_.literal.set({
+                                    'location': ['location', $.location],
+                                    'type': ['unexpected', {
+                                        'found kind': p_.literal.set($.kind),
+                                        'expected': p_.literal.set(p_.literal.list(["EndOfFileToken"]))
+                                    }]
+                                }),
+                            () => null
+                        ),
+                        () => abort({
+                            'location': ['end of document', null],
+                            'type': ['unexpected', {
+                                'found kind': p_.literal.not_set(),
+                                'expected': p_.literal.set(p_.literal.list(["Statements (SyntaxList)"]))
+                            }]
+                        })
+                    ),
                 }
             }
-        )
+        })
         // ({
 
         //     'statements': p_t.from.list($.children).on_has_single_item(
@@ -112,27 +158,16 @@ export const Statements: p_i.Refiner<
     d_out.Statements,
     d_function.Error_Inner,
     d_in.Node
-> = ($, abort) => p_.from.list($.children).map(
-    ($) => p_.from.text($.kind).to_state(
-        $,
-        ($, text): d_out.Statement => {
-            switch (text) {
-                case "ImportDeclaration": return ['import declaration', null]
-                case "ModuleDeclaration": return ['module declaration', null]
-                default:
-                    return abort(
-                        {
-                            'location': $.location,
-                            'type': ['unexpected', {
-                                'kind': p_.literal.set(text),
-                                'expected': p_.literal.set(p_.literal.list([
-                                    "ImportDeclaration",
-                                    "ModuleDeclaration"
-                                ]))
-                            }]
-                        }
-                    )
-            }
-        }
-    )
+> = ($, abort) => p_assert(
+    abort,
+    () => $.kind === "SyntaxList"
+        ? p_.literal.not_set()
+        : p_.literal.set({
+            'location': ['location', $.location],
+            'type': ['unexpected', {
+                'found kind': p_.literal.set($.kind),
+                'expected': p_.literal.set(p_.literal.list(["Statements"]))
+            }]
+        }),
+    () => p_.literal.list([])
 )

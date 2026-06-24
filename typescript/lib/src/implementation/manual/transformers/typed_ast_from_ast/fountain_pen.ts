@@ -14,8 +14,16 @@ import * as sh from "pareto-fountain-pen/dist/shorthands/prose/deprecated"
 
 export const Error: p_i.Transformer<d_in.Error, d_out.Phrase> = ($) => sh.ph.composed([
     sh.ph.literal(t_path_to_text.Node_Path($.path)),
-    sh.ph.literal(":"),
-    sh.ph.literal(`${$.inner.location.line}:${$.inner.location.column}: `),
+    p_.from.state($.inner.location).decide(
+        ($) => {
+            switch ($[0]) {
+                case 'end of document': return p_.ss($, ($) => sh.ph.literal(":0:0 (end of document)"))
+                case 'location': return p_.ss($, ($) => sh.ph.literal(`:${$.line}:${$.column}`))
+                default: return p_.au($[0])
+            }
+        }
+    ),
+    sh.ph.literal(": "),
     p_.from.state($.inner.type).decide(
         ($) => {
             switch ($[0]) {
@@ -24,7 +32,7 @@ export const Error: p_i.Transformer<d_in.Error, d_out.Phrase> = ($) => sh.ph.com
                     sh.ph.indent(sh.pg.composed([
                         sh.pg.sentences([
                             sh.sentence([
-                                p_.from.optional($.kind).decide(
+                                p_.from.optional($['found kind']).decide(
                                     ($) => sh.ph.literal("kind: " + $),
                                     () => sh.ph.literal("kind: <missing>"),
                                 )
