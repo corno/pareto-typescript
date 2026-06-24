@@ -8,3 +8,4 @@ export type Statements = p_.List<Statement>
 
 export type Statement =
 | ['import declaration', null]
+| ['module declaration', null]

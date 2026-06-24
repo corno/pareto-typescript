@@ -13,6 +13,7 @@ import * as d_parse_typescript_file from "../../../modules/typescript_parser/int
 import * as t_prose_to_loc from "pareto-fountain-pen/dist/implementation/manual/transformers/prose/list_of_characters"
 import * as t_ast_to_prose from "../transformers/ast/fountain_pen"
 import * as r_typed_ast_from_ast from "../refiners/typed_ast/ast"
+import * as t_typed_ast_from_ast_to_prose from "../transformers/typed_ast_from_ast/fountain_pen"
 
 //shorthands
 import * as sh from "pareto-fountain-pen/dist/shorthands/prose/deprecated"
@@ -25,23 +26,26 @@ export const $$: interface_.functions.analyze_typescript_file = p_.query_functio
                 ($) => $
             )
         },
-        ($): d_process_file_data.Error => sh.ph.literal("SFSFDF")
+        ($): d_process_file_data.Error => p_temp.from.state($).decide(
+            ($) => {
+                switch ($[0]) {
+                    case 'to be implemented': return p_temp.ss($, ($) => sh.ph.literal("to be implemented"))
+                    default: return p_temp.au($[0])
+                }
+            }
+        )
     )).refine(
         ($, abort) => {
             r_typed_ast_from_ast.Source_File(
                 $.ast.root,
                 ($) => abort(
-                    p_temp.from.state($.type).decide(
-                        ($) => {
-                            switch ($[0]) {
-                                case 'unexpected': return p_temp.ss($, ($) => sh.ph.literal("unexpected"))
-                                case 'missing': return p_temp.ss($, ($) => sh.ph.literal("missing"))
-                                case 'expected single token': return p_temp.ss($, ($) => sh.ph.literal("expected single token: " + $.kind))
-                                default: return p_temp.au($[0])
-                            }
-                        }
+                    t_typed_ast_from_ast_to_prose.Error(
+                        $
                     )
-                )
+                ),
+                {
+                    'path': $d.path,
+                }
             )
             return $
         }

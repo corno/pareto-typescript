@@ -42,8 +42,8 @@ class My_Node_Implementation implements d_ast.Node {
         const pos = this.tsNode.getStart(sourceFile)
         const lineAndChar = sourceFile.getLineAndCharacterOfPosition(pos)
         return {
-            line: lineAndChar.line,
-            column: lineAndChar.character
+            line: lineAndChar.line + 1, // TypeScript uses 0-based line numbers
+            column: lineAndChar.character + 1 // TypeScript uses 0-based column numbers
         }
     }
 
