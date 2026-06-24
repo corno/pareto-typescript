@@ -3,6 +3,7 @@ import * as p_t from 'pareto-core/dist/implementation/transformer'
 import * as p_i from 'pareto-core/dist/interface/refiner'
 import * as p_di from 'pareto-core/dist/interface/data'
 import p_assert from 'pareto-core/dist/implementation/refiner/specials/assert'
+import p_iterate from 'pareto-core/dist/implementation/refiner/specials/iterate'
 
 //data types
 import * as d_in from "../../../../modules/typescript_parser/interface/data/ast"
@@ -11,7 +12,7 @@ import * as d_out from "../../../../interface/data/typed_ast"
 type My_Error = {
     'type':
     | ['unexpected', {
-        'kind': string
+        'kind': p_di.Optional_Value<string>
         'expected': p_di.List<string>
     }]
     | ['missing', {
@@ -32,36 +33,60 @@ export const Source_File: p_i.Refiner<
         ? p_.literal.not_set()
         : p_.literal.set({
             'type': ['unexpected', {
-                'kind': $.kind,
+                'kind': p_.literal.set($.kind),
                 'expected': p_.literal.list(["Source File"])
             }]
         }),
-    () => ({
-        'statements': p_t.from.list($.children).on_has_single_item(
-            ($) => p_assert(
-                abort,
-                (): p_di.Optional_Value<My_Error> => $.kind === "SyntaxList"
-                    ? p_.literal.not_set()
-                    : p_.literal.set({
+    () => p_iterate(
+        $.children,
+        null,
+        p_.literal.set<My_Error>({
+            'type': ['missing', { 'kind': "SyntaxList" }]
+        }),
+        abort,
+        (iter) => {
+            return {
+                'statements': iter.expect({
+                    get_error: ($): My_Error => ({
                         'type': ['unexpected', {
-                            'kind': $.kind,
-                            'expected': p_.literal.list(["SyntaxList"]),
+                            'kind': p_.from.optional($).map(
+                                ($) => $.kind,
+                            ),
+                            'expected': p_.literal.list(["SyntaxList"])
                         }]
                     }),
-                () => Statements($, abort)
-            ),
-            () => abort({
-                'type': ['expected single token', {
-                    'kind': "SyntaxList"
-                }]
-            }),
-            () => abort({
-                'type': ['missing', {
-                    'kind': "SyntaxList"
-                }]
-            })
-        )
-    })
+                    item: ($) => Statements($, abort),
+                })
+            }
+        }
+    )
+    // ({
+
+    //     'statements': p_t.from.list($.children).on_has_single_item(
+    //         ($) => p_assert(
+    //             abort,
+    //             (): p_di.Optional_Value<My_Error> => $.kind === "SyntaxList"
+    //                 ? p_.literal.not_set()
+    //                 : p_.literal.set({
+    //                     'type': ['unexpected', {
+    //                         'kind': $.kind,
+    //                         'expected': p_.literal.list(["SyntaxList"]),
+    //                     }]
+    //                 }),
+    //             () => Statements($, abort)
+    //         ),
+    //         () => abort({
+    //             'type': ['expected single token', {
+    //                 'kind': "SyntaxList"
+    //             }]
+    //         }),
+    //         () => abort({
+    //             'type': ['missing', {
+    //                 'kind': "SyntaxList"
+    //             }]
+    //         })
+    //     )
+    // })
 )
 
 export const Statements: p_i.Refiner<
@@ -78,7 +103,7 @@ export const Statements: p_i.Refiner<
                     return abort(
                         {
                             'type': ['unexpected', {
-                                'kind': text,
+                                'kind': p_.literal.set(text),
                                 'expected': p_.literal.list(["ImportDeclaration"])
                             }]
                         }
