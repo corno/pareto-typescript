@@ -276,33 +276,26 @@ export const Source_File_Inner: p_i.Refiner<
             "SourceFile",
             (iterator) => {
                 return {
-                    'statements': StatementsX(
+                    'statements': iterator_helpers.consume(
                         iterator,
                         abort,
-                        {
-                            'parent': $
-                        }
-                    ),
-                    'end of file': iterator.consume_with_expectation(
-                        ['something', p_.literal.list(["EndOfFileToken"])] as d_function.Expected,
-                        ($, expectation) => abort({
-                            'context': "SourceFile['end of file']",
-                            'cause': ['end of node list', {
-                                'parent': $v_node
-                            }],
-                            'expected': expectation
-                        }),
-                        ($, expectation) => p_assert(
+                        "SourceFile['statements']",
+                        $,
+                        ($) => Statements(
+                            $,
                             abort,
-                            () => $.kind === "EndOfFileToken"
-                                ? p_.literal.not_set()
-                                : p_.literal.set({
-                                    'cause': ['unexpected node', $],
-                                    'expected': expectation,
-                                    'context': "SourceFile['end of file']"
-                                }),
-                            () => null
-                        ),
+                            {
+                                'parent': $
+                            }
+                        )
+                    ),
+                    'end of file': iterator_helpers.consume_and_expect(
+                        iterator,
+                        abort,
+                        "SourceFile['end of file']",
+                        "EndOfFileToken",
+                        $,
+                        ($) => $
                     ),
                 }
             }

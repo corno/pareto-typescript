@@ -3,7 +3,7 @@ import * as d_ast from "../../modules/typescript_parser/interface/data/ast"
 
 export type Source_File = {
     'statements': Statements
-    'end of file': null
+    'end of file': d_ast.Node
 }
 
 export type Statements = p_.List<Statement>
