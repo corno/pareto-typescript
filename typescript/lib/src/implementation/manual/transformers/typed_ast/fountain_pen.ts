@@ -26,7 +26,26 @@ export const Statement: p_i.Transformer<d_in.Statement, d_out.Phrase> = ($) => p
         switch ($[0]) {
             case 'import declaration': return p_.ss($, ($) => sh.ph.composed([
                 sh.ph.literal("import "),
-                sh.ph.literal("FIXMECLAUSE"),
+                p_.from.state($.clause.type).decide(
+                    ($) => {
+                        switch ($[0]) {
+                            case 'named imports':return p_.ss($, ($) => sh.ph.composed([
+                                sh.ph.literal("{"),
+                                sh.ph.composed(
+                                    p_.from.list($).map(
+                                        ($) => sh.ph.literal($.identifier.text)
+                                    )
+                                ),
+                                sh.ph.literal("}"),
+                            ]))
+                            case 'namespace import':return p_.ss($, ($) => sh.ph.composed([
+                                sh.ph.literal("* as "),
+                                sh.ph.literal($['identifier'].text)
+                            ]))
+                            default: return p_.au($[0])
+                        }
+                    }
+                ),
                 sh.ph.literal(" from "),
                 sh.ph.literal($['string literal'].text)
             ]))

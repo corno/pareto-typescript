@@ -13,8 +13,7 @@ import * as d_path from "pareto-resources/dist/interface/generated/liana/schemas
 import * as d_function from "../../../../interface/data/typed_ast_from_ast"
 import { Abort } from 'pareto-core/dist/interface/__internal/Abort'
 
-namespace helpers {
-
+namespace iterator_helpers {
 
     export const list_with_syntaxlist_wrapper = <T extends p_di.Value>(
         iterator: p_pi.Iterator<d_in.Node, null>,
@@ -24,20 +23,161 @@ namespace helpers {
             parent: d_in.Node
         },
         callback: (node: d_in.Node) => T
-    ): p_di.List<T> => iterator.consume_with_expectation(
-        ['something', p_.literal.list([`SyntaxList (${$p.context})`])] as d_function.Expected,
-        ($, expectation) => abort({
+    ): p_di.List<T> => iterator.consume(
+        ($) => abort({
             'context': $p.context,
             'cause': ['end of node list', {
                 'parent': $p.parent
             }],
+            'expected': ['something', p_.literal.list([`SyntaxList (${$p.context})`])]
+        }),
+        ($) => node_helpers.list_with_syntaxlist_wrapper(
+            $,
+            abort,
+            {
+                'context': $p.context,
+                'parent': $p.parent
+            },
+            callback
+
+        )
+    )
+
+    export const choice = <T extends p_di.Value>(
+        iterator: p_pi.Iterator<d_in.Node, null>,
+        abort: Abort<d_function.Error_Inner>,
+        context: string,
+        expected: string[],
+        parent: d_in.Node,
+        callback: (node: d_in.Node, abort: Abort<null>) => T
+    ): T => iterator.consume_with_expectation(
+        ['something', p_.literal.list(expected)] as d_function.Expected,
+        ($, expectation) => abort({
+            'context': context,
+            'cause': ['end of node list', {
+                'parent': parent
+            }],
             'expected': expectation
         }),
-        ($, expectation) => $.kind !== "SyntaxList"
+        ($, expectation) => {
+            const my_node = $
+            return callback(
+                $,
+                ($) => abort({
+                    'context': context,
+                    'cause': ['unexpected node', my_node],
+                    'expected': expectation
+                })
+            )
+        },
+    )
+
+    export const specific_node = <T extends p_di.Value>(
+        iterator: p_pi.Iterator<d_in.Node, null>,
+        abort: Abort<d_function.Error_Inner>,
+        context: string,
+        expected_node_name: string,
+        parent: d_in.Node,
+        callback: (node: d_in.Node) => T
+    ): T => iterator.consume_with_expectation(
+        ['something', p_.literal.list([expected_node_name])] as d_function.Expected,
+        ($, expectation) => abort({
+            'context': context,
+            'cause': ['end of node list', {
+                'parent': parent
+            }],
+            'expected': expectation
+        }),
+        ($, expectation) => {
+            const my_node = $
+            return $.kind !== expected_node_name
+                ? abort({
+                    'context': context,
+                    'cause': ['unexpected node', my_node],
+                    'expected': expectation
+                })
+                : callback(
+                    $,
+                )
+        },
+    )
+
+    export const consume = <T extends p_di.Value>(
+        iterator: p_pi.Iterator<d_in.Node, null>,
+        abort: Abort<d_function.Error_Inner>,
+        description: string,
+        parent: d_in.Node,
+        callback: (node: d_in.Node) => T
+    ): T => iterator.consume(
+        ($) => abort({
+            'context': description,
+            'cause': ['end of node list', {
+                'parent': parent
+            }],
+            'expected': ['something', p_.literal.list([description])]
+        }),
+        ($) => callback(
+            $,
+        )
+    )
+
+    export const consume_and_expect = <T extends p_di.Value>(
+        iterator: p_pi.Iterator<d_in.Node, null>,
+        abort: Abort<d_function.Error_Inner>,
+        description: string,
+        kind: string,
+        parent: d_in.Node,
+        callback: (node: d_in.Node) => T
+    ): T => iterator.consume(
+        ($) => abort({
+            'context': description,
+            'cause': ['end of node list', {
+                'parent': parent
+            }],
+            'expected': ['something', p_.literal.list([description])]
+        }),
+        ($) => node_helpers.expect_specific_node(
+            $,
+            abort,
+            kind,
+            description,
+            callback
+        )
+    )
+
+}
+
+
+namespace node_helpers {
+
+    export const expect_specific_node = <T extends p_di.Value>(
+        $: d_in.Node,
+        abort: Abort<d_function.Error_Inner>,
+        kind: string,
+        description: string,
+        callback: (node: d_in.Node) => T
+
+    ): T => $.kind !== kind
+            ? abort({
+                'context': description,
+                'cause': ['unexpected node', $],
+                'expected': ['something', p_.literal.list([description])]
+            })
+            : callback($)
+
+    export const list_with_syntaxlist_wrapper = <T extends p_di.Value>(
+        $: d_in.Node,
+        abort: Abort<d_function.Error_Inner>,
+        $p: {
+            context: string,
+            parent: d_in.Node
+        },
+        callback: (node: d_in.Node) => T
+    ): p_di.List<T> => $.kind !== "SyntaxList"
             ? abort({
                 'context': $p.context,
                 'cause': ['unexpected node', $],
-                'expected': expectation
+                'expected': ['something', p_.literal.list([`SyntaxList (${$p.context})`])]
             })
             : p_iterate({
                 'list': $.children,
@@ -54,8 +194,9 @@ namespace helpers {
                         ($): T => callback($),
                     )
                 })
-            }),
-    )
+            })
+
+
 
     export const list_without_syntaxlist_wrapper = <T extends p_di.Value>(
         $: d_in.Node,
@@ -97,65 +238,6 @@ namespace helpers {
         'assign': (iterator): T => callback(iterator)
     })
 
-    export const state = <T extends p_di.Value>(
-        iterator: p_pi.Iterator<d_in.Node, null>,
-        abort: Abort<d_function.Error_Inner>,
-        context: string,
-        expected: string[],
-        parent: d_in.Node,
-        callback: (node: d_in.Node, abort: Abort<null>) => T
-    ): T => iterator.consume_with_expectation(
-        ['something', p_.literal.list(expected)] as d_function.Expected,
-        ($, expectation) => abort({
-            'context': context,
-            'cause': ['end of node list', {
-                'parent': parent
-            }],
-            'expected': expectation
-        }),
-        ($, expectation) => {
-            const my_node = $
-            return callback(
-                $,
-                ($) => abort({
-                    'context': context,
-                    'cause': ['unexpected node', my_node],
-                    'expected': expectation
-                })
-            )
-        },
-    )
-
-    export const singular_value = <T extends p_di.Value>(
-        iterator: p_pi.Iterator<d_in.Node, null>,
-        abort: Abort<d_function.Error_Inner>,
-        context: string,
-        expected_node_name: string,
-        parent: d_in.Node,
-        callback: (node: d_in.Node) => T
-    ): T => iterator.consume_with_expectation(
-        ['something', p_.literal.list([expected_node_name])] as d_function.Expected,
-        ($, expectation) => abort({
-            'context': context,
-            'cause': ['end of node list', {
-                'parent': parent
-            }],
-            'expected': expectation
-        }),
-        ($, expectation) => {
-            const my_node = $
-            return $.kind !== expected_node_name
-                ? abort({
-                    'context': context,
-                    'cause': ['unexpected node', my_node],
-                    'expected': expectation
-                })
-                : callback(
-                    $,
-                )
-        },
-    )
-
 }
 
 export const Source_File: p_i.Refiner_With_Parameter<
@@ -188,13 +270,13 @@ export const Source_File_Inner: p_i.Refiner<
                 'expected': ['something', p_.literal.list(["Source File"])],
                 'context': "SourceFile"
             }),
-        () => helpers.group(
+        () => node_helpers.group(
             $,
             abort,
             "SourceFile",
             (iterator) => {
                 return {
-                    'statements': Statements(
+                    'statements': StatementsX(
                         iterator,
                         abort,
                         {
@@ -228,7 +310,303 @@ export const Source_File_Inner: p_i.Refiner<
     )
 }
 
-export const Statements: p_pi.Production_With_Parameter<
+export const Statements: p_i.Refiner_With_Parameter<
+    d_out.Statements,
+    d_function.Error_Inner,
+    d_in.Node,
+    {
+        'parent': d_in.Node
+    }
+> = ($, abort, $p) => node_helpers.list_without_syntaxlist_wrapper(
+    $,
+    abort,
+    {
+        'context': "Statements",
+    },
+    ($): d_out.Statement => {
+        switch ($.kind) {
+            case "ImportDeclaration": return ['import declaration', node_helpers.group(
+                $,
+                abort,
+                "ImportDeclaration",
+                (iterator) => ({
+                    'import keyword': iterator_helpers.specific_node(
+                        iterator,
+                        abort,
+                        "ImportDeclaration['import keyword']",
+                        "ImportKeyword",
+                        $p.parent,
+                        ($) => $
+                    ),
+                    'clause': iterator_helpers.specific_node(
+                        iterator,
+                        abort,
+                        "ImportDeclaration['clause']",
+                        "ImportClause",
+                        $p.parent,
+                        ($): d_out.Import_Declaration['clause'] => node_helpers.group(
+                            $,
+                            abort,
+                            "ImportClause",
+                            (iterator): d_out.Import_Declaration['clause'] => {
+                                return {
+                                    'type': iterator.peek(
+                                        () => abort({
+                                            'context': "ImportClause['type']",
+                                            'cause': ['end of node list', {
+                                                'parent': $
+                                            }],
+                                            'expected': ['something', p_.literal.list([
+                                                "NamedImports",
+                                                "NamespaceImport"
+                                            ])]
+                                        }),
+                                        ($): d_out.Import_Clause['type'] => {
+                                            switch ($.kind) {
+                                                case "NamedImports": return iterator_helpers.specific_node(
+                                                    iterator,
+                                                    abort,
+                                                    "ImportClause['named imports']",
+                                                    "NamedImports",
+                                                    $,
+                                                    ($): d_out.Import_Clause['type'] => ['named imports', node_helpers.list_without_syntaxlist_wrapper(
+                                                        $,
+                                                        abort,
+                                                        {
+                                                            'context': "ImportClause['named imports']",
+                                                        },
+                                                        ($): d_out.Import_Specifier => {
+                                                            switch ($.kind) {
+                                                                case "ImportSpecifier": return {
+                                                                    'identifier': iterator_helpers.specific_node(
+                                                                        iterator,
+                                                                        abort,
+                                                                        "ImportSpecifier['identifier']",
+                                                                        "Identifier",
+                                                                        $,
+                                                                        ($) => $
+                                                                    )
+                                                                }
+                                                                default: return abort({
+                                                                    'context': "ImportClause['named imports']",
+                                                                    'cause': ['unexpected node', $],
+                                                                    'expected': ['something', p_.literal.list(["ImportSpecifier"])]
+                                                                })
+                                                            }
+                                                        }
+                                                    )]
+                                                )
+                                                case "NamespaceImport": return ['namespace import', iterator_helpers.specific_node(
+                                                    iterator,
+                                                    abort,
+                                                    "NamespaceImport['identifier']",
+                                                    "NamespaceImport",
+                                                    $,
+                                                    ($) => node_helpers.group(
+                                                        $,
+                                                        abort,
+                                                        "NamespaceImport",
+                                                        (iterator): d_out.Namespace_Import => ({
+                                                            'asterisk token': iterator_helpers.specific_node(
+                                                                iterator,
+                                                                abort,
+                                                                "NamespaceImport['asterisk token']",
+                                                                "AsteriskToken",
+                                                                $,
+                                                                ($) => $
+                                                            ),
+                                                            'as keyword': iterator_helpers.specific_node(
+                                                                iterator,
+                                                                abort,
+                                                                "NamespaceImport['as keyword']",
+                                                                "AsKeyword",
+                                                                $,
+                                                                ($) => $
+                                                            ),
+                                                            'identifier': iterator_helpers.specific_node(
+                                                                iterator,
+                                                                abort,
+                                                                "NamespaceImport['identifier']",
+                                                                "Identifier",
+                                                                $,
+                                                                ($) => $
+                                                            )
+                                                        })
+                                                    )
+                                                )]
+
+                                                default: return abort({
+                                                    'context': "ImportClause['type']",
+                                                    'cause': ['unexpected node', $],
+                                                    'expected': ['something', p_.literal.list([
+                                                        "NamedImports",
+                                                        "NamespaceImport"
+                                                    ])]
+                                                })
+                                            }
+                                        }
+                                    ),
+                                    // 'name': iterator_helpers.singular_value(
+                                    //     iterator,
+                                    //     abort,
+                                    //     "ImportClause['name']",
+                                    //     "Identifier",
+                                    //     $,
+                                    //     ($) => $
+                                    // ),
+                                }
+                            }
+                        )
+                    ),
+                    'from keyword': iterator_helpers.specific_node(
+                        iterator,
+                        abort,
+                        "ImportDeclaration['from keyword']",
+                        "FromKeyword",
+                        $p.parent,
+                        ($) => $
+                    ),
+                    'string literal': iterator_helpers.specific_node(
+                        iterator,
+                        abort,
+                        "ImportDeclaration['string literal']",
+                        "StringLiteral",
+                        $p.parent,
+                        ($) => $
+                    ),
+                })
+            )]
+            case "ModuleDeclaration": return ['module declaration', node_helpers.group(
+                $,
+                abort,
+                "ModuleDeclaration",
+                (iterator): d_out.Module_Declaration => ({
+                    'modifiers': Modifiers(
+                        iterator,
+                        abort,
+                        {
+                            'parent': $
+                        }
+                    ),
+                    'namespace keyword': iterator_helpers.specific_node(
+                        iterator,
+                        abort,
+                        "ModuleDeclaration['namespace keyword']",
+                        "NamespaceKeyword",
+                        $p.parent,
+                        ($) => $
+                    ),
+                    'identifier': iterator_helpers.specific_node(
+                        iterator,
+                        abort,
+                        "ModuleDeclaration['identifier']",
+                        "Identifier",
+                        $p.parent,
+                        ($) => $
+                    ),
+                    'module block': iterator_helpers.specific_node(
+                        iterator,
+                        abort,
+                        "ModuleDeclaration['module block']",
+                        "ModuleBlock",
+                        $p.parent,
+                        ($) => node_helpers.group(
+                            $,
+                            abort,
+                            "ModuleBlock",
+                            (iterator): d_out.Module_Block => ({
+                                'open brace token': iterator_helpers.specific_node(
+                                    iterator,
+                                    abort,
+                                    "ModuleBlock['first punctuation']",
+                                    "FirstPunctuation", //FirstPunctuation has the same index in the enum as OpenBraceToken,
+                                    $p.parent,
+                                    ($) => $
+                                ),
+                                'statements': StatementsX(
+                                    iterator,
+                                    abort,
+                                    {
+                                        'parent': $
+                                    }
+                                ),
+                                'close brace token': iterator_helpers.specific_node(
+                                    iterator,
+                                    abort,
+                                    "ModuleBlock['close brace token']",
+                                    "CloseBraceToken",
+                                    $p.parent,
+                                    ($) => $,
+                                ),
+                            })
+                        ),
+                    ),
+                })
+            )]
+            case "TypeAliasDeclaration": return ['type alias declaration', node_helpers.group(
+                $,
+                abort,
+                "TypeAliasDeclaration",
+                (iterator): d_out.Type_Alias_Declaration => ({
+                    'modifiers': Modifiers(
+                        iterator,
+                        abort,
+                        {
+                            'parent': $
+                        }
+                    ),
+                    'type keyword': iterator_helpers.specific_node(
+                        iterator,
+                        abort,
+                        "TypeAliasDeclaration['type keyword']",
+                        "TypeKeyword",
+                        $p.parent,
+                        ($) => $,
+                    ),
+                    'identifier': iterator_helpers.specific_node(
+                        iterator,
+                        abort,
+                        "TypeAliasDeclaration['identifier']",
+                        "Identifier",
+                        $p.parent,
+                        ($) => $,
+                    ),
+                    'first assignment': iterator_helpers.specific_node(
+                        iterator,
+                        abort,
+                        "TypeAliasDeclaration['first assignment']",
+                        "FirstAssignment",
+                        $p.parent,
+                        ($) => $,
+                    ),
+                    'type': iterator_helpers.choice(
+                        iterator,
+                        abort,
+                        "TypeAliasDeclaration['type']",
+                        ["Type"],
+                        $p.parent,
+                        ($, abortx) => Type(
+                            $,
+                            abort,
+                            {
+                                'parent': $
+                            }
+                        )
+                    )
+                })
+            )]
+            default: return abort({
+                'context': "Statements",
+                'cause': ['unexpected node', $],
+                'expected': ['something', p_.literal.list([
+                    "Statement",
+                ])]
+            })
+        }
+    }
+)
+
+export const StatementsX: p_pi.Production_With_Parameter<
     d_out.Statements,
     d_function.Error_Inner,
     d_in.Node,
@@ -237,7 +615,7 @@ export const Statements: p_pi.Production_With_Parameter<
         'parent': d_in.Node
     }
 > = (iterator, abort, $p) => {
-    return helpers.list_with_syntaxlist_wrapper(
+    return iterator_helpers.list_with_syntaxlist_wrapper(
         iterator,
         abort,
         {
@@ -246,12 +624,12 @@ export const Statements: p_pi.Production_With_Parameter<
         },
         ($): d_out.Statement => {
             switch ($.kind) {
-                case "ImportDeclaration": return ['import declaration', helpers.group(
+                case "ImportDeclaration": return ['import declaration', node_helpers.group(
                     $,
                     abort,
                     "ImportDeclaration",
                     (iterator) => ({
-                        'import keyword': helpers.singular_value(
+                        'import keyword': iterator_helpers.specific_node(
                             iterator,
                             abort,
                             "ImportDeclaration['import keyword']",
@@ -259,13 +637,13 @@ export const Statements: p_pi.Production_With_Parameter<
                             $p.parent,
                             ($) => $
                         ),
-                        'clause': helpers.singular_value(
+                        'clause': iterator_helpers.specific_node(
                             iterator,
                             abort,
                             "ImportDeclaration['clause']",
                             "ImportClause",
                             $p.parent,
-                            ($): d_out.Import_Declaration['clause'] => helpers.group(
+                            ($): d_out.Import_Declaration['clause'] => node_helpers.group(
                                 $,
                                 abort,
                                 "ImportClause",
@@ -284,13 +662,13 @@ export const Statements: p_pi.Production_With_Parameter<
                                             }),
                                             ($): d_out.Import_Clause['type'] => {
                                                 switch ($.kind) {
-                                                    case "NamedImports": return helpers.singular_value(
+                                                    case "NamedImports": return iterator_helpers.specific_node(
                                                         iterator,
                                                         abort,
                                                         "ImportClause['named imports']",
                                                         "NamedImports",
                                                         $,
-                                                        ($): d_out.Import_Clause['type'] => ['named imports', helpers.list_without_syntaxlist_wrapper(
+                                                        ($): d_out.Import_Clause['type'] => ['named imports', node_helpers.list_without_syntaxlist_wrapper(
                                                             $,
                                                             abort,
                                                             {
@@ -299,7 +677,7 @@ export const Statements: p_pi.Production_With_Parameter<
                                                             ($): d_out.Import_Specifier => {
                                                                 switch ($.kind) {
                                                                     case "ImportSpecifier": return {
-                                                                        'identifier': helpers.singular_value(
+                                                                        'identifier': iterator_helpers.specific_node(
                                                                             iterator,
                                                                             abort,
                                                                             "ImportSpecifier['identifier']",
@@ -317,16 +695,45 @@ export const Statements: p_pi.Production_With_Parameter<
                                                             }
                                                         )]
                                                     )
-                                                    case "NamespaceImport": return ['namespace import', {
-                                                        'identifier': helpers.singular_value(
-                                                            iterator,
-                                                            abort,
-                                                            "NamespaceImport['identifier']",
-                                                            "Identifier",
+                                                    case "NamespaceImport": return ['namespace import', iterator_helpers.specific_node(
+                                                        iterator,
+                                                        abort,
+                                                        "NamespaceImport['identifier']",
+                                                        "NamespaceImport",
+                                                        $,
+                                                        ($) => node_helpers.group(
                                                             $,
-                                                            ($) => $
+                                                            abort,
+                                                            "NamespaceImport",
+                                                            (iterator): d_out.Namespace_Import => ({
+                                                                'asterisk token': iterator_helpers.specific_node(
+                                                                    iterator,
+                                                                    abort,
+                                                                    "NamespaceImport['asterisk token']",
+                                                                    "AsteriskToken",
+                                                                    $,
+                                                                    ($) => $
+                                                                ),
+                                                                'as keyword': iterator_helpers.specific_node(
+                                                                    iterator,
+                                                                    abort,
+                                                                    "NamespaceImport['as keyword']",
+                                                                    "AsKeyword",
+                                                                    $,
+                                                                    ($) => $
+                                                                ),
+                                                                'identifier': iterator_helpers.specific_node(
+                                                                    iterator,
+                                                                    abort,
+                                                                    "NamespaceImport['identifier']",
+                                                                    "Identifier",
+                                                                    $,
+                                                                    ($) => $
+                                                                )
+                                                            })
                                                         )
-                                                    }]
+                                                    )]
+
                                                     default: return abort({
                                                         'context': "ImportClause['type']",
                                                         'cause': ['unexpected node', $],
@@ -337,58 +744,20 @@ export const Statements: p_pi.Production_With_Parameter<
                                                     })
                                                 }
                                             }
-                                            // ($): d_out.Import_Clause['type'] => $.kind === "NamedImports"
-                                            //     ? ['named imports', helpers.list(
-                                            //         iterator,
-                                            //         abort,
-                                            //         {
-                                            //             'context': "ImportClause['named imports']",
-                                            //             'parent': clause_node
-                                            //         },
-                                            //         ($): d_out.Import_Specifier => {
-                                            //             switch ($.kind) {
-                                            //                 case "ImportSpecifier": return ['identifier', helpers.singular_value(
-                                            //                     iterator,
-                                            //                     abort,
-                                            //                     "ImportSpecifier['identifier']",
-                                            //                     "Identifier",
-                                            //                     clause_node,
-                                            //                     ($) => $
-                                            //                 )]
-                                            //                 default: return abort({
-                                            //                     'context': "ImportClause['named imports']",
-                                            //                     'cause': ['unexpected node', $],
-                                            //                     'expected': ['something', p_.literal.list(["ImportSpecifier"])]
-                                            //                 })
-                                            //             }
-                                            //         }
-                                            //     )]
-                                            //     : $.kind === "NamespaceImport"
-                                            //         ? ['namespace import', {
-                                            //             'identifier': helpers.singular_value(
-                                            //                 iterator,
-                                            //                 abort,
-                                            //                 "NamespaceImport['identifier']",
-                                            //                 "Identifier",
-                                            //                 clause_node,
-                                            //                 ($) => $
-                                            //             )
-                                            //         }]
-                                            //         : p_.literal.not_set(),
                                         ),
-                                        'name': helpers.singular_value(
-                                            iterator,
-                                            abort,
-                                            "ImportClause['name']",
-                                            "Identifier",
-                                            $p.parent,
-                                            ($) => $
-                                        ),
+                                        // 'name': iterator_helpers.singular_value(
+                                        //     iterator,
+                                        //     abort,
+                                        //     "ImportClause['name']",
+                                        //     "Identifier",
+                                        //     $,
+                                        //     ($) => $
+                                        // ),
                                     }
                                 }
                             )
                         ),
-                        'from keyword': helpers.singular_value(
+                        'from keyword': iterator_helpers.specific_node(
                             iterator,
                             abort,
                             "ImportDeclaration['from keyword']",
@@ -396,7 +765,7 @@ export const Statements: p_pi.Production_With_Parameter<
                             $p.parent,
                             ($) => $
                         ),
-                        'string literal': helpers.singular_value(
+                        'string literal': iterator_helpers.specific_node(
                             iterator,
                             abort,
                             "ImportDeclaration['string literal']",
@@ -406,7 +775,7 @@ export const Statements: p_pi.Production_With_Parameter<
                         ),
                     })
                 )]
-                case "ModuleDeclaration": return ['module declaration', helpers.group(
+                case "ModuleDeclaration": return ['module declaration', node_helpers.group(
                     $,
                     abort,
                     "ModuleDeclaration",
@@ -418,7 +787,7 @@ export const Statements: p_pi.Production_With_Parameter<
                                 'parent': $
                             }
                         ),
-                        'namespace keyword': helpers.singular_value(
+                        'namespace keyword': iterator_helpers.specific_node(
                             iterator,
                             abort,
                             "ModuleDeclaration['namespace keyword']",
@@ -426,7 +795,7 @@ export const Statements: p_pi.Production_With_Parameter<
                             $p.parent,
                             ($) => $
                         ),
-                        'identifier': helpers.singular_value(
+                        'identifier': iterator_helpers.specific_node(
                             iterator,
                             abort,
                             "ModuleDeclaration['identifier']",
@@ -434,18 +803,18 @@ export const Statements: p_pi.Production_With_Parameter<
                             $p.parent,
                             ($) => $
                         ),
-                        'module block': helpers.singular_value(
+                        'module block': iterator_helpers.specific_node(
                             iterator,
                             abort,
                             "ModuleDeclaration['module block']",
                             "ModuleBlock",
                             $p.parent,
-                            ($) => helpers.group(
+                            ($) => node_helpers.group(
                                 $,
                                 abort,
                                 "ModuleBlock",
                                 (iterator): d_out.Module_Block => ({
-                                    'open brace token': helpers.singular_value(
+                                    'open brace token': iterator_helpers.specific_node(
                                         iterator,
                                         abort,
                                         "ModuleBlock['first punctuation']",
@@ -453,14 +822,14 @@ export const Statements: p_pi.Production_With_Parameter<
                                         $p.parent,
                                         ($) => $
                                     ),
-                                    'statements': Statements(
+                                    'statements': StatementsX(
                                         iterator,
                                         abort,
                                         {
                                             'parent': $
                                         }
                                     ),
-                                    'close brace token': helpers.singular_value(
+                                    'close brace token': iterator_helpers.specific_node(
                                         iterator,
                                         abort,
                                         "ModuleBlock['close brace token']",
@@ -473,7 +842,7 @@ export const Statements: p_pi.Production_With_Parameter<
                         ),
                     })
                 )]
-                case "TypeAliasDeclaration": return ['type alias declaration', helpers.group(
+                case "TypeAliasDeclaration": return ['type alias declaration', node_helpers.group(
                     $,
                     abort,
                     "TypeAliasDeclaration",
@@ -485,7 +854,7 @@ export const Statements: p_pi.Production_With_Parameter<
                                 'parent': $
                             }
                         ),
-                        'type keyword': helpers.singular_value(
+                        'type keyword': iterator_helpers.specific_node(
                             iterator,
                             abort,
                             "TypeAliasDeclaration['type keyword']",
@@ -493,7 +862,7 @@ export const Statements: p_pi.Production_With_Parameter<
                             $p.parent,
                             ($) => $,
                         ),
-                        'identifier': helpers.singular_value(
+                        'identifier': iterator_helpers.specific_node(
                             iterator,
                             abort,
                             "TypeAliasDeclaration['identifier']",
@@ -501,7 +870,7 @@ export const Statements: p_pi.Production_With_Parameter<
                             $p.parent,
                             ($) => $,
                         ),
-                        'first assignment': helpers.singular_value(
+                        'first assignment': iterator_helpers.specific_node(
                             iterator,
                             abort,
                             "TypeAliasDeclaration['first assignment']",
@@ -509,7 +878,7 @@ export const Statements: p_pi.Production_With_Parameter<
                             $p.parent,
                             ($) => $,
                         ),
-                        'type': helpers.state(
+                        'type': iterator_helpers.choice(
                             iterator,
                             abort,
                             "TypeAliasDeclaration['type']",
@@ -546,7 +915,7 @@ export const Type: p_i.Refiner_With_Parameter<
     }
 > = ($, abort, $p) => {
     switch ($.kind) {
-        case "TypeReference": return ['type reference', helpers.group(
+        case "TypeReference": return ['type reference', node_helpers.group(
             $,
             abort,
             "TypeReference",
@@ -573,12 +942,12 @@ export const Type: p_i.Refiner_With_Parameter<
                 )
             })
         )]
-        case "LiteralType": return ['literal type', helpers.group(
+        case "LiteralType": return ['literal type', node_helpers.group(
             $,
             abort,
             "LiteralType",
             (iterator): d_out.Literal_Type => ({
-                'type': helpers.state(
+                'type': iterator_helpers.choice(
                     iterator,
                     abort,
                     "LiteralType['type']",
@@ -601,7 +970,7 @@ export const Type: p_i.Refiner_With_Parameter<
             ])]
         })
     }
-    // return helpers.state(
+    // return iterator_helpers.state(
     //     iterator,
     //     abort,
     //     "Type",
@@ -625,7 +994,7 @@ export const Type_Parameters: p_pi.Production_With_Parameter<
     }
 > = (iterator, abort, $p): d_out.Type_Parameters => ({
 
-    'less than token': helpers.singular_value(
+    'less than token': iterator_helpers.specific_node(
         iterator,
         abort,
         "Type>type reference>Reference['less than token']",
@@ -634,7 +1003,7 @@ export const Type_Parameters: p_pi.Production_With_Parameter<
         $p.parent,
         ($) => $,
     ),
-    'entries': helpers.list_with_syntaxlist_wrapper(
+    'entries': iterator_helpers.list_with_syntaxlist_wrapper(
         iterator,
         abort,
         {
@@ -654,7 +1023,7 @@ export const Type_Parameters: p_pi.Production_With_Parameter<
             }
         }
     ),
-    'greater than token': helpers.singular_value(
+    'greater than token': iterator_helpers.specific_node(
         iterator,
         abort,
         "TypeReference['greater than token']",
@@ -672,7 +1041,7 @@ export const Entity_Name: p_pi.Production_With_Parameter<
     {
         'parent': d_in.Node
     }
-> = (iterator, abort, $p) => helpers.state(
+> = (iterator, abort, $p) => iterator_helpers.choice(
     iterator,
     abort,
     "Entity Name",
@@ -680,14 +1049,66 @@ export const Entity_Name: p_pi.Production_With_Parameter<
     $p.parent,
     ($): d_out.Entity_Name => {
         switch ($.kind) {
-            case "FirstNode": return ['qualified name', null]
+            case "FirstNode": return ['qualified name', iterator_helpers.specific_node(
+                iterator,
+                abort,
+                "EntityName['qualified name']",
+                "FirstNode",
+                $p.parent,
+                ($): d_out.Qualified_Name => Qualified_Name(
+                    $,
+                    abort,
+                    {
+                        'parent': $p.parent
+                    }
+                )
+            )]
+            case "Identifier": return ['identifier', $]
             default: return abort({
                 'context': "TypeReference['entity name']",
                 'cause': ['unexpected node', $],
-                'expected': ['something', p_.literal.list(["FirstNode"])]
+                'expected': ['something', p_.literal.list(["FirstNode", "Identifier"])]
             })
         }
     },
+)
+
+export const Qualified_Name: p_i.Refiner_With_Parameter<
+    d_out.Qualified_Name,
+    d_function.Error_Inner,
+    d_in.Node,
+    {
+        'parent': d_in.Node
+    }
+> = ($, abort, $p) => node_helpers.group(
+    $,
+    abort,
+    "QualifiedName",
+    (iterator): d_out.Qualified_Name => ({
+        'first': Entity_Name(
+            iterator,
+            abort,
+            {
+                'parent': $p.parent
+            }
+        ),
+        'dot token': iterator_helpers.specific_node(
+            iterator,
+            abort,
+            "QualifiedName['dot token']",
+            "DotToken",
+            $p.parent,
+            ($) => $,
+        ),
+        'second': iterator_helpers.specific_node(
+            iterator,
+            abort,
+            "QualifiedName['second']",
+            "Identifier",
+            $p.parent,
+            ($) => $
+        )
+    })
 )
 
 export const Modifiers: p_pi.Production_With_Parameter<
@@ -699,7 +1120,7 @@ export const Modifiers: p_pi.Production_With_Parameter<
         'parent': d_in.Node
     }
 > = (iterator, abort, $p) => {
-    return helpers.list_with_syntaxlist_wrapper(
+    return iterator_helpers.list_with_syntaxlist_wrapper(
         iterator,
         abort,
         {

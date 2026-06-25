@@ -50,10 +50,10 @@ export const $$: interface_.functions.analyze_typescript_file = p_.query_functio
                 }
             )
 
-            return t_typed_ast_to_prose.Source_File(
-                typed,
-            )
-            //return t_ast_to_prose.AST($.ast)
+            // return t_typed_ast_to_prose.Source_File(
+            //     typed,
+            // )
+            return t_ast_to_prose.AST($.ast)
         }
     ).transform(
         ($): d_process_file_data.Result => ({

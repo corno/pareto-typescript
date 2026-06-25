@@ -24,10 +24,14 @@ export type Import_Declaration = {
 export type Import_Clause = {
     'type':
     | ['named imports', p_.List<Import_Specifier>]
-    | ['namespace import', {
-        'identifier': d_ast.Node
-    }]
-    'name': d_ast.Node
+    | ['namespace import', Namespace_Import]
+    // 'name': d_ast.Node
+}
+
+export type Namespace_Import = {
+    'asterisk token': d_ast.Node
+    'as keyword': d_ast.Node
+    'identifier': d_ast.Node
 }
 
 export type Import_Specifier = {
@@ -76,14 +80,13 @@ export type Entity_Name =
     | ['identifier', d_ast.Node]
     | ['qualified name', Qualified_Name]
 
-export type Qualified_Name = null
-// export type Qualified_Name = {
-//     'first node': {
-//         'identifier': d_ast.Node
-//         'dot token': d_ast.Node
-//         'identifier2': d_ast.Node
-//     }
-// }
+export type Qualified_Name = {
+    'first': Entity_Name
+    'dot token': d_ast.Node
+    'second': Identifier
+}
+
+export type Identifier = d_ast.Node
 
 export type Type_Parameters = {
     'less than token': d_ast.Node

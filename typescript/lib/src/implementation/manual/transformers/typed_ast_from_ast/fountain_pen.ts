@@ -64,16 +64,23 @@ export const Error: p_i.Transformer<d_in.Error, d_out.Phrase> = ($) => sh.ph.com
             }
         }
     ),
-    sh.ph.literal("snippet:"),
-    t_ast_to_fp.Node(
-        p_.from.state($.inner.cause).decide(
-            ($) => {
-                switch ($[0]) {
-                    case 'end of node list': return p_.ss($, ($) => $.parent)
-                    case 'unexpected node': return p_.ss($, ($) => $)
-                    default: return p_.au($[0])
-                }
-            }
-        )
-    ),
+    sh.ph.indent(sh.pg.sentences([
+        sh.sentence([
+            sh.ph.literal("snippet:"),
+        ]),
+        sh.sentence([
+
+            t_ast_to_fp.Node(
+                p_.from.state($.inner.cause).decide(
+                    ($) => {
+                        switch ($[0]) {
+                            case 'end of node list': return p_.ss($, ($) => $.parent)
+                            case 'unexpected node': return p_.ss($, ($) => $)
+                            default: return p_.au($[0])
+                        }
+                    }
+                )
+            ),
+        ])
+    ]))
 ])
