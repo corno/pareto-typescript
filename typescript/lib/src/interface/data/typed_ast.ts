@@ -16,9 +16,22 @@ export type Statement =
 
 export type Import_Declaration = {
     'import keyword': d_ast.Node
-    'clause': d_ast.Node
+    'clause': Import_Clause
     'from keyword': d_ast.Node
     'string literal': d_ast.Node
+}
+
+export type Import_Clause = {
+    'type':
+    | ['named imports', p_.List<Import_Specifier>]
+    | ['namespace import', {
+        'identifier': d_ast.Node
+    }]
+    'name': d_ast.Node
+}
+
+export type Import_Specifier = {
+    'identifier': d_ast.Node
 }
 
 export type Module_Declaration = {
