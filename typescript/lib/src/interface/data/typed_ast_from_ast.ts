@@ -11,6 +11,7 @@ export type Error = {
 }
 
 export type Error_Inner = {
+    'context': string
     'cause':
     | ['end of node list', {
         'parent': d_ast.Node

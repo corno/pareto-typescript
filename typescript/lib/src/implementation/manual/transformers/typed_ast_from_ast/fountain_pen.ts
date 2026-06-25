@@ -47,6 +47,8 @@ export const Error: p_i.Transformer<d_in.Error, d_out.Phrase> = ($) => sh.ph.com
             }
         }
     ),
+    sh.ph.literal(" in "),
+    sh.ph.literal($.inner.context),
     sh.ph.literal(" but found "),
     p_.from.state($.inner.cause).decide(
         ($) => {
