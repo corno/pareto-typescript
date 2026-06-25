@@ -270,7 +270,7 @@ export const Statements: p_pi.Production_With_Parameter<
                             iterator,
                             abort,
                             {
-                                'parent': $p.parent
+                                'parent': $
                             }
                         ),
                         'namespace keyword': helpers.singular_value(
@@ -300,84 +300,20 @@ export const Statements: p_pi.Production_With_Parameter<
                                 abort,
                                 "ModuleBlock",
                                 (iterator): d_out.Module_Block => ({
-                                    'first punctuation': helpers.singular_value(
+                                    'open brace token': helpers.singular_value(
                                         iterator,
                                         abort,
                                         "ModuleBlock['first punctuation']",
-                                        "FirstPunctuation",
+                                        "FirstPunctuation", //FirstPunctuation has the same index in the enum as OpenBraceToken,
                                         $p.parent,
                                         ($) => $
                                     ),
-                                    'stuff': helpers.list(
+                                    'statements': Statements(
                                         iterator,
                                         abort,
                                         {
-                                            'context': "ModuleBlock['stuff']",
-                                            'parent': $p.parent
-                                        },
-                                        ($): d_out.Module_Block_Stuff => {
-                                            switch ($.kind) {
-                                                case "TypeAliasDeclaration": return ['type alias declaration', helpers.group(
-                                                    $,
-                                                    abort,
-                                                    "TypeAliasDeclaration",
-                                                    (iterator): d_out.Type_Alias_Declaration => ({
-                                                        'modifiers': Modifiers(
-                                                            iterator,
-                                                            abort,
-                                                            {
-                                                                'parent': $p.parent
-                                                            }
-                                                        ),
-                                                        'type keyword': helpers.singular_value(
-                                                            iterator,
-                                                            abort,
-                                                            "TypeAliasDeclaration['type keyword']",
-                                                            "TypeKeyword",
-                                                            $p.parent,
-                                                            ($) => $,
-                                                        ),
-                                                        'identifier': helpers.singular_value(
-                                                            iterator,
-                                                            abort,
-                                                            "TypeAliasDeclaration['identifier']",
-                                                            "Identifier",
-                                                            $p.parent,
-                                                            ($) => $,
-                                                        ),
-                                                        'first assignment': helpers.singular_value(
-                                                            iterator,
-                                                            abort,
-                                                            "TypeAliasDeclaration['first assignment']",
-                                                            "FirstAssignment",
-                                                            $p.parent,
-                                                            ($) => $,
-                                                        ),
-                                                        'type': helpers.state(
-                                                            iterator,
-                                                            abort,
-                                                            "TypeAliasDeclaration['type']",
-                                                            ["Type"],
-                                                            $p.parent,
-                                                            ($, abortx) => Type(
-                                                                $,
-                                                                abort,
-                                                                {
-                                                                    'parent': $p.parent
-                                                                }
-                                                            )
-                                                        )
-                                                    })
-                                                )]
-                                                default: return abort({
-                                                    'context': "ModuleBlock",
-                                                    'cause': ['unexpected node', $],
-                                                    'expected': ['something', p_.literal.list([
-                                                        "TypeAliasDeclaration",
-                                                    ])]
-                                                })
-                                            }
-                                        },
+                                            'parent': $
+                                        }
                                     ),
                                     'close brace token': helpers.singular_value(
                                         iterator,
@@ -392,12 +328,63 @@ export const Statements: p_pi.Production_With_Parameter<
                         ),
                     })
                 )]
+                case "TypeAliasDeclaration": return ['type alias declaration', helpers.group(
+                    $,
+                    abort,
+                    "TypeAliasDeclaration",
+                    (iterator): d_out.Type_Alias_Declaration => ({
+                        'modifiers': Modifiers(
+                            iterator,
+                            abort,
+                            {
+                                'parent': $
+                            }
+                        ),
+                        'type keyword': helpers.singular_value(
+                            iterator,
+                            abort,
+                            "TypeAliasDeclaration['type keyword']",
+                            "TypeKeyword",
+                            $p.parent,
+                            ($) => $,
+                        ),
+                        'identifier': helpers.singular_value(
+                            iterator,
+                            abort,
+                            "TypeAliasDeclaration['identifier']",
+                            "Identifier",
+                            $p.parent,
+                            ($) => $,
+                        ),
+                        'first assignment': helpers.singular_value(
+                            iterator,
+                            abort,
+                            "TypeAliasDeclaration['first assignment']",
+                            "FirstAssignment",
+                            $p.parent,
+                            ($) => $,
+                        ),
+                        'type': helpers.state(
+                            iterator,
+                            abort,
+                            "TypeAliasDeclaration['type']",
+                            ["Type"],
+                            $p.parent,
+                            ($, abortx) => Type(
+                                $,
+                                abort,
+                                {
+                                    'parent': $
+                                }
+                            )
+                        )
+                    })
+                )]
                 default: return abort({
                     'context': "Statements",
                     'cause': ['unexpected node', $],
                     'expected': ['something', p_.literal.list([
-                        "ImportDeclaration",
-                        "ModuleDeclaration"
+                        "Statement",
                     ])]
                 })
             }
@@ -419,86 +406,37 @@ export const Type: p_i.Refiner_With_Parameter<
             abort,
             "TypeReference",
             (iterator): d_out.Type_Reference => ({
-                'first node': helpers.singular_value(
-                    iterator,
-                    abort,
-                    "TypeReference['first node']",
-                    "FirstNode",
-                    $p.parent,
-                    ($) => helpers.group(
-                            $,
-                            abort,
-                            "TypeReference['first node']",
-                            (iterator): d_out.Type_Reference['first node'] => ({
-                                'identifier': helpers.singular_value(
-                                    iterator,
-                                    abort,
-                                    "TypeReference['first node']['identifier']",
-                                    "Identifier",
-                                    $p.parent,
-                                    ($) => $,
-                                ),
-                                'dot token': helpers.singular_value(
-                                    iterator,
-                                    abort,
-                                    "TypeReference['first node']['dot token']",
-                                    "DotToken",
-                                    $p.parent,
-                                    ($) => $,
-                                ),
-                                'identifier2': helpers.singular_value(
-                                    iterator,
-                                    abort,
-                                    "TypeReference['first node']['identifier2']",
-                                    "Identifier",
-                                    $p.parent,
-                                    ($) => $,
-                                ),
-                            })
-                        ),
-                ),
-                'first binary operator': helpers.singular_value(
-                    iterator,
-                    abort,
-                    "TypeReference['first binary operator']",
-                    "FirstBinaryOperator",
-                    $p.parent,
-                    ($) => $,
-                ),
-                'type parameters': helpers.list(
+                'entity name': Entity_Name(
                     iterator,
                     abort,
                     {
-                        'context': "TypeReference['type parameters']",
-                        'parent': $p.parent
-                    },
-                    ($): d_out.Type => Type(
-                        $,
-                        abort,
-                        {
-                            'parent': $p.parent
-                        }
-                    )
+                        'parent': $
+                    }
                 ),
-                'greater than token': helpers.singular_value(
-                    iterator,
-                    abort,
-                    "TypeReference['greater than token']",
-                    "GreaterThanToken",
-                    $p.parent,
-                    ($) => $,
-                ),
+                'type parameters': iterator.peek(
+                    () => p_.literal.not_set(),
+                    ($) => $.kind === "FirstBinaryOperator"
+                        ? p_.literal.set(Type_Parameters(
+                            iterator,
+                            abort,
+                            {
+                                'parent': $
+                            }
+                        ))
+                        : p_.literal.not_set(),
+
+                )
             })
         )]
-        case "TypeLiteral": return ['type literal', helpers.group(
+        case "LiteralType": return ['literal type', helpers.group(
             $,
             abort,
-            "TypeLiteral",
+            "LiteralType",
             (iterator): d_out.Literal_Type => ({
                 'type': helpers.state(
                     iterator,
                     abort,
-                    "TypeLiteral['type']",
+                    "LiteralType['type']",
                     ["NullKeyword"],
                     $p.parent,
                     ($, abort) => $.kind !== "NullKeyword"
@@ -507,10 +445,12 @@ export const Type: p_i.Refiner_With_Parameter<
                 ),
             })
         )]
+        case "TypeLiteral": return ['type literal', $]
         default: return abort({
             'context': "Type",
             'cause': ['unexpected node', $],
             'expected': ['something', p_.literal.list([
+                "LiteralType",
                 "TypeReference",
                 "TypeLiteral"
             ])]
@@ -529,6 +469,81 @@ export const Type: p_i.Refiner_With_Parameter<
     //     }
     // )
 }
+
+export const Type_Parameters: p_pi.Production_With_Parameter<
+    d_out.Type_Parameters,
+    d_function.Error_Inner,
+    d_in.Node,
+    null,
+    {
+        'parent': d_in.Node
+    }
+> = (iterator, abort, $p): d_out.Type_Parameters => ({
+
+    'less than token': helpers.singular_value(
+        iterator,
+        abort,
+        "Type>type reference>Reference['less than token']",
+        "FirstBinaryOperator", //FirstBinaryOperator has the same index in the enum as LessThanToken, 
+        //sbut is specified later in the list and is therefor selected as the name, so we unfortunately have to use this name here
+        $p.parent,
+        ($) => $,
+    ),
+    'entries': helpers.list(
+        iterator,
+        abort,
+        {
+            'context': "TypeReference['type parameters']",
+            'parent': $p.parent
+        },
+        ($): d_out.Type_Parameters_Entry => {
+            switch ($.kind) {
+                case "CommaToken": return ['comma token', $]
+                default: return ['type', Type(
+                    $,
+                    abort,
+                    {
+                        'parent': $
+                    }
+                )]
+            }
+        }
+    ),
+    'greater than token': helpers.singular_value(
+        iterator,
+        abort,
+        "TypeReference['greater than token']",
+        "GreaterThanToken",
+        $p.parent,
+        ($) => $,
+    ),
+})
+
+export const Entity_Name: p_pi.Production_With_Parameter<
+    d_out.Entity_Name,
+    d_function.Error_Inner,
+    d_in.Node,
+    null,
+    {
+        'parent': d_in.Node
+    }
+> = (iterator, abort, $p) => helpers.state(
+    iterator,
+    abort,
+    "Entity Name",
+    ["FirstNode"],
+    $p.parent,
+    ($): d_out.Entity_Name => {
+        switch ($.kind) {
+            case "FirstNode": return ['qualified name', null]
+            default: return abort({
+                'context': "TypeReference['entity name']",
+                'cause': ['unexpected node', $],
+                'expected': ['something', p_.literal.list(["FirstNode"])]
+            })
+        }
+    },
+)
 
 export const Modifiers: p_pi.Production_With_Parameter<
     d_out.Modifiers,

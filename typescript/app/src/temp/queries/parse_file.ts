@@ -25,6 +25,10 @@ class My_Node_Implementation implements d_ast.Node {
         return ts.SyntaxKind[this.tsNode.kind]
     }
 
+    get text(): string {
+        return this.tsNode.getText()
+    }
+
     get children(): p_i.List<d_ast.Node> {
         const sourceFile = this.tsNode.getSourceFile()
         return p_.literal.list(

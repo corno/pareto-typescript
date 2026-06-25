@@ -11,6 +11,8 @@ export type Statements = p_.List<Statement>
 export type Statement =
     | ['import declaration', Import_Declaration]
     | ['module declaration', Module_Declaration]
+    | ['type alias declaration', Type_Alias_Declaration]
+
 
 export type Import_Declaration = {
     'import keyword': d_ast.Node
@@ -32,13 +34,10 @@ export type Modifier =
     | ['export', d_ast.Node]
 
 export type Module_Block = {
-    'first punctuation': d_ast.Node
-    'stuff': p_.List<Module_Block_Stuff>
+    'open brace token': d_ast.Node
+    'statements': Statements
     'close brace token': d_ast.Node
 }
-
-export type Module_Block_Stuff =
-| ['type alias declaration', Type_Alias_Declaration]
 
 export type Type_Alias_Declaration = {
     'modifiers': Modifiers
@@ -50,20 +49,38 @@ export type Type_Alias_Declaration = {
 
 export type Type =
     | ['type reference', Type_Reference]
-    | ['type literal', Literal_Type]
+    | ['literal type', Literal_Type]
+    | ['type literal', Type_Literal]
 
 export type Type_Reference = {
-    'first node': {
-        'identifier': d_ast.Node
-        'dot token': d_ast.Node
-        'identifier2': d_ast.Node
-    }
-    'first binary operator': d_ast.Node
-    'type parameters': Type_Parameters
+    'entity name': Entity_Name
+    'type parameters': p_.Optional_Value<Type_Parameters>
+}
+
+export type Type_Literal = d_ast.Node
+
+export type Entity_Name =
+    | ['identifier', d_ast.Node]
+    | ['qualified name', Qualified_Name]
+
+export type Qualified_Name = null
+// export type Qualified_Name = {
+//     'first node': {
+//         'identifier': d_ast.Node
+//         'dot token': d_ast.Node
+//         'identifier2': d_ast.Node
+//     }
+// }
+
+export type Type_Parameters = {
+    'less than token': d_ast.Node
+    'entries': p_.List<Type_Parameters_Entry>
     'greater than token': d_ast.Node
 }
 
-export type Type_Parameters = p_.List<Type>
+export type Type_Parameters_Entry =
+    | ['comma token', d_ast.Node]
+    | ['type', Type]
 
 
 export type Literal_Type = {

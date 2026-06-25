@@ -8,12 +8,14 @@ import * as interface_ from "../../../interface/queries"
 //data  types
 import * as d_process_file_data from "pareto-common/dist/interface/data/process_file_data"
 import * as d_parse_typescript_file from "../../../modules/typescript_parser/interface/data/parse_file"
+import * as d_fp from "pareto-fountain-pen/dist/interface/generated/liana/schemas/prose/data"
 
 //dependencies
 import * as t_prose_to_loc from "pareto-fountain-pen/dist/implementation/manual/transformers/prose/list_of_characters"
 import * as t_ast_to_prose from "../transformers/ast/fountain_pen"
 import * as r_typed_ast_from_ast from "../refiners/typed_ast/ast"
 import * as t_typed_ast_from_ast_to_prose from "../transformers/typed_ast_from_ast/fountain_pen"
+import * as t_typed_ast_to_prose from "../transformers/typed_ast/fountain_pen"
 
 //shorthands
 import * as sh from "pareto-fountain-pen/dist/shorthands/prose/deprecated"
@@ -35,8 +37,8 @@ export const $$: interface_.functions.analyze_typescript_file = p_.query_functio
             }
         )
     )).refine(
-        ($, abort) => {
-            r_typed_ast_from_ast.Source_File(
+        ($, abort): d_fp.Paragraph => {
+            const typed = r_typed_ast_from_ast.Source_File(
                 $.ast.root,
                 ($) => abort(
                     t_typed_ast_from_ast_to_prose.Error(
@@ -47,12 +49,16 @@ export const $$: interface_.functions.analyze_typescript_file = p_.query_functio
                     'path': $d.path,
                 }
             )
-            return $
+
+            return t_typed_ast_to_prose.Source_File(
+                typed,
+            )
+            //return t_ast_to_prose.AST($.ast)
         }
     ).transform(
         ($): d_process_file_data.Result => ({
             'data': t_prose_to_loc.Paragraph(
-                t_ast_to_prose.AST($.ast),
+                $,
                 {
                     'indentation': "    ",
                     'newline': "\n"

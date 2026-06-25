@@ -7,6 +7,7 @@ import * as d_in from "../../../../interface/data/typed_ast_from_ast"
 
 //dependencies
 import * as t_path_to_text from "pareto-resources/dist/implementation/manual/transformers/unrestricted_path/text"
+import * as t_ast_to_fp from "../ast/fountain_pen"
 
 
 //shorthands
@@ -62,5 +63,17 @@ export const Error: p_i.Transformer<d_in.Error, d_out.Phrase> = ($) => sh.ph.com
                 default: return p_.au($[0])
             }
         }
-    )
+    ),
+    sh.ph.literal("snippet:"),
+    t_ast_to_fp.Node(
+        p_.from.state($.inner.cause).decide(
+            ($) => {
+                switch ($[0]) {
+                    case 'end of node list': return p_.ss($, ($) => $.parent)
+                    case 'unexpected node': return p_.ss($, ($) => $)
+                    default: return p_.au($[0])
+                }
+            }
+        )
+    ),
 ])

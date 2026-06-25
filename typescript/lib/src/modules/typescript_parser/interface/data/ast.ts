@@ -13,6 +13,7 @@ export type Node = {
         'line': number
         'column': number
     }
+    'text': string
 }
 
 export type Comments = p_i.List<string>
