@@ -43,47 +43,44 @@ export const Source_File_Inner: p_i.Refiner<
             }),
         () => p_iterate<
             d_out.Source_File,
-            d_function.Error_Inner,
-            d_function.Expected,
             d_in.Node,
             null
         >({
             list: $.children,
             end_info: null,
-            create_dangling_item_error: ($) => p_.literal.set<d_function.Error_Inner>({
+            on_dangling_item: ($) => abort({
                 'location': ['location', $.location],
                 'type': ['unexpected', {
                     'found kind': p_.literal.set($.kind),
                     'expected': p_.literal.not_set()
                 }]
             }),
-            create_expectation_error: (expected, found) => ({
-                'location': p_.from.state(found).decide(
-                    ($) => {
-                        switch ($[0]) {
-                            case 'item': return p_.ss($, ($) => ['location', $.location])
-                            case 'end': return p_.ss($, ($) => ['end of document', null])
-                            default: return p_.au($[0])
-                        }
-                    }
-                ),
-                'type': ['unexpected', {
-                    'found kind': p_.from.state(found).decide(
-                        ($) => {
-                            switch ($[0]) {
-                                case 'item': return p_.ss($, ($) => p_.literal.set($.kind))
-                                case 'end': return p_.ss($, ($) => p_.literal.not_set())
-                                default: return p_.au($[0])
-                            }
-                        }
-                    ),
-                    'expected': p_.literal.set(expected)
-                }]
-            }),
-            abort: abort,
+            // create_expectation_error: (expected, found) => ({
+            //     'location': p_.from.state(found).decide(
+            //         ($) => {
+            //             switch ($[0]) {
+            //                 case 'item': return p_.ss($, ($) => ['location', $.location])
+            //                 case 'end': return p_.ss($, ($) => ['end of document', null])
+            //                 default: return p_.au($[0])
+            //             }
+            //         }
+            //     ),
+            //     'type': ['unexpected', {
+            //         'found kind': p_.from.state(found).decide(
+            //             ($) => {
+            //                 switch ($[0]) {
+            //                     case 'item': return p_.ss($, ($) => p_.literal.set($.kind))
+            //                     case 'end': return p_.ss($, ($) => p_.literal.not_set())
+            //                     default: return p_.au($[0])
+            //                 }
+            //             }
+            //         ),
+            //         'expected': p_.literal.set(expected)
+            //     }]
+            // }),
             assign: (iterator) => {
                 return {
-                    'statements': iterator.consume(
+                    'statements': iterator.consume.list(
                         ($) => Statements($, abort),
                         () => abort({
                             'location': ['end of document', null],
@@ -93,7 +90,7 @@ export const Source_File_Inner: p_i.Refiner<
                             }]
                         })
                     ),
-                    'end of file': iterator.consume(
+                    'end of file': iterator.consume.nothing(
                         ($) => p_assert(
                             abort,
                             () => $.kind === "EndOfFileToken"
