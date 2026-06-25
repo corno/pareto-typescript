@@ -80,17 +80,24 @@ export const Source_File_Inner: p_i.Refiner<
             // }),
             assign: (iterator) => {
                 return {
-                    'statements': iterator.consume.list(
-                        ($) => Statements($, abort),
+                    'statements': iterator.consume(
                         () => abort({
                             'location': ['end of document', null],
                             'type': ['unexpected', {
                                 'found kind': p_.literal.not_set(),
                                 'expected': p_.literal.set(p_.literal.list(["Statements (SyntaxList)"]))
                             }]
-                        })
+                        }),
+                        ($) => Statements($, abort),
                     ),
-                    'end of file': iterator.consume.nothing(
+                    'end of file': iterator.consume(
+                        () => abort({
+                            'location': ['end of document', null],
+                            'type': ['unexpected', {
+                                'found kind': p_.literal.not_set(),
+                                'expected': p_.literal.set(p_.literal.list(["Statements (SyntaxList)"]))
+                            }]
+                        }),
                         ($) => p_assert(
                             abort,
                             () => $.kind === "EndOfFileToken"
@@ -104,13 +111,6 @@ export const Source_File_Inner: p_i.Refiner<
                                 }),
                             () => null
                         ),
-                        () => abort({
-                            'location': ['end of document', null],
-                            'type': ['unexpected', {
-                                'found kind': p_.literal.not_set(),
-                                'expected': p_.literal.set(p_.literal.list(["Statements (SyntaxList)"]))
-                            }]
-                        })
                     ),
                 }
             }
