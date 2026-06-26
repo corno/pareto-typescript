@@ -47,6 +47,8 @@ export type Module_Declaration = {
 
 export type Modifiers = p_.List<Modifier>
 
+export type Optional_Modifiers = p_.Optional_Value<Modifiers>
+
 export type Modifier =
     | ['export', null]
     | ['readonly', null]
@@ -133,7 +135,7 @@ export type Call_Signature = d_ast.Node
 export type Index_Signature = d_ast.Node
 
 export type Property_Signature = {
-    'modifiers': p_.Optional_Value<Modifiers>
+    'modifiers': Optional_Modifiers
     'id': String_Literal_Or_Identifier
     'colon token': null
     'type': Type
