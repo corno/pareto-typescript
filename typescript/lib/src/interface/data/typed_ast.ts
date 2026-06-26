@@ -71,6 +71,15 @@ export type Type =
     | ['type literal', Type_Literal]
     | ['union type', Union_Type]
     | ['tuple type', Tuple_Type]
+    // | ['interface declaration', Interface_Declaration]
+
+export type Interface_Declaration = {
+    'interface keyword': d_ast.Node
+    'identifier': d_ast.Node
+    'type parameters': p_.Optional_Value<Type_Parameters>
+    // 'heritage clauses': p_.Optional_Value<p_.List<Heritage_Clause>>
+    // 'body': Type_Literal
+}
 
 export type Union_Type = {
     'members': p_.List<Union_Type_Member>
