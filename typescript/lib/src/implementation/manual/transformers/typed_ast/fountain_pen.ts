@@ -102,7 +102,8 @@ export const Type: p_i.Transformer<d_in.Type, d_out.Phrase> = ($) => p_.from.sta
     ($) => {
         switch ($[0]) {
             case 'type reference': return p_.ss($, ($) => sh.ph.composed([
-                Entity_Name($['entity name']),
+                //Entity_Name($['entity name']),
+                sh.ph.literal("FIXME: Entity_Name"),
                 p_.from.optional($['type parameters']).decide(
                     ($) => Type_Parameters($),
                     () => sh.ph.nothing()

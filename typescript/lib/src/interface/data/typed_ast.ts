@@ -70,7 +70,8 @@ export type Type =
     | ['type literal', Type_Literal]
 
 export type Type_Reference = {
-    'entity name': Entity_Name
+    'entity name': null
+    // 'entity name': Entity_Name
     'type parameters': p_.Optional_Value<Type_Parameters>
 }
 

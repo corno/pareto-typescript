@@ -12,14 +12,13 @@ export type Error = {
 
 export type Error_Inner = {
     'context': string
+    'parent': d_ast.Node
     'cause':
-    | ['end of node list', {
-        'parent': d_ast.Node
-    }]
+    | ['end of node list', null]
     | ['unexpected node', d_ast.Node]
     'expected': Expected
 }
 
 export type Expected =
     | ['nothing', null]
-    | ['something', p_.List<string>]
+    | ['something', string]
