@@ -49,6 +49,7 @@ export type Modifiers = p_.List<Modifier>
 
 export type Modifier =
     | ['export', d_ast.Node]
+    | ['readonly', d_ast.Node]
 
 export type Module_Block = {
     'open brace token': d_ast.Node
@@ -68,6 +69,26 @@ export type Type =
     | ['type reference', Type_Reference]
     | ['literal type', Literal_Type]
     | ['type literal', Type_Literal]
+    | ['union type', Union_Type]
+    | ['tuple type', Tuple_Type]
+
+export type Union_Type = {
+    'members': p_.List<Union_Type_Member>
+}
+
+export type Tuple_Type = {
+    readonly 'open bracket token': d_ast.Node
+    'elements': p_.List<Tuple_Type_Member>
+    'close bracket token': d_ast.Node
+}
+
+export type Tuple_Type_Member =
+    | ['comma token', d_ast.Node]
+    | ['type', Type]
+
+export type Union_Type_Member =
+    | ['type', Type]
+    | ['bar token', d_ast.Node]
 
 export type Type_Reference = {
     // 'entity name': null
@@ -85,6 +106,7 @@ export type Type_Literal_Member =
     | ['property signature', Property_Signature]
 
 export type Property_Signature = {
+    'modifiers': p_.Optional_Value<Modifiers>
     'id': String_Literal_Or_Identifier
     'colon token': d_ast.Node
     'type': Type
@@ -120,4 +142,5 @@ export type Type_Parameters_Entry =
 export type Literal_Type = {
     'type':
     | ['null', d_ast.Node]
+    | ['string literal', d_ast.Node]
 }
