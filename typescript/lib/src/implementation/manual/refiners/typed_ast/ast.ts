@@ -34,7 +34,7 @@ export const Source_File_Inner: p_i.Refiner<
 > = ($, abort) => h.create_node_context(
     $,
     abort,
-    (context) => p_assert(
+    (context): d_out.Source_File => p_assert(
         abort,
         () => $.kind === "SourceFile"
             ? p_.literal.not_set()
@@ -59,7 +59,7 @@ export const Source_File_Inner: p_i.Refiner<
                     'end of file': context.consume_and_expect(
                         "SourceFile['end of file']",
                         "EndOfFileToken",
-                        ($) => $
+                        ($) => null
                     ),
                 }
             }
@@ -80,11 +80,11 @@ export const Statements: p_i.Refiner<
             switch ($.kind) {
                 case "ImportDeclaration": return ['import declaration', context.parse_children(
                     "ImportDeclaration",
-                    (context) => ({
+                    (context): d_out.Import_Declaration => ({
                         'import keyword': context.consume_and_expect(
                             "ImportDeclaration['import keyword']",
                             "ImportKeyword",
-                            ($) => $
+                            ($) => null
                         ),
                         'clause': context.consume_and_expect(
                             "ImportDeclaration['clause']",
@@ -128,12 +128,12 @@ export const Statements: p_i.Refiner<
                                                             'asterisk token': context.consume_and_expect(
                                                                 "NamespaceImport['asterisk token']",
                                                                 "AsteriskToken",
-                                                                ($) => $
+                                                                ($) => null
                                                             ),
                                                             'as keyword': context.consume_and_expect(
                                                                 "NamespaceImport['as keyword']",
                                                                 "AsKeyword",
-                                                                ($) => $
+                                                                ($) => null
                                                             ),
                                                             'identifier': context.consume_and_expect(
                                                                 "NamespaceImport['identifier']",
@@ -159,7 +159,7 @@ export const Statements: p_i.Refiner<
                         'from keyword': context.consume_and_expect(
                             "ImportDeclaration['from keyword']",
                             "FromKeyword",
-                            ($) => $
+                            ($) => null
                         ),
                         'string literal': context.consume_and_expect(
                             "ImportDeclaration['string literal']",
@@ -174,7 +174,7 @@ export const Statements: p_i.Refiner<
                         'interface keyword': context.consume_and_expect(
                             "InterfaceDeclaration['interface keyword']",
                             "InterfaceKeyword",
-                            ($) => $
+                            ($) => null
                         ),
                         'identifier': context.consume_and_expect(
                             "InterfaceDeclaration['identifier']",
@@ -204,7 +204,7 @@ export const Statements: p_i.Refiner<
                         'namespace keyword': context.consume_and_expect(
                             "ModuleDeclaration['namespace keyword']",
                             "NamespaceKeyword",
-                            ($) => $
+                            ($) => null
                         ),
                         'identifier': context.consume_and_expect(
                             "ModuleDeclaration['identifier']",
@@ -220,7 +220,7 @@ export const Statements: p_i.Refiner<
                                     'open brace token': context.consume_and_expect(
                                         "ModuleBlock['first punctuation']",
                                         "OpenBraceToken",
-                                        ($) => $
+                                        ($) => null
                                     ),
                                     'statements': context.consume_and_expect(
                                         "ModuleBlock['statements']",
@@ -233,7 +233,7 @@ export const Statements: p_i.Refiner<
                                     'close brace token': context.consume_and_expect(
                                         "ModuleBlock['close brace token']",
                                         "CloseBraceToken",
-                                        ($) => $,
+                                        ($) => null,
                                     ),
                                 })
                             ),
@@ -250,7 +250,7 @@ export const Statements: p_i.Refiner<
                         'type keyword': context.consume_and_expect(
                             "TypeAliasDeclaration['type keyword']",
                             "TypeKeyword",
-                            ($) => $,
+                            ($) => null,
                         ),
                         'identifier': context.consume_and_expect(
                             "TypeAliasDeclaration['identifier']",
@@ -260,7 +260,7 @@ export const Statements: p_i.Refiner<
                         'equals token': context.consume_and_expect(
                             "TypeAliasDeclaration['equals token']",
                             "EqualsToken",
-                            ($) => $,
+                            ($) => null,
                         ),
                         'type': context.consume(
                             "TypeAliasDeclaration['type']",
@@ -289,7 +289,7 @@ export const Type: p_i.Refiner<
 > = ($, abort) => h.create_node_context(
     $,
     abort,
-    (context) => {
+    (context): d_out.Type => {
         switch ($.kind) {
             case "LiteralType": return ['literal type', context.parse_children(
                 "LiteralType",
@@ -298,10 +298,10 @@ export const Type: p_i.Refiner<
                         "LiteralType['type']",
                         ($, context) => {
                             switch ($.kind) {
-                                case "FalseKeyword": return ['false keyword', $]
-                                case "NullKeyword": return ['null', $]
+                                case "FalseKeyword": return ['false keyword', null]
+                                case "NullKeyword": return ['null', null]
                                 case "StringLiteral": return ['string literal', $]
-                                case "TrueKeyword": return ['true keyword', $]
+                                case "TrueKeyword": return ['true keyword', null]
                                 default: return abort({
                                     'parent': $,
                                     'context': "LiteralType['type']",
@@ -313,21 +313,21 @@ export const Type: p_i.Refiner<
                     ),
                 })
             )]
-            case "NumberKeyword": return ['number keyword', $]
-            case "StringKeyword": return ['string keyword', $]
+            case "NumberKeyword": return ['number keyword', null]
+            case "StringKeyword": return ['string keyword', null]
             case "TupleType": return ['tuple type', context.parse_children(
                 "TupleType",
                 (context): d_out.Tuple_Type => ({
                     'open bracket token': context.consume_and_expect(
                         "TupleType['open bracket token']",
                         "OpenBracketToken",
-                        ($) => $
+                        ($) => null
                     ),
                     'elements': context.consume_syntax_list(
                         "TupleType['elements']",
                         ($) => {
                             switch ($.kind) {
-                                case "CommaToken": return ['comma token', $]
+                                case "CommaToken": return ['comma token', null]
                                 default: return ['type', Type(
                                     $,
                                     abort,
@@ -338,7 +338,7 @@ export const Type: p_i.Refiner<
                     'close bracket token': context.consume_and_expect(
                         "TupleType['close bracket token']",
                         "CloseBracketToken",
-                        ($) => $,
+                        ($) => null,
                     ),
                 })
             )]
@@ -375,7 +375,7 @@ export const Type: p_i.Refiner<
                         "UnionType['members']",
                         ($): d_out.Union_Type_Member => {
                             switch ($.kind) {
-                                case "BarToken": return ['bar token', $]
+                                case "BarToken": return ['bar token', null]
                                 default: return ['type', Type(
                                     $,
                                     abort,
@@ -428,11 +428,11 @@ export const Type_Literal: p_pi.Production_With_Parameter<
     iterator,
     abort,
     $p.parent,
-    (context) => ({
+    (context): d_out.Type_Literal => ({
         'open brace token': context.consume_and_expect(
             "TypeLiteral['open brace token']",
             "OpenBraceToken",
-            ($) => $
+            ($) => null
         ),
         'members': context.consume_syntax_list(
             "TypeLiteral['members']",
@@ -460,7 +460,7 @@ export const Type_Literal: p_pi.Production_With_Parameter<
                             'colon token': context.consume_and_expect(
                                 "PropertySignature['colon token']",
                                 "ColonToken",
-                                ($) => $
+                                ($) => null
                             ),
                             'type': context.consume(
                                 "PropertySignature['type']",
@@ -478,7 +478,7 @@ export const Type_Literal: p_pi.Production_With_Parameter<
         'close brace token': context.consume_and_expect(
             "TypeLiteral['close brace token']",
             "CloseBraceToken",
-            ($) => $,
+            ($) => null,
         ),
     })
 )
@@ -496,18 +496,18 @@ export const Type_Arguments: p_pi.Production_With_Parameter<
     iterator,
     abort,
     $p.parent,
-    (context) => ({
+    (context): d_out.Type_Arguments => ({
 
         'less than token': context.consume_and_expect(
             "TypeArguments['less than token']",
             "LessThanToken",
-            ($) => $,
+            ($) => null,
         ),
         'entries': context.consume_syntax_list(
             "TypeArguments['entries']",
             ($): d_out.Type_Arguments_Entry => {
                 switch ($.kind) {
-                    case "CommaToken": return ['comma token', $]
+                    case "CommaToken": return ['comma token', null]
                     default: return ['type', Type(
                         $,
                         abort,
@@ -518,7 +518,7 @@ export const Type_Arguments: p_pi.Production_With_Parameter<
         'greater than token': context.consume_and_expect(
             "TypeArguments['greater than token']",
             "GreaterThanToken",
-            ($) => $,
+            ($) => null,
         ),
     })
 )
@@ -535,12 +535,12 @@ export const Type_Parameters: p_pi.Production_With_Parameter<
     iterator,
     abort,
     $p.parent,
-    (context) => ({
+    (context): d_out.Type_Parameters => ({
 
         'less than token': context.consume_and_expect(
             "TypeParameters['less than token']",
             "LessThanToken",
-            ($) => $,
+            ($) => null,
         ),
         'entries': context.consume_syntax_list(
             "TypeParameters['entries']",
@@ -569,7 +569,7 @@ export const Type_Parameters: p_pi.Production_With_Parameter<
         'greater than token': context.consume_and_expect(
             "TypeParameters['greater than token']",
             "GreaterThanToken",
-            ($) => $,
+            ($) => null,
         ),
     })
 )
@@ -629,7 +629,7 @@ export const Qualified_Name: p_i.Refiner<
             'dot token': context.consume_and_expect(
                 "QualifiedName['dot token']",
                 "DotToken",
-                ($) => $,
+                ($) => null,
             ),
             'second': context.consume(
                 "QualifiedName['second']",
@@ -659,8 +659,8 @@ export const Modifiers: p_pi.Production_With_Parameter<
             "Modifiers",
             ($): d_out.Modifier => {
                 switch ($.kind) {
-                    case "ExportKeyword": return ['export', $]
-                    case "ReadonlyKeyword": return ['readonly', $]
+                    case "ExportKeyword": return ['export', null]
+                    case "ReadonlyKeyword": return ['readonly', null]
                     default: return abort({
                         'parent': $p.parent,
                         'context': "Modifiers",

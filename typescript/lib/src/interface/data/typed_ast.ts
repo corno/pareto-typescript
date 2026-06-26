@@ -3,7 +3,7 @@ import * as d_ast from "../../modules/typescript_parser/interface/data/ast"
 
 export type Source_File = {
     'statements': Statements
-    'end of file': d_ast.Node
+    'end of file': null
 }
 
 export type Statements = p_.List<Statement>
@@ -16,68 +16,67 @@ export type Statement =
 
 
 export type Import_Declaration = {
-    'import keyword': d_ast.Node
+    'import keyword': null
     'clause': Import_Clause
-    'from keyword': d_ast.Node
-    'string literal': d_ast.Node
+    'from keyword': null
+    'string literal': String_Literal
 }
 
 export type Import_Clause = {
     'type':
     | ['named imports', p_.List<Import_Specifier>]
     | ['namespace import', Namespace_Import]
-    // 'name': d_ast.Node
 }
 
 export type Namespace_Import = {
-    'asterisk token': d_ast.Node
-    'as keyword': d_ast.Node
-    'identifier': d_ast.Node
+    'asterisk token': null
+    'as keyword': null
+    'identifier': Identifier
 }
 
 export type Import_Specifier = {
-    'identifier': d_ast.Node
+    'identifier': Identifier
 }
 
 export type Module_Declaration = {
     'modifiers': Modifiers
-    'namespace keyword': d_ast.Node
-    'identifier': d_ast.Node
+    'namespace keyword': null
+    'identifier': Identifier
     'module block': Module_Block
 }
 
 export type Modifiers = p_.List<Modifier>
 
 export type Modifier =
-    | ['export', d_ast.Node]
-    | ['readonly', d_ast.Node]
+    | ['export', null]
+    | ['readonly', null]
 
 export type Module_Block = {
-    'open brace token': d_ast.Node
+    'open brace token': null
     'statements': Statements
-    'close brace token': d_ast.Node
+    'close brace token': null
 }
 
 export type Type_Alias_Declaration = {
     'modifiers': Modifiers
-    'type keyword': d_ast.Node
-    'identifier': d_ast.Node
-    'equals token': d_ast.Node
+    'type keyword': null
+    'identifier': Identifier
+    'equals token': null
     'type': Type
 }
 
 export type Type =
     | ['literal type', Literal_Type]
-    | ['number keyword', d_ast.Node]
-    | ['string keyword', d_ast.Node]
+    | ['number keyword', null]
+    | ['string keyword', null]
     | ['tuple type', Tuple_Type]
     | ['type literal', Type_Literal]
     | ['type reference', Type_Reference]
     | ['union type', Union_Type]
 
 export type Interface_Declaration = {
-    'interface keyword': d_ast.Node
-    'identifier': d_ast.Node
+    'interface keyword': null
+    'identifier': Identifier
     'type parameters': p_.Optional_Value<Type_Parameters>
     'body': Type_Literal
     // 'heritage clauses': p_.Optional_Value<p_.List<Heritage_Clause>>
@@ -85,13 +84,13 @@ export type Interface_Declaration = {
 }
 
 export type Type_Parameters = {
-    'less than token': d_ast.Node
+    'less than token': null
     'entries': p_.List<Type_Parameters_Entry>
-    'greater than token': d_ast.Node
+    'greater than token': null
 }
 
 export type Type_Parameters_Entry = {
-    'identifier': d_ast.Node
+    'identifier': Identifier
 }
 
 export type Union_Type = {
@@ -99,18 +98,18 @@ export type Union_Type = {
 }
 
 export type Tuple_Type = {
-    readonly 'open bracket token': d_ast.Node
+    readonly 'open bracket token': null
     'elements': p_.List<Tuple_Type_Member>
-    'close bracket token': d_ast.Node
+    'close bracket token': null
 }
 
 export type Tuple_Type_Member =
-    | ['comma token', d_ast.Node]
+    | ['comma token', null]
     | ['type', Type]
 
 export type Union_Type_Member =
     | ['type', Type]
-    | ['bar token', d_ast.Node]
+    | ['bar token', null]
 
 export type Type_Reference = {
     // 'entity name': null
@@ -119,9 +118,9 @@ export type Type_Reference = {
 }
 
 export type Type_Literal = {
-    'open brace token': d_ast.Node
+    'open brace token': null
     'members': p_.List<Type_Literal_Member>
-    'close brace token': d_ast.Node
+    'close brace token': null
 }
 
 export type Type_Literal_Member =
@@ -136,12 +135,12 @@ export type Index_Signature = d_ast.Node
 export type Property_Signature = {
     'modifiers': p_.Optional_Value<Modifiers>
     'id': String_Literal_Or_Identifier
-    'colon token': d_ast.Node
+    'colon token': null
     'type': Type
 }
 
 export type String_Literal_Or_Identifier =
-    | ['string literal', d_ast.Node]
+    | ['string literal', String_Literal]
     | ['identifier', Identifier]
 
 export type Entity_Name =
@@ -150,27 +149,29 @@ export type Entity_Name =
 
 export type Qualified_Name = {
     'first': Entity_Name
-    'dot token': d_ast.Node
+    'dot token': null
     'second': Identifier
 }
 
 export type Identifier = d_ast.Node
 
 export type Type_Arguments = {
-    'less than token': d_ast.Node
+    'less than token': null
     'entries': p_.List<Type_Arguments_Entry>
-    'greater than token': d_ast.Node
+    'greater than token': null
 }
 
 export type Type_Arguments_Entry =
-    | ['comma token', d_ast.Node]
+    | ['comma token', null]
     | ['type', Type]
 
 
 export type Literal_Type = {
     'type':
-    | ['false keyword', d_ast.Node]
-    | ['null', d_ast.Node]
-    | ['string literal', d_ast.Node]
-    | ['true keyword', d_ast.Node]
+    | ['false keyword', null]
+    | ['null', null]
+    | ['string literal', String_Literal]
+    | ['true keyword', null]
 }
+
+export type String_Literal = d_ast.Node
