@@ -10,6 +10,7 @@ export type Statements = p_.List<Statement>
 
 export type Statement =
     | ['import declaration', Import_Declaration]
+    | ['interface declaration', Interface_Declaration]
     | ['module declaration', Module_Declaration]
     | ['type alias declaration', Type_Alias_Declaration]
 
@@ -61,24 +62,36 @@ export type Type_Alias_Declaration = {
     'modifiers': Modifiers
     'type keyword': d_ast.Node
     'identifier': d_ast.Node
-    'first assignment': d_ast.Node
+    'equals token': d_ast.Node
     'type': Type
 }
 
 export type Type =
-    | ['type reference', Type_Reference]
     | ['literal type', Literal_Type]
-    | ['type literal', Type_Literal]
-    | ['union type', Union_Type]
+    | ['number keyword', d_ast.Node]
+    | ['string keyword', d_ast.Node]
     | ['tuple type', Tuple_Type]
-    // | ['interface declaration', Interface_Declaration]
+    | ['type literal', Type_Literal]
+    | ['type reference', Type_Reference]
+    | ['union type', Union_Type]
 
 export type Interface_Declaration = {
     'interface keyword': d_ast.Node
     'identifier': d_ast.Node
     'type parameters': p_.Optional_Value<Type_Parameters>
+    'body': Type_Literal
     // 'heritage clauses': p_.Optional_Value<p_.List<Heritage_Clause>>
     // 'body': Type_Literal
+}
+
+export type Type_Parameters = {
+    'less than token': d_ast.Node
+    'entries': p_.List<Type_Parameters_Entry>
+    'greater than token': d_ast.Node
+}
+
+export type Type_Parameters_Entry = {
+    'identifier': d_ast.Node
 }
 
 export type Union_Type = {
@@ -102,7 +115,7 @@ export type Union_Type_Member =
 export type Type_Reference = {
     // 'entity name': null
     'entity name': Entity_Name
-    'type parameters': p_.Optional_Value<Type_Parameters>
+    'type arguments': p_.Optional_Value<Type_Arguments>
 }
 
 export type Type_Literal = {
@@ -113,6 +126,12 @@ export type Type_Literal = {
 
 export type Type_Literal_Member =
     | ['property signature', Property_Signature]
+    | ['index signature', Index_Signature]
+    | ['call signature', Call_Signature]
+
+export type Call_Signature = d_ast.Node
+
+export type Index_Signature = d_ast.Node
 
 export type Property_Signature = {
     'modifiers': p_.Optional_Value<Modifiers>
@@ -137,19 +156,21 @@ export type Qualified_Name = {
 
 export type Identifier = d_ast.Node
 
-export type Type_Parameters = {
+export type Type_Arguments = {
     'less than token': d_ast.Node
-    'entries': p_.List<Type_Parameters_Entry>
+    'entries': p_.List<Type_Arguments_Entry>
     'greater than token': d_ast.Node
 }
 
-export type Type_Parameters_Entry =
+export type Type_Arguments_Entry =
     | ['comma token', d_ast.Node]
     | ['type', Type]
 
 
 export type Literal_Type = {
     'type':
+    | ['false keyword', d_ast.Node]
     | ['null', d_ast.Node]
     | ['string literal', d_ast.Node]
+    | ['true keyword', d_ast.Node]
 }

@@ -1,6 +1,5 @@
 import * as p_ from 'pareto-core/dist/implementation/query'
 import * as p_i from 'pareto-core/dist/interface/data'
-import * as p_t from 'pareto-core/dist/implementation/transformer'
 
 import p_query from 'pareto-core/dist/implementation/query/__internal/query'
 import p_query_result from 'pareto-core/dist/implementation/query/__internal/query_result'
@@ -12,17 +11,41 @@ import * as resources from "lib/dist/modules/typescript_parser/interface/queries
 import * as d_ast from "lib/dist/modules/typescript_parser/interface/data/ast"
 
 import * as ts from "typescript"
-import * as fs from "fs"
+
+
+// Cache for enum members sorted by value - returns primary names instead of aliases
+const syntaxKindMembers: Array<[number, string]> = (() => {
+    const result: Array<[number, string]> = []
+    for (const name in ts.SyntaxKind) {
+        const value = (ts.SyntaxKind as any)[name]
+        if (typeof value === "number") {
+            result.push([value, name])
+        }
+    }
+    return result.sort((a, b) => a[0] - b[0])
+})()
+
 
 class My_Node_Implementation implements d_ast.Node {
     private tsNode: ts.Node
 
-    constructor(tsNode: ts.Node) {
+    constructor(
+        tsNode: ts.Node
+    ) {
         this.tsNode = tsNode
     }
 
     get kind(): string {
-        return ts.SyntaxKind[this.tsNode.kind]
+
+        function getPrimarySyntaxKindName(kind: ts.SyntaxKind): string {
+            for (const [value, name] of syntaxKindMembers) {
+                if (value === kind) {
+                    return name
+                }
+            }
+            return kind.toString()
+        }
+        return getPrimarySyntaxKindName(this.tsNode.kind)
     }
 
     get text(): string {
