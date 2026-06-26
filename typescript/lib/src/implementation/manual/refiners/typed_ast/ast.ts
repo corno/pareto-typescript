@@ -174,17 +174,20 @@ namespace node_helpers {
             iterator: p_pi.Iterator<d_in.Node, null>,
             parent: d_in.Node,
         ) => T
-    ): T => p_iterate({
-        list: $.children,
-        end_info: null,
-        assign: (iterator): T => callback(iterator, $),
-        on_dangling_item: ($) => abort({
-            'parent': $,
-            'context': location_description,
-            'cause': ['unexpected node', $],
-            'expected': ['nothing', null]
-        }),
-    })
+    ): T => {
+        const parent = $
+        return p_iterate({
+            list: $.children,
+            end_info: null,
+            assign: (iterator): T => callback(iterator, parent),
+            on_dangling_item: ($) => abort({
+                'parent': parent,
+                'context': location_description,
+                'cause': ['unexpected node', $],
+                'expected': ['nothing', null]
+            }),
+        })
+    }
 
 }
 
@@ -534,9 +537,6 @@ export const Statements: p_i.Refiner_With_Parameter<
                         ($) => Type(
                             $,
                             abort,
-                            {
-                                'parent': $
-                            }
                         )
                     )
                 })
@@ -551,36 +551,30 @@ export const Statements: p_i.Refiner_With_Parameter<
     }
 )
 
-export const Type: p_i.Refiner_With_Parameter<
+export const Type: p_i.Refiner<
     d_out.Type,
     d_function.Error_Inner,
-    d_in.Node,
-    {
-        'parent': d_in.Node
-    }
-> = ($, abort, $p) => {
+    d_in.Node
+> = ($, abort) => {
     switch ($.kind) {
         case "TypeReference": return ['type reference', node_helpers.process_children(
             $,
             abort,
             "TypeReference",
-            (iterator): d_out.Type_Reference => ({
-                'entity name': iterator.consume(
-                    () => abort({
-                        'context': "TypeReference['entity name']",
-                        'parent': $,
-                        'cause': ['end of node list', null],
-                        'expected': ['something', "`EntityName`"]
-                    }),
-                    ($) => null
+            (iterator, parent): d_out.Type_Reference => ({
+                'entity name': iterator_helpers.consume(
+                    iterator,
+                    abort,
+                    parent,
+                    "TypeReference['entity name']",
+                    ($) => Entity_Name(
+                        $,
+                        abort,
+                        {
+                            'parent': parent
+                        }
+                    )
                 ),
-                // 'entity name': Entity_Name(
-                //     iterator,
-                //     abort,
-                //     {
-                //         'parent': $
-                //     }
-                // ),
                 'type parameters': iterator.peek(
                     () => p_.literal.not_set(),
                     ($) => $.kind === "FirstBinaryOperator"
@@ -611,12 +605,107 @@ export const Type: p_i.Refiner_With_Parameter<
                 ),
             })
         )]
-        case "TypeLiteral": return ['type literal', $]
+        case "TypeLiteral": return ['type literal', node_helpers.process_children(
+            $,
+            abort,
+            "TypeLiteral",
+            (iterator, parent): d_out.Type_Literal => ({
+                'open brace token': iterator_helpers.consume_and_expect(
+                    iterator,
+                    abort,
+                    parent,
+                    "TypeLiteral['open brace token']",
+                    "FirstPunctuation", //FirstPunctuation has the same index in the enum as OpenBraceToken,
+                    ($) => $
+                ),
+                'members': iterator_helpers.consume_list_with_syntaxlist_wrapper(
+                    iterator,
+                    abort,
+                    {
+                        'context': "TypeLiteral['members']",
+                        'parent': parent
+                    },
+                    ($): d_out.Type_Literal_Member => {
+                        switch ($.kind) {
+                            case "PropertySignature": return ['property signature', node_helpers.process_children(
+                                $,
+                                abort,
+                                "PropertySignature",
+                                (iterator, parent): d_out.Property_Signature => ({
+                                    'id': iterator_helpers.consume(
+                                        iterator,
+                                        abort,
+                                        parent,
+                                        "PropertySignature['id']",
+                                        ($) => String_Literal_Or_Identifier(
+                                            $,
+                                            abort,
+                                        )
+                                    ),
+                                    'colon token': iterator_helpers.consume_and_expect(
+                                        iterator,
+                                        abort,
+                                        parent,
+                                        "PropertySignature['colon token']",
+                                        "ColonToken",
+                                        ($) => $
+                                    ),
+                                    'type': iterator_helpers.consume(
+                                        iterator,
+                                        abort,
+                                        parent,
+                                        "PropertySignature['type']",
+                                        ($) => Type(
+                                            $,
+                                            abort,
+                                        )
+                                    )
+                                })
+                            )]
+                            default: return abort({
+                                'parent': parent,
+                                'context': "TypeLiteral['members']",
+                                'cause': ['unexpected node', $],
+                                'expected': ['something', "`TypeLiteral_Member`"]
+                            })
+                        }
+                    }
+                ),
+                'close brace token': iterator_helpers.consume_and_expect(
+                    iterator,
+                    abort,
+                    parent,
+                    "TypeLiteral['close brace token']",
+                    "CloseBraceToken",
+                    ($) => $,
+                ),
+            })
+        )]
         default: return abort({
             'context': "Type",
-            'parent': $p.parent,
+            'parent': $,
             'cause': ['unexpected node', $],
             'expected': ['something', "a Type"]
+        })
+    }
+}
+
+export const String_Literal_Or_Identifier: p_i.Refiner<
+    d_out.String_Literal_Or_Identifier,
+    d_function.Error_Inner,
+    d_in.Node
+> = ($, abort) => {
+    switch ($.kind) {
+        case "StringLiteral": return ['string literal', $]
+        case "Identifier": return ['identifier', Identifier(
+            $,
+            abort,
+        )]
+        default: return abort({
+            'parent': $,
+            'context': "String_Literal_Or_Identifier",
+            'cause': ['unexpected node', $],
+            'expected': ['something', "`StringLiteral` or `Identifier`"]
         })
     }
 }
@@ -653,9 +742,6 @@ export const Type_Parameters: p_pi.Production_With_Parameter<
                 default: return ['type', Type(
                     $,
                     abort,
-                    {
-                        'parent': $
-                    }
                 )]
             }
         }
@@ -670,69 +756,65 @@ export const Type_Parameters: p_pi.Production_With_Parameter<
     ),
 })
 
-export const Entity_Name: p_pi.Production_With_Parameter<
+export const Entity_Name: p_i.Refiner_With_Parameter<
     d_out.Entity_Name,
     d_function.Error_Inner,
     d_in.Node,
-    null,
     {
         'parent': d_in.Node
     }
-> = (iterator, abort, $p) => iterator_helpers.consume(
-    iterator,
-    abort,
-    $p.parent,
-    "Entity Name",
-    ($): d_out.Entity_Name => {
-        switch ($.kind) {
-            case "FirstNode": return ['qualified name', iterator_helpers.consume(
-                iterator,
-                abort,
-                $p.parent,
-                "EntityName['qualified name']",
-                ($): d_out.Qualified_Name => Qualified_Name(
-                    $,
-                    abort,
-                    {
-                        'parent': $p.parent
-                    }
-                )
-            )]
-            case "Identifier": return ['identifier', iterator_helpers.consume(
-                iterator,
-                abort,
-                $p.parent,
-                "EntityName['identifier']",
-                ($) => $
-            )]
-            default: return abort({
-                'parent': $p.parent,
-                'context': "TypeReference['entity name']",
-                'cause': ['unexpected node', $],
-                'expected': ['something', "`FirstNode` or `Identifier`"]
-            })
-        }
-    },
-)
+> = ($, abort, $p) => {
 
-export const Qualified_Name: p_i.Refiner_With_Parameter<
+    switch ($.kind) {
+        case "FirstNode": return ['qualified name', Qualified_Name(
+            $,
+            abort,
+        )]
+        case "Identifier": return ['identifier', $]
+        default: return abort({
+            'parent': $p.parent,
+            'context': "TypeReference['entity name']",
+            'cause': ['unexpected node', $],
+            'expected': ['something', "`FirstNode` or `Identifier`"]
+        })
+    }
+}
+
+export const Identifier: p_i.Refiner<
+    d_out.Identifier,
+    d_function.Error_Inner,
+    d_in.Node
+> = ($, abort) => $.kind !== "Identifier"
+    ? abort({
+        'parent': $,
+        'context': "Identifier",
+        'cause': ['unexpected node', $],
+        'expected': ['something', "`Identifier`"]
+    })
+    : $
+
+
+export const Qualified_Name: p_i.Refiner<
     d_out.Qualified_Name,
     d_function.Error_Inner,
-    d_in.Node,
-    {
-        // 'parent': d_in.Node
-    }
-> = ($, abort, $p) => node_helpers.process_children(
+    d_in.Node
+> = ($, abort) => node_helpers.process_children(
     $,
     abort,
     "QualifiedName",
     (iterator, parent): d_out.Qualified_Name => ({
-        'first': Entity_Name(
+        'first': iterator_helpers.consume(
             iterator,
             abort,
-            {
-                'parent': parent
-            }
+            parent,
+            "QualifiedName['first']",
+            ($) => Entity_Name(
+                $,
+                abort,
+                {
+                    'parent': parent
+                }
+            )
         ),
         'dot token': iterator_helpers.consume_and_expect(
             iterator,
@@ -742,13 +824,15 @@ export const Qualified_Name: p_i.Refiner_With_Parameter<
             "DotToken",
             ($) => $,
         ),
-        'second': iterator_helpers.consume_and_expect(
+        'second': iterator_helpers.consume(
             iterator,
             abort,
             parent,
             "QualifiedName['second']",
-            "Identifier",
-            ($) => $
+            ($) => Identifier(
+                $,
+                abort,
+            )
         )
     })
 )

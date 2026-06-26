@@ -70,15 +70,32 @@ export type Type =
     | ['type literal', Type_Literal]
 
 export type Type_Reference = {
-    'entity name': null
-    // 'entity name': Entity_Name
+    // 'entity name': null
+    'entity name': Entity_Name
     'type parameters': p_.Optional_Value<Type_Parameters>
 }
 
-export type Type_Literal = d_ast.Node
+export type Type_Literal = {
+    'open brace token': d_ast.Node
+    'members': p_.List<Type_Literal_Member>
+    'close brace token': d_ast.Node
+}
+
+export type Type_Literal_Member =
+    | ['property signature', Property_Signature]
+
+export type Property_Signature = {
+    'id': String_Literal_Or_Identifier
+    'colon token': d_ast.Node
+    'type': Type
+}
+
+export type String_Literal_Or_Identifier =
+    | ['string literal', d_ast.Node]
+    | ['identifier', Identifier]
 
 export type Entity_Name =
-    | ['identifier', d_ast.Node]
+    | ['identifier', Identifier]
     | ['qualified name', Qualified_Name]
 
 export type Qualified_Name = {
