@@ -19,7 +19,7 @@ export type Statement =
         'return keyword': null
         'expression': p_.Optional_Value<Expression>
     }]
-    // | ['switch statement', Switch_Statement]
+    | ['switch statement', Switch_Statement]
     | ['type alias declaration', Type_Alias_Declaration]
     | ['variable statement', Variable_Statement]
 
@@ -29,9 +29,24 @@ export type Switch_Statement = {
     'expression': Expression
     'close parenthesis token': null
     'case block': {
-        
+        'open brace token': null
+        'clauses': p_.List<Switch_Statement_Case_Clause>
+        'close brace token': null
     }
 }
+
+export type Switch_Statement_Case_Clause =
+    | ['case', {
+        'case keyword': null
+        'expression': Expression
+        'colon token': null
+        'statements': Statements
+    }]
+    | ['default', {
+        'default keyword': null
+        'colon token': null
+        'statements': Statements
+    }]
 
 export type Variable_Statement = {
     'modifiers': Optional_Modifiers
@@ -62,9 +77,15 @@ export type Expression =
     | ['identifier', Identifier]
     | ['null keyword', null]
     | ['object literal', Object_Literal_Expression]
+    | ['parenthesized', {
+        'open parenthesis token': null
+        'expression': Expression
+        'close parenthesis token': null
+    }]
     | ['property access', Property_Access_Expression]
     | ['string literal', String_Literal]
     | ['template', Template_Expression]
+    | ['true keyword', null]
 
 export type Block = {
     'open brace token': null
@@ -74,8 +95,9 @@ export type Block = {
 
 export type Binary_Expression = {
     'left': Expression
-    'operator token': 
+    'operator token':
     | ['equals equals equals token', null]
+    | ['exclamation equals equals token', null]
     'right': Expression
 }
 
@@ -217,6 +239,12 @@ export type Type_Alias_Declaration = {
 }
 
 export type Type =
+    | ['indexed access', {
+        'object type': Type
+        'open bracket token': null
+        'index type': Type
+        'close bracket token': null
+    }]
     | ['literal type', Literal_Type]
     | ['number keyword', null]
     | ['string keyword', null]
@@ -288,6 +316,7 @@ export type Property_Signature = {
     'id': String_Literal_Or_Identifier
     'colon token': null
     'type': Type
+    'comma token': p_.Optional_Value<null>
 }
 
 export type String_Literal_Or_Identifier =

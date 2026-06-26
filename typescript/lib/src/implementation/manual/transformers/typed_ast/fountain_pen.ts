@@ -82,6 +82,41 @@ export const Statement: p_i.Transformer<d_in.Statement, d_out.Phrase> = ($) => p
                     () => sh.ph.nothing()
                 )
             ]))
+            case 'switch statement': return p_.ss($, ($) => sh.ph.composed([
+                sh.ph.literal("switch ("),
+                Expression($['expression']),
+                sh.ph.literal(") {"),
+                sh.ph.indent(
+                    sh.pg.sentences(
+                        p_.from.list($['case block']['clauses']).map(
+                            ($): d_out.Sentence => sh.sentence([
+                                p_.from.state($).decide(
+                                    ($) => {
+                                        switch ($[0]) {
+                                            case 'case': return p_.ss($, ($) => sh.ph.composed([
+                                                sh.ph.literal("case "),
+                                                Expression($['expression']),
+                                                sh.ph.literal(":"),
+                                                sh.ph.indent(
+                                                    Statements($['statements'])
+                                                )
+                                            ]))
+                                            case 'default': return p_.ss($, ($) => sh.ph.composed([
+                                                sh.ph.literal("default:"),
+                                                sh.ph.indent(
+                                                    Statements($['statements'])
+                                                )
+                                            ]))
+                                            default: return p_.au($[0])
+                                        }
+                                    }
+                                )
+                            ])
+                        )
+                    ),
+                ),
+                sh.ph.literal("}")
+            ]))
             case 'type alias declaration': return p_.ss($, ($) => sh.ph.composed([
                 Optional_Modifiers($['modifiers']),
                 sh.ph.literal("type "),
@@ -172,6 +207,7 @@ export const Expression: p_i.Transformer<d_in.Expression, d_out.Phrase> = ($) =>
                     ($) => {
                         switch ($[0]) {
                             case 'equals equals equals token': return p_.ss($, ($) => sh.ph.literal(" === "))
+                            case 'exclamation equals equals token': return p_.ss($, ($) => sh.ph.literal(" !== "))
                             default: return p_.au($[0])
                         }
                     }
@@ -188,19 +224,21 @@ export const Expression: p_i.Transformer<d_in.Expression, d_out.Phrase> = ($) =>
             case 'call': return p_.ss($, ($) => sh.ph.composed([
                 Expression($['expression']),
                 sh.ph.literal("("),
-                sh.ph.composed(
-                    p_.from.list($['arguments']).map(
-                        ($) => sh.ph.composed([
-                            p_.from.state($).decide(
-                                ($) => {
-                                    switch ($[0]) {
-                                        case 'comma token': return p_.ss($, ($) => sh.ph.literal(", "))
-                                        case 'expression': return p_.ss($, ($) => Expression($))
-                                        default: return p_.au($[0])
+                sh.ph.indent(
+                    sh.pg.sentences(
+                        p_.from.list($['arguments']).map(
+                            ($) => sh.sentence([
+                                p_.from.state($).decide(
+                                    ($) => {
+                                        switch ($[0]) {
+                                            case 'comma token': return p_.ss($, ($) => sh.ph.literal(", "))
+                                            case 'expression': return p_.ss($, ($) => Expression($))
+                                            default: return p_.au($[0])
+                                        }
                                     }
-                                }
-                            ),
-                        ])
+                                ),
+                            ])
+                        )
                     )
                 ),
                 sh.ph.literal(")"),
@@ -235,6 +273,11 @@ export const Expression: p_i.Transformer<d_in.Expression, d_out.Phrase> = ($) =>
                 sh.ph.literal("}"),
             ]))
             case 'null keyword': return p_.ss($, ($) => sh.ph.literal("null"))
+            case 'parenthesized': return p_.ss($, ($) => sh.ph.composed([
+                sh.ph.literal("("),
+                Expression($['expression']),
+                sh.ph.literal(")"),
+            ]))
             case 'property access': return p_.ss($, ($) => sh.ph.composed([
                 Expression($['expression']),
                 sh.ph.literal("."),
@@ -252,6 +295,7 @@ export const Expression: p_i.Transformer<d_in.Expression, d_out.Phrase> = ($) =>
                     )
                 )
             ]))
+            case 'true keyword': return p_.ss($, ($) => sh.ph.literal("true"))
             default: return p_.au($[0])
         }
     }
@@ -274,6 +318,12 @@ export const Modifiers: p_i.Transformer<d_in.Modifiers, d_out.Phrase> = ($) => s
 export const Type: p_i.Transformer<d_in.Type, d_out.Phrase> = ($) => p_.from.state($).decide(
     ($) => {
         switch ($[0]) {
+            case 'indexed access': return p_.ss($, ($) => sh.ph.composed([
+                Type($['object type']),
+                sh.ph.literal("["),
+                Type($['index type']),
+                sh.ph.literal("]"),
+            ]))
             case 'literal type': return p_.ss($, ($) => p_.from.state($.type).decide(
                 ($) => {
                     switch ($[0]) {

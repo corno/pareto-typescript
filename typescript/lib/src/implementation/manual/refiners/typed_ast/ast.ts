@@ -261,6 +261,117 @@ export const Statements: p_i.Refiner<
                         )
                     })
                 )]
+                case "SwitchStatement": return ['switch statement', context.parse_children(
+                    "SwitchStatement",
+                    (context): d_out.Switch_Statement => ({
+                        'switch keyword': context.consume_and_expect(
+                            "SwitchStatement['switch keyword']",
+                            "SwitchKeyword",
+                            ($) => null,
+                        ),
+                        'open parenthesis token': context.consume_and_expect(
+                            "SwitchStatement['open parenthesis token']",
+                            "OpenParenToken",
+                            ($) => null,
+                        ),
+                        'expression': context.consume(
+                            "SwitchStatement['expression']",
+                            ($) => Expression(
+                                $,
+                                abort,
+                            )
+                        ),
+                        'close parenthesis token': context.consume_and_expect(
+                            "SwitchStatement['close parenthesis token']",
+                            "CloseParenToken",
+                            ($) => null,
+                        ),
+                        'case block': context.consume(
+                            "SwitchStatement['case block']",
+                            ($, context) => context.parse_children(
+                                "CaseBlock",
+                                (context): d_out.Switch_Statement['case block'] => ({
+                                    'open brace token': context.consume_and_expect(
+                                        "CaseBlock['open brace token']",
+                                        "OpenBraceToken",
+                                        ($) => null,
+                                    ),
+                                    'clauses': context.consume_syntax_list(
+                                        "CaseBlock['clauses']",
+                                        ($, context): d_out.Switch_Statement_Case_Clause => {
+                                            switch ($.kind) {
+                                                case "CaseClause": return ['case', context.parse_children(
+                                                    "CaseClause",
+                                                    (context) => ({
+                                                        'case keyword': context.consume_and_expect(
+                                                            "CaseClause['case keyword']",
+                                                            "CaseKeyword",
+                                                            ($) => null,
+                                                        ),
+                                                        'expression': context.consume(
+                                                            "CaseClause['expression']",
+                                                            ($) => Expression(
+                                                                $,
+                                                                abort,
+                                                            )
+                                                        ),
+                                                        'colon token': context.consume_and_expect(
+                                                            "CaseClause['colon token']",
+                                                            "ColonToken",
+                                                            ($) => null,
+                                                        ),
+                                                        'statements': context.consume_and_expect(
+                                                            "CaseClause['statements']",
+                                                            "SyntaxList",
+                                                            ($) => Statements(
+                                                                $,
+                                                                abort,
+                                                            )
+                                                        ),
+                                                    })
+                                                )]
+                                                case "DefaultClause": return ['default', context.parse_children(
+                                                    "DefaultClause",
+                                                    (context) => ({
+                                                        'default keyword': context.consume_and_expect(
+                                                            "DefaultClause['default keyword']",
+                                                            "DefaultKeyword",
+                                                            ($) => null,
+                                                        ),
+                                                        'colon token': context.consume_and_expect(
+                                                            "DefaultClause['colon token']",
+                                                            "ColonToken",
+                                                            ($) => null,
+                                                        ),
+                                                        'statements': context.consume_and_expect(
+                                                            "DefaultClause['statements']",
+                                                            "SyntaxList",
+                                                            ($) => Statements(
+                                                                $,
+                                                                abort,
+                                                            )
+                                                        ),
+                                                    })
+                                                )]
+                                                default: return abort({
+                                                    'parent': $,
+                                                    'context': "CaseBlock['clauses']",
+                                                    'cause': ['unexpected node', $],
+                                                    'expected': ['something', "`CaseClause` or `DefaultClause`"]
+                                                })
+                                            }
+                                        }
+                                    ),
+                                    'close brace token': context.consume_and_expect(
+                                        "CaseBlock['close brace token']",
+                                        "CloseBraceToken",
+                                        ($) => null,
+                                    ),
+                                })
+                            )
+                        )
+                    })
+                )]
                 case "TypeAliasDeclaration": return ['type alias declaration', context.parse_children(
                     "TypeAliasDeclaration",
                     (context): d_out.Type_Alias_Declaration => ({
@@ -457,10 +568,20 @@ export const Expression: p_i.Refiner<
                             abort,
                         )
                     ),
-                    'operator token': context.consume_and_expect(
+                    'operator token': context.consume(
                         "BinaryExpression['operator token']",
-                        "EqualsEqualsEqualsToken",
-                        ($) => ['equals equals equals token', null]
+                        ($) => {
+                            switch ($.kind) {
+                                case "EqualsEqualsEqualsToken": return ['equals equals equals token', null]
+                                case "ExclamationEqualsEqualsToken": return ['exclamation equals equals token', null]
+                                default: return abort({
+                                    'parent': $,
+                                    'context': "BinaryExpression['operator token']",
+                                    'cause': ['unexpected node', $],
+                                    'expected': ['something', "`EqualsEqualsEqualsToken` or `ExclamationEqualsEqualsToken`"]
+                                })
+                            }
+                        }
                     ),
                     'right': context.consume(
                         "BinaryExpression['right']",
@@ -619,6 +740,28 @@ export const Expression: p_i.Refiner<
                 })
             )]
             case "NullKeyword": return ['null keyword', null]
+            case "ParenthesizedExpression": return ['parenthesized', context.parse_children(
+                "ParenthesizedExpression",
+                (context) => ({
+                    'open parenthesis token': context.consume_and_expect(
+                        "ParenthesizedExpression['open parenthesis token']",
+                        "OpenParenToken",
+                        ($) => null
+                    ),
+                    'expression': context.consume(
+                        "ParenthesizedExpression['expression']",
+                        ($) => Expression(
+                            $,
+                            abort,
+                        )
+                    ),
+                    'close parenthesis token': context.consume_and_expect(
+                        "ParenthesizedExpression['close parenthesis token']",
+                        "CloseParenToken",
+                        ($) => null
+                    ),
+                })
+            )]
             case "PropertyAccessExpression": return ['property access', context.parse_children(
                 "PropertyAccessExpression",
                 (context): d_out.Property_Access_Expression => ({
@@ -683,6 +826,7 @@ export const Expression: p_i.Refiner<
                     )
                 })
             )]
+            case "TrueKeyword": return ['true keyword', null]
             default: return abort({
                 'parent': $,
                 'context': "Expression",
@@ -731,6 +875,35 @@ export const Type: p_i.Refiner<
     abort,
     (context): d_out.Type => {
         switch ($.kind) {
+            case "IndexedAccessType": return ['indexed access', context.parse_children(
+                "IndexedAccessType",
+                (context) => ({
+                    'object type': context.consume(
+                        "IndexedAccessType['object type']",
+                        ($) => Type(
+                            $,
+                            abort,
+                        )
+                    ),
+                    'open bracket token': context.consume_and_expect(
+                        "IndexedAccessType['open bracket token']",
+                        "OpenBracketToken",
+                        ($) => null
+                    ),
+                    'index type': context.consume(
+                        "IndexedAccessType['index type']",
+                        ($) => Type(
+                            $,
+                            abort,
+                        )
+                    ),
+                    'close bracket token': context.consume_and_expect(
+                        "IndexedAccessType['close bracket token']",
+                        "CloseBracketToken",
+                        ($) => null
+                    ),
+                })
+            )]
             case "LiteralType": return ['literal type', context.parse_children(
                 "LiteralType",
                 (context): d_out.Literal_Type => ({
@@ -905,7 +1078,15 @@ export const Type_Literal: p_pi.Production_With_Parameter<
                                     $,
                                     abort,
                                 )
-                            )
+                            ),
+                            'comma token': context.optional(
+                                ($) => $.kind === "CommaToken",
+                                (context) => context.consume_and_expect(
+                                    "PropertySignature['comma token']",
+                                    "CommaToken",
+                                    ($) => null
+                                )
+                            ),
                         })
                     )]
                     default: return context.abort("a type literal member")
