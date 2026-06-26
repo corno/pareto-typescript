@@ -12,6 +12,19 @@ export type TODO = d_ast.Node
 export type Statements = p_.List<Statement>
 
 export type Statement =
+    | ['block', Block]
+    | ['expression', Expression]
+    | ['if', {
+        'if keyword': null
+        'open parenthesis token': null
+        'expression': Expression
+        'close parenthesis token': null
+        'then statement': Statement
+        'else': p_.Optional_Value<{
+            'else keyword': null
+            'statement': Statement
+        }>
+    }]
     | ['import declaration', Import_Declaration]
     | ['interface declaration', Interface_Declaration]
     | ['module declaration', Module_Declaration]
@@ -71,11 +84,18 @@ export type Expression =
     | ['array literal', Array_Literal_Expression]
     | ['arrow function', Arrow_Function]
     | ['binary', Binary_Expression]
-    | ['block', Block]
+    // | ['block', Block]
     | ['call', Call_Expression]
     | ['conditional', Conditional_Expression]
+    | ['element access', {
+        'expression': Expression
+        'open bracket token': null
+        'argument expression': Expression
+        'close bracket token': null
+    }]
     | ['identifier', Identifier]
     | ['null keyword', null]
+    | ['numeric literal', d_ast.Node]
     | ['object literal', Object_Literal_Expression]
     | ['parenthesized', {
         'open parenthesis token': null
@@ -163,12 +183,12 @@ export type Call_Expression_Arguments_Entry =
     | ['expression', Expression]
 
 export type Arrow_Function = {
-    'open parenthesis token': null
     'parameters': Parameters
-    'close parenthesis token': null
     'type': Optional_Type
     'equals greater than token': null
-    'body': Expression
+    'body':
+    | ['block', Block]
+    | ['expression', Expression]
 }
 
 export type Optional_Type = p_.Optional_Value<{
@@ -176,12 +196,17 @@ export type Optional_Type = p_.Optional_Value<{
     'type': Type
 }>
 
-export type Parameters = p_.List<Parameters_Entry>
+export type Parameters = {
+    'open parenthesis token': null
+    'entries': p_.List<Parameters_Entry>
+    'close parenthesis token': null
+}
 
 export type Parameters_Entry =
     | ['comma token', null]
     | ['parameter', {
         'identifier': Identifier
+        'type': Optional_Type
     }]
 
 
@@ -239,6 +264,8 @@ export type Type_Alias_Declaration = {
 }
 
 export type Type =
+    | ['boolean keyword', null]
+    | ['function', Function_Type]
     | ['indexed access', {
         'object type': Type
         'open bracket token': null
@@ -250,23 +277,35 @@ export type Type =
     | ['string keyword', null]
     | ['tuple type', Tuple_Type]
     | ['type literal', Type_Literal]
+    | ['type operator', {
+        'readonly keyword': null
+        'type': Type
+    }]
     | ['type reference', Type_Reference]
     | ['union type', Union_Type]
+
+export type Function_Type = {
+    'type parameters': p_.Optional_Value<Type_Parameters>
+    'parameters': Parameters
+    'type': Optional_Type
+    'equals greater than token': null
+    'return type': Type
+}
 
 export type Interface_Declaration = {
     'interface keyword': null
     'identifier': Identifier
-    'type parameters': p_.Optional_Value<Type_Parameters>
+    'type parameters': Type_Parameters
     'body': Type_Literal
     // 'heritage clauses': p_.Optional_Value<p_.List<Heritage_Clause>>
     // 'body': Type_Literal
 }
 
-export type Type_Parameters = {
+export type Type_Parameters = p_.Optional_Value<{
     'less than token': null
     'entries': p_.List<Type_Parameters_Entry>
     'greater than token': null
-}
+}>
 
 export type Type_Parameters_Entry = {
     'identifier': Identifier
