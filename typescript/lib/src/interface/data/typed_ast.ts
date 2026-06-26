@@ -93,6 +93,7 @@ export type Expression =
         'argument expression': Expression
         'close bracket token': null
     }]
+    | ['false keyword', null]
     | ['identifier', Identifier]
     | ['null keyword', null]
     | ['numeric literal', d_ast.Node]
@@ -118,6 +119,7 @@ export type Binary_Expression = {
     'operator token':
     | ['equals equals equals token', null]
     | ['exclamation equals equals token', null]
+    | ['plus token', null]
     'right': Expression
 }
 
@@ -285,7 +287,7 @@ export type Type =
     | ['union type', Union_Type]
 
 export type Function_Type = {
-    'type parameters': p_.Optional_Value<Type_Parameters>
+    'type parameters': Type_Parameters
     'parameters': Parameters
     'type': Optional_Type
     'equals greater than token': null

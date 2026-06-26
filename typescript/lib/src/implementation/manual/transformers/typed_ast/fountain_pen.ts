@@ -222,6 +222,7 @@ export const Expression: p_i.Transformer<d_in.Expression, d_out.Phrase> = ($) =>
                         switch ($[0]) {
                             case 'equals equals equals token': return p_.ss($, ($) => sh.ph.literal(" === "))
                             case 'exclamation equals equals token': return p_.ss($, ($) => sh.ph.literal(" !== "))
+                            case 'plus token': return p_.ss($, ($) => sh.ph.literal(" + "))
                             default: return p_.au($[0])
                         }
                     }
@@ -263,6 +264,7 @@ export const Expression: p_i.Transformer<d_in.Expression, d_out.Phrase> = ($) =>
                 Expression($['argument expression']),
                 sh.ph.literal("]"),
             ]))
+            case 'false keyword': return p_.ss($, ($) => sh.ph.literal("false"))
             case 'identifier': return p_.ss($, ($) => sh.ph.literal($.text))
             case 'object literal': return p_.ss($, ($) => sh.ph.composed([
                 sh.ph.literal("{"),
@@ -355,10 +357,7 @@ export const Type: p_i.Transformer<d_in.Type, d_out.Phrase> = ($) => p_.from.sta
         switch ($[0]) {
             case 'boolean keyword': return p_.ss($, ($) => sh.ph.literal("boolean"))
             case 'function': return p_.ss($, ($) => sh.ph.composed([
-                p_.from.optional($['type parameters']).decide(
-                    ($) => Type_Parameters($),
-                    () => sh.ph.nothing()
-                ),
+                Type_Parameters($['type parameters']),
                 Parameters($['parameters']),
                 Optional_Type($['type']),
                 sh.ph.literal(" => "),
