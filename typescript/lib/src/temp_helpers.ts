@@ -18,6 +18,12 @@ export type Iterator_Context = {
             context: Node_Context,
         ) => T
     ) => T
+    peek: <T extends p_di.Value>(
+        location_description: string,
+        callback: (
+            node: d_in.Node,
+        ) => T
+    ) => T
     consume_and_expect: <T extends p_di.Value>(
         location_description: string,
         kind: string,
@@ -78,6 +84,22 @@ export const create_iterator_context = <T extends p_di.Value>(
     )
     return callback({
         temp_parent: parent,
+        peek: (
+            location_description,
+            callback
+        ) => {
+            return iterator.peek(
+                ($) => abort({
+                    'context': location_description,
+                    'parent': parent,
+                    'cause': ['end of node list', null],
+                    'expected': ['something', location_description]
+                }),
+                ($) => callback(
+                    $,
+                )
+            )
+        },
         consume: (
             location_description,
             callback

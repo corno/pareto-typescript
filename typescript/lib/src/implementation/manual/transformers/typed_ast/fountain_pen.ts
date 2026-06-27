@@ -37,9 +37,66 @@ export const Statement: p_i.Transformer<d_in.Statement, d_out.Phrase> = ($) => s
                 case 'break': return p_.ss($, ($) => sh.ph.composed([
                     sh.ph.literal("break"),
                 ]))
+                // case 'class declaration': return p_.ss($, ($) => sh.ph.composed([
+                //     sh.ph.literal("class "),
+                //     sh.ph.literal($.identifier.text),
+                //     Type_Parameters($['type parameters']),
+                //     p_.from.optional($['heritage clauses']).decide(
+                //         ($) => sh.ph.composed([
+                //             sh.ph.literal(" extends "),
+                //             sh.ph.composed(
+                //                 p_.from.list($).map(
+                //                     ($) => Heritage_Clause($)
+                //                 )
+                //             )
+                //         ]),
+                //         () => sh.ph.nothing()
+                //     ),
+                //     sh.ph.literal(" {"),
+                //     sh.ph.indent(
+                //         sh.pg.composed([
+                //             sh.pg.sentences([
+                //                 sh.sentence([]),
+                //             ]),
+                //             sh.pg.composed(
+                //                 p_.from.list($.body.members).map(
+                //                     ($) => sh.pg.sentences([
+                //                         sh.sentence([
+                //                             p_.from.state($).decide(
+                //                                 ($) => {
+                //                                     switch ($[0]) {
+                //                                         case 'constructor': return p_.ss($, ($) => sh.ph.composed([
+                //                                             sh.ph.literal("constructor"),
+                //                                             Parameters($['parameters']),
+                //                                             Block($['body']),
+
+                //                                         ]))
+                //                                         case 'method': return p_.ss($, ($) => sh.ph.composed([
+                //                                             sh.ph.literal($.identifier.text),
+                //                                             Parameters($['parameters']),
+                //                                             Optional_Type($['type']),
+                //                                             Block($['body']),
+                //                                         ]))
+                //                                         case 'property': return p_.ss($, ($) => sh.ph.composed([
+                //                                             sh.ph.literal($.identifier.text),
+                //                                             Optional_Type($['type']),
+                //                                         ]))
+                //                                         default: return p_.au($[0])
+                //                                     }
+                //                                 }
+                //                             )
+                //                         ]),
+                //                     ])
+                //                 )
+                //             )
+
+                //         ]),
+
+                //     ),
+                // ]))
                 case 'do': return p_.ss($, ($) => sh.ph.composed([
                     sh.ph.literal("do "),
-                    Block($['block']),
+                    Statement($['statement']),
                     sh.ph.literal(" while ("),
                     Expression($['expression']),
                     sh.ph.literal(")"),
@@ -99,6 +156,23 @@ export const Statement: p_i.Transformer<d_in.Statement, d_out.Phrase> = ($) => s
                     ),
                     sh.ph.literal(") "),
                     Statement($['statement']),
+                ]))
+                case 'for in': return p_.ss($, ($) => sh.ph.composed([
+                    sh.ph.literal("for ("),
+                    Variable_Declaration_List($['variable declaration list']),
+                    sh.ph.literal(" in "),
+                    Expression($['expression']),
+                    sh.ph.literal(") "),
+                    Statement($['statement']),
+                ]))
+                case 'function declaration': return p_.ss($, ($) => sh.ph.composed([
+                    sh.ph.literal("function "),
+                    sh.ph.literal($['identifier'].text),
+                    Type_Parameters($['type parameters']),
+                    Parameters($['parameters']),
+                    Optional_Type($['type']),
+                    sh.ph.literal(" "),
+                    Block($['body']),
                 ]))
                 case 'if': return p_.ss($, ($) => sh.ph.composed([
                     sh.ph.literal("if ("),
@@ -338,7 +412,18 @@ export const Expression: p_i.Transformer<d_in.Expression, d_out.Phrase> = ($) =>
             ]))
             case 'arrow function': return p_.ss($, ($) => sh.ph.composed([
                 Type_Parameters($['type parameters']),
-                Parameters($['parameters']),
+                p_.from.state($['parameters']).decide(
+                    ($) => {
+                        switch ($[0]) {
+                            case 'with parentheses': return p_.ss($, ($) => Parameters($))
+                            case 'without parentheses': return p_.ss($, ($) => sh.ph.composed([
+                                sh.ph.literal($.parameter.identifier.text),
+                                Optional_Type($.parameter.type)
+                            ]))
+                            default: return p_.au($[0])
+                        }
+                    }
+                ),
                 Optional_Type($['type']),
                 sh.ph.literal(" => "),
                 p_.from.state($['body']).decide(
@@ -501,6 +586,10 @@ export const Expression: p_i.Transformer<d_in.Expression, d_out.Phrase> = ($) =>
                 )
             ]))
             case 'true keyword': return p_.ss($, ($) => sh.ph.literal("true"))
+            case 'type of': return p_.ss($, ($) => sh.ph.composed([
+                sh.ph.literal("typeof "),
+                Expression($['expression']),
+            ]))
             default: return p_.au($[0])
         }
     }
@@ -673,7 +762,7 @@ export const Type_Literal: p_i.Transformer<d_in.Type_Literal, d_out.Phrase> = ($
     sh.ph.literal("}")
 ])
 
-export const String_Literal_Or_Identifier: p_i.Transformer<d_in.String_Literal_Or_Identifier, d_out.Phrase> = ($) => p_.from.state($).decide(
+export const String_Literal_Or_Identifier: p_i.Transformer<d_in.String_Literal_or_Identifier, d_out.Phrase> = ($) => p_.from.state($).decide(
     ($) => {
         switch ($[0]) {
             case 'string literal': return p_.ss($, ($) => sh.ph.literal($.text))

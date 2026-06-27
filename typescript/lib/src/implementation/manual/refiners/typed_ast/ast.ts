@@ -97,7 +97,11 @@ export const Statement: p_i.Refiner<
                             "BreakStatement['break keyword']",
                             "BreakKeyword",
                             ($) => null
-                        )
+                        ),
+                        'semicolon token': context.call(
+                            "BreakStatement['semicolon token']",
+                            Semi_Colon
+                        ),
                     })
                 )]
                 case "DoStatement": return ['do', context.parse_children(
@@ -108,9 +112,9 @@ export const Statement: p_i.Refiner<
                             "DoKeyword",
                             ($) => null
                         ),
-                        'block': context.consume(
-                            "DoStatement['block']",
-                            ($) => Block(
+                        'statement': context.consume(
+                            "DoStatement['statement']",
+                            ($) => Statement(
                                 $,
                                 abort,
                             )
@@ -276,6 +280,80 @@ export const Statement: p_i.Refiner<
                         )
                     })
                 )]
+                case "ForInStatement": return ['for in', context.parse_children(
+                    "ForInStatement",
+                    (context) => ({
+                        'for keyword': context.consume_and_expect(
+                            "ForInStatement['for keyword']",
+                            "ForKeyword",
+                            ($) => null
+                        ),
+                        'open parenthesis token': context.consume_and_expect(
+                            "ForInStatement['open parenthesis token']",
+                            "OpenParenToken",
+                            ($) => null
+                        ),
+                        'variable declaration list': context.consume_and_expect(
+                            "ForInStatement['variable declaration list']",
+                            "VariableDeclarationList",
+                            ($) => Variable_Declaration_List($, abort)
+                        ),
+                        'in keyword': context.consume_and_expect(
+                            "ForInStatement['in keyword']",
+                            "InKeyword",
+                            ($) => null
+                        ),
+                        'expression': context.consume(
+                            "ForInStatement['expression']",
+                            ($) => Expression($, abort)
+                        ),
+                        'close parenthesis token': context.consume_and_expect(
+                            "ForInStatement['close parenthesis token']",
+                            "CloseParenToken",
+                            ($) => null
+                        ),
+                        'statement': context.consume(
+                            "ForInStatement['statement']",
+                            ($) => Statement($, abort)
+                        )
+                    })
+                )]
+                case "FunctionDeclaration": return ['function declaration', context.parse_children(
+                    "FunctionDeclaration",
+                    (context): d_out.Function_Declaration => ({
+                        'function keyword': context.consume_and_expect(
+                            "FunctionDeclaration['function keyword']",
+                            "FunctionKeyword",
+                            ($) => null
+                        ),
+                        'identifier': context.consume_and_expect(
+                            "FunctionDeclaration['identifier']",
+                            "Identifier",
+                            ($) => $
+                        ),
+                        'type parameters': context.call(
+                            "FunctionDeclaration['type parameters']",
+                            Type_Parameters
+                        ),
+                        'parameters': context.call(
+                            "FunctionDeclaration['parameters']",
+                            Parameters
+                        ),
+                        'type': context.call(
+                            "FunctionDeclaration['type']",
+                            Optional_Type
+                        ),
+                        'body': context.consume(
+                            "FunctionDeclaration['body']",
+                            ($) => Block(
+                                $,
+                                abort,
+                            )
+                        )
+                    })
+                )]
+
+
                 case "IfStatement": return ['if', context.parse_children(
                     "IfStatement",
                     (context) => ({
@@ -919,9 +997,41 @@ export const Expression: p_i.Refiner<
                         "ArrowFunction['type parameters']",
                         Type_Parameters
                     ),
-                    'parameters': context.call(
+                    'parameters': context.peek(
                         "ArrowFunction['parameters']",
-                        Parameters
+                        ($): d_out.Arrow_Function_Parameters => $.kind === "SyntaxList"
+                            ? ['without parentheses', context.consume_and_expect(
+                                "ArrowFunction['parameters']",
+                                "SyntaxList",
+                                ($, context): d_out.Without_Parentheses => context.parse_children(
+                                    "SyntaxList",
+                                    (context): d_out.Without_Parentheses => ({
+                                        'parameter': context.consume_and_expect(
+                                            "SyntaxList['parameter']",
+                                            "Parameter",
+                                            ($, context) => context.parse_children(
+                                                "Parameter",
+                                                (context) => ({
+
+                                                    'identifier': context.consume_and_expect(
+                                                        "Parameter['identifier']",
+                                                        "Identifier",
+                                                        ($) => $
+                                                    ),
+                                                    'type': context.call(
+                                                        "Parameter['type']",
+                                                        Optional_Type
+                                                    ),
+                                                })
+                                            )
+                                        )
+                                    })
+                                )
+                            )]
+                            : ['with parentheses', context.call(
+                                "ArrowFunction['parameters']",
+                                Parameters
+                            )]
                     ),
                     'type': context.call(
                         "ArrowFunction['type']",
@@ -1133,7 +1243,7 @@ export const Expression: p_i.Refiner<
                     ),
                     'properties': context.consume_syntax_list(
                         "ObjectLiteralExpression['properties']",
-                        ($, context) => {
+                        ($, context): d_out.Object_Literal_Expression_Property => {
                             switch ($.kind) {
                                 case "CommaToken": return ['comma token', null]
                                 case "PropertyAssignment": return ['property assignment', context.parse_children(
@@ -1145,7 +1255,7 @@ export const Expression: p_i.Refiner<
                                         ),
                                         'name': context.consume(
                                             "PropertyAssignment['name']",
-                                            ($) => String_Literal_Or_Identifier(
+                                            ($) => String_Literal_or_Identifier(
                                                 $,
                                                 abort,
                                             )
@@ -1162,6 +1272,22 @@ export const Expression: p_i.Refiner<
                                                 abort,
                                             )
                                         )
+                                    })
+                                )]
+                                case "ShorthandPropertyAssignment": return ['shorthand property assignment', context.parse_children(
+                                    "ShorthandPropertyAssignment",
+                                    (context) => ({
+                                        // 'jsdoc': context.call(
+                                        //     "ShorthandPropertyAssignment['jsdoc']",
+                                        //     JSDoc
+                                        // ),
+                                        'name': context.consume(
+                                            "ShorthandPropertyAssignment['name']",
+                                            ($) => String_Literal_or_Identifier(
+                                                $,
+                                                abort,
+                                            )
+                                        ),
                                     })
                                 )]
                                 default: return abort({
@@ -1352,6 +1478,23 @@ export const Expression: p_i.Refiner<
                 })
             )]
             case "TrueKeyword": return ['true keyword', null]
+            case "TypeOfExpression": return ['type of', context.parse_children(
+                "TypeOfExpression",
+                (context) => ({
+                    'type of keyword': context.consume_and_expect(
+                        "TypeOfExpression['type of keyword']",
+                        "TypeOfKeyword",
+                        ($) => null
+                    ),
+                    'expression': context.consume(
+                        "TypeOfExpression['expression']",
+                        ($) => Expression(
+                            $,
+                            abort,
+                        )
+                    ),
+                })
+            )]
             default: return abort({
                 'parent': $,
                 'context': "Expression",
@@ -1657,8 +1800,8 @@ export const Type: p_i.Refiner<
     }
 )
 
-export const String_Literal_Or_Identifier: p_i.Refiner<
-    d_out.String_Literal_Or_Identifier,
+export const String_Literal_or_Identifier: p_i.Refiner<
+    d_out.String_Literal_or_Identifier,
     d_function.Error_Inner,
     d_in.Node
 > = ($, abort) => {
@@ -1715,7 +1858,7 @@ export const Type_Literal: p_pi.Production_With_Parameter<
                             ),
                             'id': context.consume(
                                 "PropertySignature['id']",
-                                ($, parent) => String_Literal_Or_Identifier(
+                                ($, parent) => String_Literal_or_Identifier(
                                     $,
                                     abort,
                                 )
