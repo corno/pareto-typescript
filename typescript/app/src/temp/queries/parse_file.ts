@@ -191,7 +191,7 @@ export const $$: resources.queries.parse_file = p_query(
                     "input.ts",
                     data,
                     ts.ScriptTarget.Latest,
-                    true // setParentNodes
+                    true // setParentNodes, needed to be able to call .getChildren()
                 )
 
                 // Get trailing comments at the end of the file
