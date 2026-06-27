@@ -11,9 +11,27 @@ export type TODO = d_ast.Node
 
 export type Statements = p_.List<Statement>
 
-export type Statement =
+export type Statement = {
+    // 'jsdoc': p_.Optional_Value<d_ast.Node>
+    'type':
     | ['block', Block]
-    | ['expression', Expression]
+    | ['break', {
+        'break keyword': null
+    }]
+    | ['do', {
+        'do keyword': null
+        'block': Block
+        'while keyword': null
+        'open parenthesis token': null
+        'expression': Expression
+        'close parenthesis token': null
+    }]
+    | ['export declaration', Export_Declaration]
+    | ['expression', {
+        'expression': Expression
+        'semicolon token': Semi_Colon
+    }]
+    | ['for', For_Statement]
     | ['if', {
         'if keyword': null
         'open parenthesis token': null
@@ -29,12 +47,63 @@ export type Statement =
     | ['interface declaration', Interface_Declaration]
     | ['module declaration', Module_Declaration]
     | ['return statement', {
+        'jsdoc': JSDoc
         'return keyword': null
         'expression': p_.Optional_Value<Expression>
     }]
-    | ['switch statement', Switch_Statement]
+    | ['switch', Switch_Statement]
+    | ['throw', {
+        'throw keyword': null
+        'expression': Expression
+        'semicolon token': Semi_Colon
+    }]
     | ['type alias declaration', Type_Alias_Declaration]
     | ['variable statement', Variable_Statement]
+    | ['while', {
+        'while keyword': null
+        'open parenthesis token': null
+        'expression': Expression
+        'close parenthesis token': null
+        'statement': Statement
+    }]
+    // 'semicolon token': p_.Optional_Value<null>
+}
+
+export type For_Statement = {
+    'for keyword': null
+    'open parenthesis token': null
+    'variable declaration list': Variable_Declaration_List
+    'semicolon token': null
+    'condition': p_.Optional_Value<Expression>
+    'semicolon token 2': null
+    'incrementor': p_.Optional_Value<Expression>
+    'close parenthesis token': null
+    'statement': Statement
+}
+
+export type Semi_Colon = p_.Optional_Value<null>
+
+export type JSDoc = p_.Optional_Value<d_ast.Node>
+
+export type Export_Declaration = {
+    'export keyword': null
+    'type':
+    | ['named exports', {
+        'open brace token': null
+        'exports': p_.List<Export_Declaration_Entry>
+        'close brace token': null
+    }]
+}
+
+export type Export_Declaration_Entry =
+    | ['comma token', null]
+    | ['export specifier', {
+        'identifier': Identifier
+        'as': p_.Optional_Value<{
+            'as keyword': null
+            'identifier': Identifier
+        }>
+    }]
 
 export type Switch_Statement = {
     'switch keyword': null
@@ -62,12 +131,15 @@ export type Switch_Statement_Case_Clause =
     }]
 
 export type Variable_Statement = {
-    'modifiers': Optional_Modifiers
+    'jsdoc': p_.Optional_Value<d_ast.Node>
+    'modifiers': Modifiers
     'variable declaration list': Variable_Declaration_List
 }
 
 export type Variable_Declaration_List = {
-    'const keyword': p_.Optional_Value<null>
+    'mutability':
+    | ['const keyword', null]
+    | ['let keyword', null]
     'declarations': p_.List<Variable_Declaration>
 }
 
@@ -83,6 +155,11 @@ export type Variable_Declaration = {
 export type Expression =
     | ['array literal', Array_Literal_Expression]
     | ['arrow function', Arrow_Function]
+    | ['as expression', {
+        'expression': Expression
+        'as keyword': null
+        'type': Type
+    }]
     | ['binary', Binary_Expression]
     // | ['block', Block]
     | ['call', Call_Expression]
@@ -95,6 +172,11 @@ export type Expression =
     }]
     | ['false keyword', null]
     | ['identifier', Identifier]
+    | ['no substitution template literal', d_ast.Node]
+    | ['non null', {
+        'expression': Expression
+        'exclamation token': null
+    }]
     | ['null keyword', null]
     | ['numeric literal', d_ast.Node]
     | ['object literal', Object_Literal_Expression]
@@ -102,6 +184,20 @@ export type Expression =
         'open parenthesis token': null
         'expression': Expression
         'close parenthesis token': null
+    }]
+    | ['postfix unary', {
+        'operand': Expression
+        'operator token':
+        | ['minus minus token', null]
+        | ['plus plus token', null]
+    }]
+
+    | ['prefix unary', {
+        'operator token':
+        | ['exclamation token', null]
+        | ['minus token', null]
+        | ['plus token', null]
+        'operand': Expression
     }]
     | ['property access', Property_Access_Expression]
     | ['string literal', String_Literal]
@@ -117,9 +213,22 @@ export type Block = {
 export type Binary_Expression = {
     'left': Expression
     'operator token':
+    | ['asterisk equals token', null]
+    | ['asterisk token', null]
+    | ['ampersand ampersand token', null]
+    | ['bar bar token', null]
+    | ['equals token', null]
     | ['equals equals equals token', null]
     | ['exclamation equals equals token', null]
+    | ['greater than equals token', null]
+    | ['greater than token', null]
+    | ['less than equals token', null]
+    | ['less than token', null]
+    | ['minus token', null]
+    | ['percent token', null]
+    | ['plus equals token', null]
     | ['plus token', null]
+    | ['slash token', null]
     'right': Expression
 }
 
@@ -140,8 +249,12 @@ export type Object_Literal_Expression = {
 export type Object_Literal_Expression_Property =
     | ['comma token', null]
     | ['property assignment', Property_Assignment]
+    | ['shorthand property assignment', {
+        'name': String_Literal_Or_Identifier
+    }]
 
 export type Property_Assignment = {
+    'jsdoc': JSDoc
     'name': String_Literal_Or_Identifier
     'colon token': null
     'initializer': Expression
@@ -154,7 +267,7 @@ export type Template_Expression = {
 
 export type Template_Span = {
     'expression': Expression
-    'template tail': d_ast.Node
+    'template middle or tail': d_ast.Node
 }
 
 export type Array_Literal_Expression = {
@@ -175,6 +288,7 @@ export type Property_Access_Expression = {
 
 export type Call_Expression = {
     'expression': Expression
+    'type arguments': Type_Arguments
     'open parenthesis token': null
     'arguments': p_.List<Call_Expression_Arguments_Entry>
     'close parenthesis token': null
@@ -185,6 +299,7 @@ export type Call_Expression_Arguments_Entry =
     | ['expression', Expression]
 
 export type Arrow_Function = {
+    'type parameters': Type_Parameters
     'parameters': Parameters
     'type': Optional_Type
     'equals greater than token': null
@@ -208,6 +323,7 @@ export type Parameters_Entry =
     | ['comma token', null]
     | ['parameter', {
         'identifier': Identifier
+        'question token': p_.Optional_Value<null>
         'type': Optional_Type
     }]
 
@@ -221,9 +337,15 @@ export type Import_Declaration = {
 
 export type Import_Clause = {
     'type':
-    | ['named imports', p_.List<Import_Specifier>]
+    | ['named imports', Named_Imports]
     | ['namespace import', Namespace_Import]
     | ['identifier', Identifier]
+}
+
+export type Named_Imports = {
+    'open brace token': null
+    'entries': p_.List<Import_Specifier>
+    'close brace token': null
 }
 
 export type Namespace_Import = {
@@ -232,20 +354,25 @@ export type Namespace_Import = {
     'identifier': Identifier
 }
 
-export type Import_Specifier = {
-    'identifier': Identifier
-}
+export type Import_Specifier =
+    | ['comma token', null]
+    | ['import specifier', {
+        'identifier': Identifier
+        'as': p_.Optional_Value<{
+            'as keyword': null
+            'identifier': Identifier
+        }>
+    }]
 
 export type Module_Declaration = {
-    'modifiers': Optional_Modifiers
+    'jsdoc': JSDoc
+    'modifiers': Modifiers
     'namespace keyword': null
     'identifier': Identifier
     'module block': Module_Block
 }
 
-export type Modifiers = p_.List<Modifier>
-
-export type Optional_Modifiers = p_.Optional_Value<Modifiers>
+export type Modifiers = p_.Optional_Value<p_.List<Modifier>>
 
 export type Modifier =
     | ['export', null]
@@ -258,14 +385,22 @@ export type Module_Block = {
 }
 
 export type Type_Alias_Declaration = {
-    'modifiers': Optional_Modifiers
+    'jsdoc': JSDoc
+    'modifiers': Modifiers
     'type keyword': null
     'identifier': Identifier
+    'type parameters': Type_Parameters
     'equals token': null
     'type': Type
 }
 
 export type Type =
+    | ['any keyword', null]
+    | ['array', {
+        'element type': Type
+        'open bracket token': null
+        'close bracket token': null
+    }]
     | ['boolean keyword', null]
     | ['function', Function_Type]
     | ['indexed access', {
@@ -275,8 +410,10 @@ export type Type =
         'close bracket token': null
     }]
     | ['literal type', Literal_Type]
+    | ['never keyword', null]
     | ['number keyword', null]
     | ['string keyword', null]
+    | ['symbol keyword', null]
     | ['tuple type', Tuple_Type]
     | ['type literal', Type_Literal]
     | ['type operator', {
@@ -285,6 +422,7 @@ export type Type =
     }]
     | ['type reference', Type_Reference]
     | ['union type', Union_Type]
+    | ['void keyword', null]
 
 export type Function_Type = {
     'type parameters': Type_Parameters
@@ -309,9 +447,15 @@ export type Type_Parameters = p_.Optional_Value<{
     'greater than token': null
 }>
 
-export type Type_Parameters_Entry = {
-    'identifier': Identifier
-}
+export type Type_Parameters_Entry =
+    | ['comma token', null]
+    | ['type parameter', {
+        'identifier': Identifier
+        'extends': p_.Optional_Value<{
+            'extends keyword': null
+            'type': Type
+        }>
+    }]
 
 export type Union_Type = {
     'members': p_.List<Union_Type_Member>
@@ -334,7 +478,7 @@ export type Union_Type_Member =
 export type Type_Reference = {
     // 'entity name': null
     'entity name': Entity_Name
-    'type arguments': p_.Optional_Value<Type_Arguments>
+    'type arguments': Type_Arguments
 }
 
 export type Type_Literal = {
@@ -353,11 +497,14 @@ export type Call_Signature = TODO
 export type Index_Signature = TODO
 
 export type Property_Signature = {
-    'modifiers': Optional_Modifiers
+    'jsdoc': JSDoc
+    'modifiers': Modifiers
     'id': String_Literal_Or_Identifier
+    'question token': p_.Optional_Value<null>
     'colon token': null
     'type': Type
     'comma token': p_.Optional_Value<null>
+    'semicolon token': p_.Optional_Value<null>
 }
 
 export type String_Literal_Or_Identifier =
@@ -376,11 +523,11 @@ export type Qualified_Name = {
 
 export type Identifier = d_ast.Node
 
-export type Type_Arguments = {
+export type Type_Arguments = p_.Optional_Value<{
     'less than token': null
     'entries': p_.List<Type_Arguments_Entry>
     'greater than token': null
-}
+}>
 
 export type Type_Arguments_Entry =
     | ['comma token', null]
