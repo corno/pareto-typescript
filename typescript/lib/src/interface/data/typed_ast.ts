@@ -17,7 +17,7 @@ export type Statement = {
     | ['block', Block]
     | ['break', {
         'break keyword': null
-        'semicolon token': Semi_Colon
+        'semicolon': Semi_Colon
     }]
     // | ['class declaration', Class_Declaration]
     | ['do', {
@@ -31,7 +31,7 @@ export type Statement = {
     | ['export declaration', Export_Declaration]
     | ['expression', {
         'expression': Expression
-        'semicolon token': Semi_Colon
+        'semicolon': Semi_Colon
     }]
     | ['for', For_Statement]
     | ['for in', {
@@ -67,7 +67,7 @@ export type Statement = {
     | ['throw', {
         'throw keyword': null
         'expression': Expression
-        'semicolon token': Semi_Colon
+        'semicolon': Semi_Colon
     }]
     | ['type alias declaration', Type_Alias_Declaration]
     | ['variable statement', Variable_Statement]

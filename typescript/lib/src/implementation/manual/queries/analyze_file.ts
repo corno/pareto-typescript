@@ -13,7 +13,7 @@ import * as d_fp from "pareto-fountain-pen/dist/interface/generated/liana/schema
 //dependencies
 import * as t_prose_to_loc from "pareto-fountain-pen/dist/implementation/manual/transformers/prose/list_of_characters"
 import * as t_ast_to_prose from "../transformers/ast/fountain_pen"
-import * as r_typed_ast_from_ast from "../refiners/typed_ast/ast"
+import * as r_typed_ast_from_ast from "../refiners/typed_ast/temp_wrapper"
 import * as t_typed_ast_from_ast_to_prose from "../transformers/typed_ast_from_ast/fountain_pen"
 import * as t_typed_ast_to_prose from "../transformers/typed_ast/fountain_pen"
 

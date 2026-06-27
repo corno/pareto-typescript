@@ -1,5 +1,6 @@
 import * as p_ from 'pareto-core/dist/implementation/refiner'
 import * as p_pi from 'pareto-core/dist/interface/production'
+import * as p_ri from 'pareto-core/dist/interface/refiner'
 import * as p_di from 'pareto-core/dist/interface/data'
 import p_iterate from 'pareto-core/dist/implementation/refiner/specials/iterate'
 import P_unreachable_code_path from 'pareto-core/dist/implementation/transformer/specials/unreachable_code_path'
@@ -9,22 +10,36 @@ import * as d_in from "./modules/typescript_parser/interface/data/ast"
 import * as d_function from "./interface/data/typed_ast_from_ast"
 import { Abort } from 'pareto-core/dist/interface/__internal/Abort'
 
+export type Parameters = {
+    'location description': string
+    'parent': d_in.Node
+}
+
+export type Refiner<T extends p_di.Value> = p_ri.Refiner_With_Parameter<
+    T,
+    d_function.Error_Inner,
+    d_in.Node,
+    Parameters
+>
+
+export type Production<T extends p_di.Value> = p_pi.Production_With_Parameter<
+    T,
+    d_function.Error_Inner,
+    d_in.Node,
+    null,
+    Parameters
+>
+
 export type Iterator_Context = {
     temp_parent: d_in.Node
-    consume: <T extends p_di.Value>(
+    consume_deprecated: <T extends p_di.Value>(
         location_description: string,
         callback: (
             node: d_in.Node,
             context: Node_Context,
         ) => T
     ) => T
-    peek: <T extends p_di.Value>(
-        location_description: string,
-        callback: (
-            node: d_in.Node,
-        ) => T
-    ) => T
-    consume_and_expect: <T extends p_di.Value>(
+    consume_and_expect_deprecated: <T extends p_di.Value>(
         location_description: string,
         kind: string,
         callback: (
@@ -32,14 +47,14 @@ export type Iterator_Context = {
             context: Node_Context,
         ) => T
     ) => T
-    consume_syntax_list: <T extends p_di.Value>(
-        location_description: string,
-        callback: (
-            node: d_in.Node,
-            context: Node_Context
-        ) => T
-    ) => p_di.List<T>
-    call: <T extends p_di.Value>(
+
+
+
+
+    /**
+    use this one if multiple consequtive nodes need to be parsed to build the target value. If only one node is needed, use call_refiner
+    */
+    construct_component: <T extends p_di.Value>(
         location_description: string,
         func: p_pi.Production_With_Parameter<
             T,
@@ -52,6 +67,53 @@ export type Iterator_Context = {
             }
         >
     ) => T
+    consume_component: <T extends p_di.Value>(
+        location_description: string,
+        func: p_ri.Refiner_With_Parameter<
+            T,
+            d_function.Error_Inner,
+            d_in.Node,
+            {
+                'location description': string
+                'parent': d_in.Node
+            }
+        >
+    ) => T
+    consume_group: <T extends p_di.Group>(
+        location_description: string,
+        callback: (
+            node: d_in.Node,
+            context: Node_Context,
+        ) => T
+    ) => T
+    consume_keyword: (
+        location_description: string,
+        kind: string,
+    ) => null
+    consume_state: <State extends p_di.State>(
+        location_description: string,
+        callback: (
+            node: d_in.Node,
+            context: Node_Context,
+        ) => State
+    ) => State
+    consume_value: (
+        location_description: string,
+        kind: string,
+    ) => d_in.Node
+    peek: <T extends p_di.Value>(
+        location_description: string,
+        callback: (
+            node: d_in.Node,
+        ) => T
+    ) => T
+    consume_syntax_list: <T extends p_di.Value>(
+        location_description: string,
+        callback: (
+            node: d_in.Node,
+            context: Node_Context
+        ) => T
+    ) => p_di.List<T>
     optional: <T extends p_di.Value>(
         condition: ($: d_in.Node) => boolean,
         callback: (context: Iterator_Context) => T
@@ -100,7 +162,7 @@ export const create_iterator_context = <T extends p_di.Value>(
                 )
             )
         },
-        consume: (
+        consume_deprecated: (
             location_description,
             callback
         ) => {
@@ -119,7 +181,68 @@ export const create_iterator_context = <T extends p_di.Value>(
                 )
             )
         },
-        consume_and_expect: (
+        consume_group: (
+            location_description,
+            callback
+        ) => {
+            return consume_deprecated(
+                iterator,
+                abort,
+                parent,
+                location_description,
+                ($, parent) => create_node_context(
+                    $,
+                    abort,
+                    (context) => callback(
+                        $,
+                        context
+                    )
+                )
+            )
+        },
+        consume_state: (
+            location_description,
+            callback
+        ) => {
+            return consume_deprecated(
+                iterator,
+                abort,
+                parent,
+                location_description,
+                ($, parent) => create_node_context(
+                    $,
+                    abort,
+                    (context) => callback(
+                        $,
+                        context
+                    )
+                )
+            )
+        },
+        consume_component: (
+            location_description,
+            func
+        ) => {
+            return consume_deprecated(
+                iterator,
+                abort,
+                parent,
+                location_description,
+                ($, parent) => create_node_context(
+                    $,
+                    abort,
+                    (context) => func(
+                        $,
+                        abort,
+                        {
+                            'location description': location_description,
+                            'parent': parent
+                        }
+                    )
+                )
+            )
+        },
+        consume_and_expect_deprecated: (
             location_description,
             kind,
             callback
@@ -144,6 +267,44 @@ export const create_iterator_context = <T extends p_di.Value>(
                             context
                         )
                     )
+            )
+        },
+        consume_value: (
+            location_description,
+            kind,
+        ) => {
+            return consume_deprecated(
+                iterator,
+                abort,
+                parent,
+                location_description,
+                ($, parent) => $.kind !== kind
+                    ? abort({
+                        'parent': parent,
+                        'cause': ['unexpected node', $],
+                        'expected': ['something', kind],
+                        'context': location_description
+                    })
+                    : $
+            )
+        },
+        consume_keyword: (
+            location_description,
+            kind,
+        ) => {
+            return consume_deprecated(
+                iterator,
+                abort,
+                parent,
+                location_description,
+                ($, parent) => $.kind !== kind
+                    ? abort({
+                        'parent': parent,
+                        'cause': ['unexpected node', $],
+                        'expected': ['something', kind],
+                        'context': location_description
+                    })
+                    : null
             )
         },
         consume_syntax_list: (
@@ -205,7 +366,7 @@ export const create_iterator_context = <T extends p_di.Value>(
                 }
             )
         },
-        call: (
+        construct_component: (
             location_description,
             func
         ) => {

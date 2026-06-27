@@ -139,7 +139,7 @@ export const Statement: p_i.Transformer<d_in.Statement, d_out.Phrase> = ($) => s
                 ]))
                 case 'expression': return p_.ss($, ($) => sh.ph.composed([
                     Expression($['expression']),
-                    Semi_Colon($['semicolon token']),
+                    Semi_Colon($['semicolon']),
                 ]))
                 case 'for': return p_.ss($, ($) => sh.ph.composed([
                     sh.ph.literal("for ("),
@@ -300,7 +300,7 @@ export const Statement: p_i.Transformer<d_in.Statement, d_out.Phrase> = ($) => s
                 case 'throw': return p_.ss($, ($) => sh.ph.composed([
                     sh.ph.literal("throw "),
                     Expression($['expression']),
-                    Semi_Colon($['semicolon token']),
+                    Semi_Colon($['semicolon']),
                 ]))
                 case 'type alias declaration': return p_.ss($, ($) => sh.ph.composed([
                     JSDoc($['jsdoc']),
