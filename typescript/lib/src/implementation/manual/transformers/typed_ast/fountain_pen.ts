@@ -30,7 +30,7 @@ export const Block: p_i.Transformer<d_in.Block, d_out.Phrase> = ($) => sh.ph.com
 ])
 
 export const Statement: p_i.Transformer<d_in.Statement, d_out.Phrase> = ($) => sh.ph.composed([
-    p_.from.state($.type).decide(
+    p_.from.state($).decide(
         ($) => {
             switch ($[0]) {
                 case 'block': return p_.ss($, ($) => Block($))
@@ -580,7 +580,15 @@ export const Expression: p_i.Transformer<d_in.Expression, d_out.Phrase> = ($) =>
                     p_.from.list($['template spans']).map(
                         ($) => sh.ph.composed([
                             Expression($['expression']),
-                            sh.ph.literal($['template middle or tail'].text),
+                            p_.from.state($['suffix']).decide(
+                                ($) => {
+                                    switch ($[0]) {
+                                        case 'middle': return p_.ss($, ($) => sh.ph.literal($.text))
+                                        case 'tail': return p_.ss($, ($) => sh.ph.literal($.text))
+                                        default: return p_.au($[0])
+                                    }
+                                }
+                            )
                         ])
                     )
                 )

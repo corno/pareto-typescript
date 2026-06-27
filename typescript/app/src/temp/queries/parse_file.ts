@@ -35,6 +35,90 @@ class My_Node_Implementation implements d_ast.Node {
         this.tsNode = tsNode
     }
 
+    // get type(): d_ast.Node['type'] {
+    //     const kind = this.tsNode.kind
+
+    //     // Check for identifiers
+    //     if (ts.isIdentifier(this.tsNode)) {
+    //         return ['literal', {
+    //             'value': this.tsNode.text,
+    //             'type': ['identifier', null]
+    //         }]
+    //     }
+        
+    //     // Check for string literals
+    //     if (ts.isStringLiteral(this.tsNode)) {
+    //         return ['literal', {
+    //             'value': this.tsNode.text, //the text property of a StringLiteral node gives the unescaped string value
+    //             'type': ['string', {
+    //                 'delimiter': this.tsNode.getText().startsWith("'") // the getText() method returns the full text of the node, including delimiters
+    //                 ? ['apostrophe', null] 
+    //                 :this.tsNode.getText().startsWith('"') 
+    //                 ? ['quote', null] 
+    //                 : (() => { throw new Error("Unknown string delimiter") })()
+    //             }]
+    //         }]
+    //     }
+        
+    //     // Check for numeric literals
+    //     if (ts.isNumericLiteral(this.tsNode)) {
+    //         return ['literal', {
+    //             'value': this.tsNode.text,
+    //             'type': ['number', null]
+    //         }]
+    //     }
+        
+    //     // Check for template literals (check specific types directly)
+    //     if (ts.isTemplateHead(this.tsNode)) {
+    //         return ['literal', {
+    //             'value': this.tsNode.getText(),
+    //             'type': ['template', ['head', null]]
+    //         }]
+    //     }
+        
+    //     if (ts.isTemplateMiddle(this.tsNode)) {
+    //         return ['literal', {
+    //             'value': this.tsNode.getText(),
+    //             'type': ['template', ['middle', null]]
+    //         }]
+    //     }
+        
+    //     if (ts.isTemplateTail(this.tsNode)) {
+    //         return ['literal', {
+    //             'value': this.tsNode.getText(),
+    //             'type': ['template', ['tail', null]]
+    //         }]
+    //     }
+        
+    //     if (ts.isNoSubstitutionTemplateLiteral(this.tsNode)) {
+    //         return ['literal', {
+    //             'value': this.tsNode.getText(),
+    //             'type': ['template', ['no substitution', null]]
+    //         }]
+    //     }
+        
+    //     // Check for JSDoc
+    //     if (kind === ts.SyntaxKind.JSDoc) {
+    //         return ['literal', {
+    //             'value': this.tsNode.getText(),
+    //             'type': ['jsdoc', null]
+    //         }]
+    //     }
+        
+    //     // Check for keywords and punctuation
+    //     if (kind >= ts.SyntaxKind.FirstKeyword && kind <= ts.SyntaxKind.LastKeyword) {
+    //         return ['keyword or punctuation', null]
+    //     }
+        
+    //     // Check for other tokens (punctuation/operators)
+    //     if (ts.isToken(this.tsNode)) {
+    //         return ['keyword or punctuation', null]
+    //     }
+        
+    //     // Everything else is structural
+    //     return ['structural', null]
+    // }
+
     get kind(): string {
 
         function getPrimarySyntaxKindName(kind: ts.SyntaxKind): string {

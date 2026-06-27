@@ -31,26 +31,6 @@ export type Production<T extends p_di.Value> = p_pi.Production_With_Parameter<
 >
 
 export type Iterator_Context = {
-    temp_parent: d_in.Node
-    consume_deprecated: <T extends p_di.Value>(
-        location_description: string,
-        callback: (
-            node: d_in.Node,
-            context: Node_Context,
-        ) => T
-    ) => T
-    consume_and_expect_deprecated: <T extends p_di.Value>(
-        location_description: string,
-        kind: string,
-        callback: (
-            node: d_in.Node,
-            context: Node_Context,
-        ) => T
-    ) => T
-
-
-
-
     /**
     use this one if multiple consequtive nodes need to be parsed to build the target value. If only one node is needed, use call_refiner
     */
@@ -97,11 +77,11 @@ export type Iterator_Context = {
             context: Node_Context,
         ) => State
     ) => State
-    consume_value: (
+    consume_literal: (
         location_description: string,
         kind: string,
     ) => d_in.Node
-    peek: <T extends p_di.Value>(
+    peek_for_state: <T extends p_di.State>(
         location_description: string,
         callback: (
             node: d_in.Node,
@@ -126,7 +106,8 @@ export const create_iterator_context = <T extends p_di.Value>(
     parent: d_in.Node,
     callback: (context: Iterator_Context) => T
 ): T => {
-    const consume_deprecated = <T extends p_di.Value>(
+
+    const consume_internal = <T extends p_di.Value>(
         iterator: p_pi.Iterator<d_in.Node, null>,
         abort: Abort<d_function.Error_Inner>,
         parent: d_in.Node,
@@ -144,9 +125,10 @@ export const create_iterator_context = <T extends p_di.Value>(
             parent,
         )
     )
+
     return callback({
-        temp_parent: parent,
-        peek: (
+
+        peek_for_state: (
             location_description,
             callback
         ) => {
@@ -162,30 +144,11 @@ export const create_iterator_context = <T extends p_di.Value>(
                 )
             )
         },
-        consume_deprecated: (
-            location_description,
-            callback
-        ) => {
-            return consume_deprecated(
-                iterator,
-                abort,
-                parent,
-                location_description,
-                ($, parent) => create_node_context(
-                    $,
-                    abort,
-                    (context) => callback(
-                        $,
-                        context
-                    )
-                )
-            )
-        },
         consume_group: (
             location_description,
             callback
         ) => {
-            return consume_deprecated(
+            return consume_internal(
                 iterator,
                 abort,
                 parent,
@@ -204,7 +167,7 @@ export const create_iterator_context = <T extends p_di.Value>(
             location_description,
             callback
         ) => {
-            return consume_deprecated(
+            return consume_internal(
                 iterator,
                 abort,
                 parent,
@@ -223,7 +186,7 @@ export const create_iterator_context = <T extends p_di.Value>(
             location_description,
             func
         ) => {
-            return consume_deprecated(
+            return consume_internal(
                 iterator,
                 abort,
                 parent,
@@ -242,69 +205,52 @@ export const create_iterator_context = <T extends p_di.Value>(
                 )
             )
         },
-        consume_and_expect_deprecated: (
+        consume_literal: (
             location_description,
             kind,
-            callback
         ) => {
-            return consume_deprecated(
+            return consume_internal(
                 iterator,
                 abort,
                 parent,
                 location_description,
-                ($, parent) => $.kind !== kind
-                    ? abort({
-                        'parent': parent,
-                        'cause': ['unexpected node', $],
-                        'expected': ['something', kind],
-                        'context': location_description
-                    })
-                    : create_node_context(
-                        $,
-                        abort,
-                        (context) => callback(
-                            $,
-                            context
-                        )
-                    )
-            )
-        },
-        consume_value: (
-            location_description,
-            kind,
-        ) => {
-            return consume_deprecated(
-                iterator,
-                abort,
-                parent,
-                location_description,
-                ($, parent) => $.kind !== kind
-                    ? abort({
-                        'parent': parent,
-                        'cause': ['unexpected node', $],
-                        'expected': ['something', kind],
-                        'context': location_description
-                    })
-                    : $
+                ($, parent) => {
+                    // if ($.type[0] !== 'literal') {
+                    //     return P_unreachable_code_path("error in the parser; consuming a node as a literal, but the node is not a literal")
+                    // }
+                    if ($.kind !== kind) {
+                        return abort({
+                            'parent': parent,
+                            'cause': ['unexpected node', $],
+                            'expected': ['something', kind],
+                            'context': location_description
+                        })
+                    } else return $
+                }
             )
         },
         consume_keyword: (
             location_description,
             kind,
         ) => {
-            return consume_deprecated(
+            return consume_internal(
                 iterator,
                 abort,
                 parent,
                 location_description,
-                ($, parent) => $.kind !== kind
-                    ? abort({
-                        'parent': parent,
-                        'cause': ['unexpected node', $],
-                        'expected': ['something', kind],
-                        'context': location_description
-                    })
-                    : null
+                ($, parent) => {
+                    // if ($.type[0] !== 'keyword or punctuation') {
+                    //     return P_unreachable_code_path("error in the parser; consuming a node as a keyword or punctuation, but the node is not a keyword or punctuation")
+                    // }
+                    if ($.kind !== kind) {
+                        return abort({
+                            'parent': parent,
+                            'cause': ['unexpected node', $],
+                            'expected': ['something', kind],
+                            'context': location_description
+                        })
+                    } else return null
+                }
             )
         },
         consume_syntax_list: (
@@ -341,7 +287,7 @@ export const create_iterator_context = <T extends p_di.Value>(
                             'expected': ['nothing', null]
                         }),
                     })
-            return consume_deprecated(
+            return consume_internal(
                 iterator,
                 abort,
                 parent,
@@ -405,6 +351,14 @@ export const create_iterator_context = <T extends p_di.Value>(
 export type Node_Context = {
 
     abort: Abort<string>
+    assert_kind: <T extends p_di.Value>(
+        location_description: string,
+        expected_kind: string,
+        callback: (
+            node: d_in.Node,
+            context: Node_Context,
+        ) => T
+    ) => T
     parse_children: <T extends p_di.Value>(
         location_description: string,
         callback: (
@@ -482,6 +436,30 @@ export const create_node_context = <T>(
         })
     }
     return callback({
+        assert_kind: (
+            location_description,
+            expected_kind,
+            callback
+        ) => {
+            if (node.kind !== expected_kind) {
+                return abort({
+                    'parent': node,
+                    'cause': ['unexpected node', node],
+                    'expected': ['something', expected_kind],
+                    'context': location_description
+                })
+            }
+            return create_node_context(
+                node,
+                abort,
+                (context) => callback(
+                    node,
+                    context
+                )
+            )
+        },
+
+
         parse_children: (
             location_description,
             callback

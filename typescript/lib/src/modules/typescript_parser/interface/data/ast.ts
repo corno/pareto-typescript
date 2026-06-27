@@ -14,6 +14,23 @@ export type Node = {
         'column': number
     }
     'text': string
+    // 'type':
+    // | ['structural', null]
+    // | ['literal',
+    //     | ['string', {
+    //         'value': string
+    //         'delimiter': 
+    //         | ['apostrophe', null]
+    //         | ['quote', null]
+    //     }]
+    //     | ['number', {
+    //         'value': string
+    //     }]
+    //     | ['identifier', {
+    //         'value': string
+    //     }]
+        
+    // ]
 }
 
 export type Comments = p_i.List<string>

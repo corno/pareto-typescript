@@ -1,6 +1,5 @@
 import * as p_ from 'pareto-core/dist/interface/data'
 import * as d_ast from "../../modules/typescript_parser/interface/data/ast"
-import { e } from 'pareto-core/dist/implementation/query'
 
 export type Source_File = {
     'statements': Statements
@@ -11,9 +10,7 @@ export type TODO = d_ast.Node
 
 export type Statements = p_.List<Statement>
 
-export type Statement = {
-    // 'jsdoc': p_.Optional_Value<d_ast.Node>
-    'type':
+export type Statement = 
     | ['block', Block]
     | ['break', {
         'break keyword': null
@@ -78,9 +75,7 @@ export type Statement = {
         'close parenthesis token': null
         'statement': Statement
     }]
-    // 'semicolon token': p_.Optional_Value<null>
-}
-
+    
 export type Class_Declaration = {
     'class keyword': null
     'identifier': Identifier
@@ -203,7 +198,7 @@ export type Switch_Statement_Case_Clause =
     }]
 
 export type Variable_Statement = {
-    'jsdoc': p_.Optional_Value<d_ast.Node>
+    'jsdoc': JSDoc
     'modifiers': Modifiers
     'variable declaration list': Variable_Declaration_List
 }
@@ -342,7 +337,9 @@ export type Template_Expression = {
 
 export type Template_Span = {
     'expression': Expression
-    'template middle or tail': d_ast.Node
+    'suffix': 
+    | ['middle', d_ast.Node]
+    | ['tail', d_ast.Node]
 }
 
 export type Array_Literal_Expression = {
