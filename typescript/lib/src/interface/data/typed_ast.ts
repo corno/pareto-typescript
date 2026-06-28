@@ -146,7 +146,7 @@ export type Function_Declaration = {
 
 export type Return_Type_Annotation = p_.Optional_Value<{
     'colon token': null
-    'kind': 
+    'kind':
     | ['type', Type]
     | ['type predicate', {
         'identifier': Identifier
@@ -245,7 +245,7 @@ export type Variable_Declaration_List = {
 }
 
 export type Variable_Declaration = {
-    'name': Identifier
+    'name': Binding_Pattern
     'type': Optional_Type
     'assignment': p_.Optional_Value<{
         'equals token': null
@@ -323,24 +323,25 @@ export type Block = {
 export type Binary_Expression = {
     'left': Expression
     'operator token':
-    | ['asterisk equals token', null]
-    | ['asterisk token', null]
-    | ['ampersand ampersand token', null]
-    | ['bar bar token', null]
-    | ['equals token', null]
-    | ['equals equals equals token', null]
-    | ['exclamation equals equals token', null]
-    | ['greater than equals token', null]
-    | ['greater than token', null]
+    | ['-', null]
+    | ['-=', null]
+    | ['!==', null]
+    | ['??', null]
+    | ['*', null]
+    | ['*=', null]
+    | ['/', null]
+    | ['&&', null]
+    | ['%', null]
+    | ['+', null]
+    | ['+=', null]
+    | ['<', null]
+    | ['<=', null]
+    | ['=', null]
+    | ['===', null]
+    | ['>', null]
+    | ['>=', null]
+    | ['||', null]
     | ['instanceof', null]
-    | ['less than equals token', null]
-    | ['less than token', null]
-    | ['minus equals token', null]
-    | ['minus token', null]
-    | ['percent token', null]
-    | ['plus equals token', null]
-    | ['plus token', null]
-    | ['slash token', null]
     'right': Expression
 }
 
@@ -443,7 +444,7 @@ export type Arrow_Function_Parameters =
 
 export type Without_Parentheses = {
     'parameter': {
-        'identifier': Identifier
+        'name': Binding_Pattern
         'type': Optional_Type
     }
 }
@@ -458,10 +459,35 @@ export type Parameters_Entry =
     | ['comma token', null]
     | ['parameter', {
         'dot dot dot token': p_.Optional_Value<null>
-        'identifier': Identifier
+        'name': Binding_Pattern
         'question token': p_.Optional_Value<null>
         'type': Optional_Type
     }]
+
+export type Binding_Pattern =
+    | ['identifier', Identifier]
+    | ['array binding pattern', Array_Binding_Pattern]
+    | ['object binding pattern', Object_Binding_Pattern]
+
+export type Array_Binding_Pattern = {
+    'open bracket token': null
+    'elements': p_.List<Array_Binding_Element>
+    'close bracket token': null
+}
+
+export type Array_Binding_Element =
+    | ['comma token', null]
+    | ['binding element', {
+        'dot dot dot token': p_.Optional_Value<null>
+        'name': Binding_Pattern
+        'initializer': p_.Optional_Value<{
+            'equals token': null
+            'expression': Expression
+        }>
+    }]
+    | ['omitted expression', null]
+
+export type Object_Binding_Pattern = TODO
 
 
 export type Import_Declaration = {

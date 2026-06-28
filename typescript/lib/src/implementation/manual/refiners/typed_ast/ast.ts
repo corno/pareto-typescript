@@ -110,10 +110,9 @@ export const Expression: h.Refiner<d_out.Expression> = ($, abort, $p) => h.creat
                                                 ($, context) => context.parse_children(
                                                     "Parameter",
                                                     (context) => ({
-
-                                                        'identifier': context.consume_literal(
-                                                            "Parameter['identifier']",
-                                                            "Identifier",
+                                                        'name': context.consume_component(
+                                                            "Parameter['name']",
+                                                            Binding_Pattern
                                                         ),
                                                         'type': context.construct_component(
                                                             "Parameter['type']",
@@ -185,24 +184,25 @@ export const Expression: h.Refiner<d_out.Expression> = ($, abort, $p) => h.creat
                         "BinaryExpression['operator token']",
                         ($) => {
                             switch ($.kind) {
-                                case "AsteriskEqualsToken": return ['asterisk equals token', null]
-                                case "AsteriskToken": return ['asterisk token', null]
-                                case "AmpersandAmpersandToken": return ['ampersand ampersand token', null]
-                                case "BarBarToken": return ['bar bar token', null]
-                                case "EqualsToken": return ['equals token', null]
-                                case "EqualsEqualsEqualsToken": return ['equals equals equals token', null]
-                                case "ExclamationEqualsEqualsToken": return ['exclamation equals equals token', null]
-                                case "GreaterThanEqualsToken": return ['greater than equals token', null]
-                                case "GreaterThanToken": return ['greater than token', null]
+                                case "AsteriskEqualsToken": return ['*=', null]
+                                case "AsteriskToken": return ['*', null]
+                                case "AmpersandAmpersandToken": return ['&&', null]
+                                case "BarBarToken": return ['||', null]
+                                case "EqualsToken": return ['=', null]
+                                case "EqualsEqualsEqualsToken": return ['===', null]
+                                case "ExclamationEqualsEqualsToken": return ['!==', null]
+                                case "GreaterThanEqualsToken": return ['>=', null]
+                                case "GreaterThanToken": return ['>', null]
                                 case "InstanceOfKeyword": return ['instanceof', null]
-                                case "LessThanEqualsToken": return ['less than equals token', null]
-                                case "LessThanToken": return ['less than token', null]
-                                case "MinusEqualsToken": return ['minus equals token', null]
-                                case "MinusToken": return ['minus token', null]
-                                case "PercentToken": return ['percent token', null]
-                                case "PlusEqualsToken": return ['plus equals token', null]
-                                case "PlusToken": return ['plus token', null]
-                                case "SlashToken": return ['slash token', null]
+                                case "LessThanEqualsToken": return ['<=', null]
+                                case "LessThanToken": return ['<', null]
+                                case "MinusEqualsToken": return ['-=', null]
+                                case "MinusToken": return ['-', null]
+                                case "PercentToken": return ['%', null]
+                                case "PlusEqualsToken": return ['+=', null]
+                                case "PlusToken": return ['+', null]
+                                case "SlashToken": return ['/', null]
+                                case "QuestionQuestionToken": return ['??', null]
                                 default: return abort({
                                     'parent': $,
                                     'context': "BinaryExpression['operator token']",
@@ -529,6 +529,7 @@ export const Expression: h.Refiner<d_out.Expression> = ($, abort, $p) => h.creat
                     )
                 })
             )]
+            case "RegularExpressionLiteral": return ['regular expression literal', $]
             case "StringLiteral": return ['string literal', $]
             case "TemplateExpression": return ['template', context.parse_children(
                 "TemplateExpression",
@@ -674,6 +675,85 @@ export const Optional_Type: h.Production<d_out.Optional_Type> = (iterator, abort
     )
 )
 
+export const Binding_Pattern: h.Refiner<d_out.Binding_Pattern> = ($, abort, $p) => h.create_node_context(
+    $,
+    abort,
+    (context): d_out.Binding_Pattern => {
+        switch ($.kind) {
+            case "Identifier": return ['identifier', $]
+            case "ArrayBindingPattern": return ['array binding pattern', context.parse_children(
+                "ArrayBindingPattern",
+                (context): d_out.Array_Binding_Pattern => ({
+                    'open bracket token': context.consume_keyword(
+                        "ArrayBindingPattern['open bracket token']",
+                        "OpenBracketToken",
+                    ),
+                    'elements': context.consume_syntax_list(
+                        "ArrayBindingPattern['elements']",
+                        ($, context) => {
+                            switch ($.kind) {
+                                case "CommaToken": return ['comma token', null]
+                                case "OmittedExpression": return ['omitted expression', null]
+                                case "BindingElement": return ['binding element', context.parse_children(
+                                    "BindingElement",
+                                    (context) => ({
+                                        'dot dot dot token': context.optional(
+                                            ($) => $.kind === "DotDotDotToken",
+                                            (context) => context.consume_keyword(
+                                                "BindingElement['dot dot dot token']",
+                                                "DotDotDotToken",
+                                            )
+                                        ),
+                                        'name': context.consume_component(
+                                            "BindingElement['name']",
+                                            Binding_Pattern
+                                        ),
+                                        'initializer': context.optional(
+                                            ($) => $.kind === "EqualsToken",
+                                            (context) => ({
+                                                'equals token': context.consume_keyword(
+                                                    "BindingElement['initializer']['equals token']",
+                                                    "EqualsToken",
+                                                ),
+                                                'expression': context.consume_component(
+                                                    "BindingElement['initializer']['expression']",
+                                                    Expression
+                                                )
+                                            })
+                                        )
+                                    })
+                                )]
+                                default: return abort({
+                                    'parent': $,
+                                    'context': "ArrayBindingElement",
+                                    'cause': ['unexpected node', $],
+                                    'expected': ['something', "`CommaToken`, `OmittedExpression`, or `BindingElement`"]
+                                })
+                            }
+                        }
+                    ),
+                    'close bracket token': context.consume_keyword(
+                        "ArrayBindingPattern['close bracket token']",
+                        "CloseBracketToken",
+                    ),
+                })
+            )]
+            case "ObjectBindingPattern": return abort({
+                'parent': $,
+                'context': "Binding_Pattern",
+                'cause': ['unexpected node', $],
+                'expected': ['something', "ObjectBindingPattern support"]
+            })
+            default: return abort({
+                'parent': $,
+                'context': "Binding_Pattern",
+                'cause': ['unexpected node', $],
+                'expected': ['something', "`Identifier`, `ArrayBindingPattern`, or `ObjectBindingPattern`"]
+            })
+        }
+    }
+)
+
 export const Parameters: h.Production<d_out.Parameters> = (iterator, abort, $p) => h.create_iterator_context(
     iterator,
     abort,
@@ -698,9 +778,9 @@ export const Parameters: h.Production<d_out.Parameters> = (iterator, abort, $p) 
                                     "DotDotDotToken",
                                 )
                             ),
-                            'identifier': context.consume_literal(
-                                "Parameter['identifier']",
-                                "Identifier",
+                            'name': context.consume_component(
+                                "Parameter['name']",
+                                Binding_Pattern
                             ),
                             'question token': context.optional(
                                 ($) => $.kind === "QuestionToken",
@@ -2040,9 +2120,9 @@ export const Variable_Declaration_List: h.Refiner<d_out.Variable_Declaration_Lis
                             case "VariableDeclaration": return context.parse_children(
                                 "VariableDeclaration",
                                 (context): d_out.Variable_Declaration => ({
-                                    'name': context.consume_literal(
+                                    'name': context.consume_component(
                                         "VariableDeclaration['name']",
-                                        "Identifier"
+                                        Binding_Pattern
                                     ),
                                     'type': context.construct_component(
                                         "VariableDeclaration['type']",

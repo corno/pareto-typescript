@@ -81,7 +81,7 @@ export const Expression: p_i.Transformer<d_in.Expression, d_out.Phrase> = ($) =>
                         switch ($[0]) {
                             case 'with parentheses': return p_.ss($, ($) => Parameters($))
                             case 'without parentheses': return p_.ss($, ($) => sh.ph.composed([
-                                sh.ph.literal($.parameter.identifier.text),
+                                Binding_Pattern($.parameter.name),
                                 Optional_Type($.parameter.type)
                             ]))
                             default: return p_.au($[0])
@@ -110,24 +110,25 @@ export const Expression: p_i.Transformer<d_in.Expression, d_out.Phrase> = ($) =>
                 p_.from.state($['operator token']).decide(
                     ($) => {
                         switch ($[0]) {
-                            case 'asterisk equals token': return p_.ss($, ($) => sh.ph.literal(" *= "))
-                            case 'asterisk token': return p_.ss($, ($) => sh.ph.literal(" * "))
-                            case 'ampersand ampersand token': return p_.ss($, ($) => sh.ph.literal(" && "))
-                            case 'bar bar token': return p_.ss($, ($) => sh.ph.literal(" || "))
-                            case 'equals token': return p_.ss($, ($) => sh.ph.literal(" = "))
-                            case 'equals equals equals token': return p_.ss($, ($) => sh.ph.literal(" === "))
-                            case 'exclamation equals equals token': return p_.ss($, ($) => sh.ph.literal(" !== "))
-                            case 'greater than equals token': return p_.ss($, ($) => sh.ph.literal(" >= "))
-                            case 'greater than token': return p_.ss($, ($) => sh.ph.literal(" > "))
+                            case '*=': return p_.ss($, ($) => sh.ph.literal(" *= "))
+                            case '*': return p_.ss($, ($) => sh.ph.literal(" * "))
+                            case '&&': return p_.ss($, ($) => sh.ph.literal(" && "))
+                            case '||': return p_.ss($, ($) => sh.ph.literal(" || "))
+                            case '=': return p_.ss($, ($) => sh.ph.literal(" = "))
+                            case '===': return p_.ss($, ($) => sh.ph.literal(" === "))
+                            case '!==': return p_.ss($, ($) => sh.ph.literal(" !== "))
+                            case '>=': return p_.ss($, ($) => sh.ph.literal(" >= "))
+                            case '>': return p_.ss($, ($) => sh.ph.literal(" > "))
                             case 'instanceof': return p_.ss($, ($) => sh.ph.literal(" instanceof "))
-                            case 'less than equals token': return p_.ss($, ($) => sh.ph.literal(" <= "))
-                            case 'less than token': return p_.ss($, ($) => sh.ph.literal(" < "))
-                            case 'minus equals token': return p_.ss($, ($) => sh.ph.literal(" -= "))
-                            case 'minus token': return p_.ss($, ($) => sh.ph.literal(" - "))
-                            case 'percent token': return p_.ss($, ($) => sh.ph.literal(" % "))
-                            case 'plus equals token': return p_.ss($, ($) => sh.ph.literal(" += "))
-                            case 'plus token': return p_.ss($, ($) => sh.ph.literal(" + "))
-                            case 'slash token': return p_.ss($, ($) => sh.ph.literal(" / "))
+                            case '<=': return p_.ss($, ($) => sh.ph.literal(" <= "))
+                            case '<': return p_.ss($, ($) => sh.ph.literal(" < "))
+                            case '-=': return p_.ss($, ($) => sh.ph.literal(" -= "))
+                            case '-': return p_.ss($, ($) => sh.ph.literal(" - "))
+                            case '%': return p_.ss($, ($) => sh.ph.literal(" % "))
+                            case '+=': return p_.ss($, ($) => sh.ph.literal(" += "))
+                            case '+': return p_.ss($, ($) => sh.ph.literal(" + "))
+                            case '/': return p_.ss($, ($) => sh.ph.literal(" / "))
+                            case '??': return p_.ss($, ($) => sh.ph.literal(" ?? "))
                             default: return p_.au($[0])
                         }
                     }
@@ -295,6 +296,46 @@ export const Optional_Type: p_i.Transformer<d_in.Optional_Type, d_out.Phrase> = 
     () => sh.ph.nothing()
 )
 
+export const Binding_Pattern: p_i.Transformer<d_in.Binding_Pattern, d_out.Phrase> = ($) => p_.from.state($).decide(
+    ($) => {
+        switch ($[0]) {
+            case 'identifier': return p_.ss($, ($) => sh.ph.literal($.text))
+            case 'array binding pattern': return p_.ss($, ($) => sh.ph.composed([
+                sh.ph.literal("["),
+                sh.ph.composed(
+                    p_.from.list($['elements']).map(
+                        ($) => p_.from.state($).decide(
+                            ($) => {
+                                switch ($[0]) {
+                                    case 'comma token': return p_.ss($, ($) => sh.ph.literal(", "))
+                                    case 'omitted expression': return p_.ss($, ($) => sh.ph.nothing())
+                                    case 'binding element': return p_.ss($, ($) => sh.ph.composed([
+                                        p_.from.optional($['dot dot dot token']).decide(
+                                            () => sh.ph.literal("..."),
+                                            () => sh.ph.nothing()
+                                        ),
+                                        Binding_Pattern($.name),
+                                        p_.from.optional($.initializer).decide(
+                                            ($) => sh.ph.composed([
+                                                sh.ph.literal(" = "),
+                                                Expression($['expression']),
+                                            ]),
+                                            () => sh.ph.nothing()
+                                        ),
+                                    ]))
+                                    default: return p_.au($[0])
+                                }
+                            }
+                        )
+                    )
+                ),
+                sh.ph.literal("]"),
+            ]))
+            case 'object binding pattern': return p_.ss($, ($) => sh.ph.literal("/* TODO: object binding pattern */"))
+            default: return p_.au($[0])
+        }
+    })
+
 export const Parameters: p_i.Transformer<d_in.Parameters, d_out.Phrase> = ($) => sh.ph.composed([
     sh.ph.literal("("),
     sh.ph.composed(
@@ -308,7 +349,7 @@ export const Parameters: p_i.Transformer<d_in.Parameters, d_out.Phrase> = ($) =>
                                 () => sh.ph.literal("..."),
                                 () => sh.ph.nothing()
                             ),
-                            sh.ph.literal($.identifier.text),
+                            Binding_Pattern($.name),
                             p_.from.optional($['question token']).decide(
                                 () => sh.ph.literal("?"),
                                 () => sh.ph.nothing()
@@ -899,7 +940,7 @@ export const Variable_Declaration_List: p_i.Transformer<d_in.Variable_Declaratio
     sh.ph.composed(
         p_.from.list($['declarations']).map(
             ($) => sh.ph.composed([
-                sh.ph.literal($.name.text),
+                Binding_Pattern($.name),
                 Optional_Type($.type),
                 p_.from.optional($['assignment']).decide(
                     ($) => sh.ph.composed([
