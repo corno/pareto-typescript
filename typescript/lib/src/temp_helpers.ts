@@ -293,7 +293,6 @@ export const create_iterator_context = <T extends p_di.Value>(
                 parent,
                 location_description,
                 ($) => {
-                    const my_node = $
                     return list_with_syntaxlist_wrapper_x(
                         $,
                         parent,
@@ -417,7 +416,6 @@ export const create_node_context = <T>(
             context: Node_Context,
         ) => T
     ): p_di.List<T> => {
-        const parent = $
         return p_iterate({
             list: $.children,
             end_info: null,

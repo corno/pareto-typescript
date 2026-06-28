@@ -1,5 +1,4 @@
 
-import * as p_ from 'pareto-core/dist/interface/data'
 
 //data types
 import * as d_path from "pareto-resources/dist/interface/generated/liana/schemas/fs_unrestricted_path/data"

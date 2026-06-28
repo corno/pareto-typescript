@@ -1,4 +1,3 @@
-import * as p_ from 'pareto-core/dist/interface/data'
 
 //data types
 import * as d_ast from "./ast"
