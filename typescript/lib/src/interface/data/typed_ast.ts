@@ -40,7 +40,7 @@ export type Statement =
         'close parenthesis token': null
         'statement': Statement
     }]
-    | ['function declaration', Function_Declaration]
+    | ['function', Function_Declaration]
     | ['if', {
         'if keyword': null
         'open parenthesis token': null
@@ -52,10 +52,10 @@ export type Statement =
             'statement': Statement
         }>
     }]
-    | ['import declaration', Import_Declaration]
-    | ['interface declaration', Interface_Declaration]
-    | ['module declaration', Module_Declaration]
-    | ['return statement', {
+    | ['import', Import_Declaration]
+    | ['interface', Interface_Declaration]
+    | ['namespace', Module_Declaration] //aka 'module'
+    | ['return', {
         'jsdoc': JSDoc
         'return keyword': null
         'expression': p_.Optional_Value<Expression>
@@ -66,8 +66,8 @@ export type Statement =
         'expression': Expression
         'semicolon': Semi_Colon
     }]
-    | ['type alias declaration', Type_Alias_Declaration]
-    | ['variable statement', Variable_Statement]
+    | ['type alias', Type_Alias_Declaration]
+    | ['variable', Variable_Statement]
     | ['while', {
         'while keyword': null
         'open parenthesis token': null

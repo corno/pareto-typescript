@@ -165,7 +165,7 @@ export const Statement: p_i.Transformer<d_in.Statement, d_out.Phrase> = ($) => s
                     sh.ph.literal(") "),
                     Statement($['statement']),
                 ]))
-                case 'function declaration': return p_.ss($, ($) => sh.ph.composed([
+                case 'function': return p_.ss($, ($) => sh.ph.composed([
                     sh.ph.literal("function "),
                     sh.ph.literal($['identifier'].text),
                     Type_Parameters($['type parameters']),
@@ -187,7 +187,7 @@ export const Statement: p_i.Transformer<d_in.Statement, d_out.Phrase> = ($) => s
                         () => sh.ph.nothing()
                     )
                 ]))
-                case 'import declaration': return p_.ss($, ($) => sh.ph.composed([
+                case 'import': return p_.ss($, ($) => sh.ph.composed([
                     sh.ph.literal("import "),
                     p_.from.state($.clause.type).decide(
                         ($) => {
@@ -231,14 +231,14 @@ export const Statement: p_i.Transformer<d_in.Statement, d_out.Phrase> = ($) => s
                     sh.ph.literal(" from "),
                     sh.ph.literal($['string literal'].text)
                 ]))
-                case 'interface declaration': return p_.ss($, ($) => sh.ph.composed([
+                case 'interface': return p_.ss($, ($) => sh.ph.composed([
                     sh.ph.literal("interface "),
                     sh.ph.literal($['identifier'].text),
                     Type_Parameters($['type parameters']),
                     sh.ph.literal(" "),
                     Type_Literal($['body']),
                 ]))
-                case 'module declaration': return p_.ss($, ($) => sh.ph.composed([
+                case 'namespace': return p_.ss($, ($) => sh.ph.composed([
                     JSDoc($['jsdoc']),
                     Modifiers($['modifiers']),
                     sh.ph.literal("namespace "),
@@ -254,7 +254,7 @@ export const Statement: p_i.Transformer<d_in.Statement, d_out.Phrase> = ($) => s
                     ),
                     sh.ph.literal("}")
                 ]))
-                case 'return statement': return p_.ss($, ($) => sh.ph.composed([
+                case 'return': return p_.ss($, ($) => sh.ph.composed([
                     JSDoc($['jsdoc']),
                     sh.ph.literal("return "),
                     p_.from.optional($['expression']).decide(
@@ -302,7 +302,7 @@ export const Statement: p_i.Transformer<d_in.Statement, d_out.Phrase> = ($) => s
                     Expression($['expression']),
                     Semi_Colon($['semicolon']),
                 ]))
-                case 'type alias declaration': return p_.ss($, ($) => sh.ph.composed([
+                case 'type alias': return p_.ss($, ($) => sh.ph.composed([
                     JSDoc($['jsdoc']),
                     Modifiers($['modifiers']),
                     sh.ph.literal("type "),
@@ -311,7 +311,7 @@ export const Statement: p_i.Transformer<d_in.Statement, d_out.Phrase> = ($) => s
                     sh.ph.literal(" = "),
                     Type($['type']),
                 ]))
-                case 'variable statement': return p_.ss($, ($) => sh.ph.composed([
+                case 'variable': return p_.ss($, ($) => sh.ph.composed([
                     p_.from.optional($['jsdoc']).decide(
                         ($) => sh.ph.composed([
                             sh.ph.literal("/**"),

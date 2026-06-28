@@ -920,7 +920,7 @@ export const Statement: h.Refiner<d_out.Statement> = ($, abort, $p) => h.create_
                     )
                 })
             )]
-            case "FunctionDeclaration": return ['function declaration', context.parse_children(
+            case "FunctionDeclaration": return ['function', context.parse_children(
                 "FunctionDeclaration",
                 (context): d_out.Function_Declaration => ({
                     'function keyword': context.consume_keyword(
@@ -989,7 +989,7 @@ export const Statement: h.Refiner<d_out.Statement> = ($, abort, $p) => h.create_
                     )
                 })
             )]
-            case "ImportDeclaration": return ['import declaration', context.parse_children(
+            case "ImportDeclaration": return ['import', context.parse_children(
                 "ImportDeclaration",
                 (context): d_out.Import_Declaration => ({
                     'import keyword': context.consume_keyword(
@@ -1102,7 +1102,7 @@ export const Statement: h.Refiner<d_out.Statement> = ($, abort, $p) => h.create_
                     ),
                 })
             )]
-            case "InterfaceDeclaration": return ['interface declaration', context.parse_children(
+            case "InterfaceDeclaration": return ['interface', context.parse_children(
                 "InterfaceDeclaration",
                 (context): d_out.Interface_Declaration => ({
                     'interface keyword': context.consume_keyword(
@@ -1123,7 +1123,7 @@ export const Statement: h.Refiner<d_out.Statement> = ($, abort, $p) => h.create_
                     ),
                 })
             )]
-            case "ModuleDeclaration": return ['module declaration', context.parse_children(
+            case "ModuleDeclaration": return ['namespace', context.parse_children(
                 "ModuleDeclaration",
                 (context): d_out.Module_Declaration => ({
                     'jsdoc': context.construct_component(
@@ -1168,7 +1168,7 @@ export const Statement: h.Refiner<d_out.Statement> = ($, abort, $p) => h.create_
                     ),
                 })
             )]
-            case "ReturnStatement": return ['return statement', context.parse_children(
+            case "ReturnStatement": return ['return', context.parse_children(
                 "ReturnStatement",
                 (context) => ({
                     'jsdoc': context.construct_component(
@@ -1293,7 +1293,7 @@ export const Statement: h.Refiner<d_out.Statement> = ($, abort, $p) => h.create_
                     ),
                 })
             )]
-            case "TypeAliasDeclaration": return ['type alias declaration', context.parse_children(
+            case "TypeAliasDeclaration": return ['type alias', context.parse_children(
                 "TypeAliasDeclaration",
                 (context): d_out.Type_Alias_Declaration => ({
                     'jsdoc': context.construct_component(
@@ -1326,7 +1326,7 @@ export const Statement: h.Refiner<d_out.Statement> = ($, abort, $p) => h.create_
                     )
                 })
             )]
-            case "VariableStatement": return ['variable statement', context.parse_children(
+            case "VariableStatement": return ['variable', context.parse_children(
                 "VariableStatement",
                 (context): d_out.Variable_Statement => ({
                     'jsdoc': context.construct_component(
