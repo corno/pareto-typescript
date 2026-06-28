@@ -10,7 +10,7 @@ export type TODO = d_ast.Node
 
 export type Statements = p_.List<Statement>
 
-export type Statement = 
+export type Statement =
     | ['block', Block]
     | ['break', {
         'break keyword': null
@@ -75,7 +75,7 @@ export type Statement =
         'close parenthesis token': null
         'statement': Statement
     }]
-    
+
 export type Class_Declaration = {
     'class keyword': null
     'identifier': Identifier
@@ -337,7 +337,7 @@ export type Template_Expression = {
 
 export type Template_Span = {
     'expression': Expression
-    'suffix': 
+    'suffix':
     | ['middle', d_ast.Node]
     | ['tail', d_ast.Node]
 }
@@ -405,6 +405,7 @@ export type Parameters = {
 export type Parameters_Entry =
     | ['comma token', null]
     | ['parameter', {
+        'dot dot dot token': p_.Optional_Value<null>
         'identifier': Identifier
         'question token': p_.Optional_Value<null>
         'type': Optional_Type
@@ -478,13 +479,13 @@ export type Type_Alias_Declaration = {
 }
 
 export type Type =
-    | ['any keyword', null]
+    | ['any', null]
     | ['array', {
         'element type': Type
         'open bracket token': null
         'close bracket token': null
     }]
-    | ['boolean keyword', null]
+    | ['boolean', null]
     | ['function', Function_Type]
     | ['indexed access', {
         'object type': Type
@@ -493,10 +494,10 @@ export type Type =
         'close bracket token': null
     }]
     | ['literal type', Literal_Type]
-    | ['never keyword', null]
-    | ['number keyword', null]
-    | ['string keyword', null]
-    | ['symbol keyword', null]
+    | ['never', null]
+    | ['number', null]
+    | ['string', null]
+    | ['symbol', null]
     | ['tuple type', Tuple_Type]
     | ['type literal', Type_Literal]
     | ['type operator', {
@@ -505,7 +506,8 @@ export type Type =
     }]
     | ['type reference', Type_Reference]
     | ['union type', Union_Type]
-    | ['void keyword', null]
+    | ['unknown', null]
+    | ['void', null]
 
 export type Function_Type = {
     'type parameters': Type_Parameters
@@ -571,13 +573,26 @@ export type Type_Literal = {
 }
 
 export type Type_Literal_Member =
-    | ['property signature', Property_Signature]
-    | ['index signature', Index_Signature]
     | ['call signature', Call_Signature]
+    | ['index signature', Index_Signature]
+    | ['property signature', Property_Signature]
 
-export type Call_Signature = TODO
+export type Call_Signature = {
+    'parameters': Parameters
+    'type': Optional_Type
+}
 
-export type Index_Signature = TODO
+export type Index_Signature = {
+    'open bracket token': null
+    'parameter': {
+        'identifier': Identifier
+        'colon token': null
+        'type': Type //this is too broad, only certain types are allowed; string, number, symbol, template literal, union of those (not fully sure if there's more)
+    }
+    'close bracket token': null
+    'colon token': null
+    'type': Type
+}
 
 export type Property_Signature = {
     'jsdoc': JSDoc

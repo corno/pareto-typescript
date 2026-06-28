@@ -35,23 +35,26 @@ export const Block: h.Refiner<d_out.Block> = ($, abort, $p) => h.create_node_con
     }
 )
 
-export const Entity_Name: h.Refiner<d_out.Entity_Name> = ($, abort, $p) => {
+export const Entity_Name: h.Refiner<d_out.Entity_Name> = ($, abort, $p) => h.create_node_context(
+    $,
+    abort,
+    (context): d_out.Entity_Name => {
 
-    switch ($.kind) {
-        case "QualifiedName": return ['qualified name', Qualified_Name(
-            $,
-            abort,
-            $p
-        )]
-        case "Identifier": return ['identifier', $]
-        default: return abort({
-            'parent': $,
-            'context': "TypeReference['entity name']",
-            'cause': ['unexpected node', $],
-            'expected': ['something', "`QualifiedName` or `Identifier`"]
-        })
+        switch ($.kind) {
+            case "QualifiedName": return ['qualified name', context.call_with_this_node(
+                "Entity_Name",
+                Qualified_Name,
+            )]
+            case "Identifier": return ['identifier', $]
+            default: return abort({
+                'parent': $,
+                'context': "TypeReference['entity name']",
+                'cause': ['unexpected node', $],
+                'expected': ['something', "`QualifiedName` or `Identifier`"]
+            })
+        }
     }
-}
+)
 
 export const Expression: h.Refiner<d_out.Expression> = ($, abort, $p) => h.create_node_context(
     $,
@@ -70,10 +73,9 @@ export const Expression: h.Refiner<d_out.Expression> = ($, abort, $p) => h.creat
                         ($, context): d_out.Array_Literal_Expression_Element => {
                             switch ($.kind) {
                                 case "CommaToken": return ['comma token', null]
-                                default: return ['expression', Expression(
-                                    $,
-                                    abort,
-                                    $p
+                                default: return ['expression', context.call_with_this_node(
+                                    "ArrayLiteralExpression['elements']",
+                                    Expression,
                                 )]
                             }
                         }
@@ -98,28 +100,26 @@ export const Expression: h.Refiner<d_out.Expression> = ($, abort, $p) => h.creat
                                 //this seems to be a misuse of the concept of 'SyntaxList'; there is exactly 1 element expected
                                 case "SyntaxList": return ['without parentheses', context.consume_group(
                                     "ArrowFunction['parameters']",
+                                    "SyntaxList",
                                     ($, context): d_out.Without_Parentheses => context.parse_children(
                                         "xxx",
                                         (context): d_out.Without_Parentheses => ({
                                             'parameter': context.consume_group(
                                                 "SyntaxList['parameter']",
-                                                ($, context) => context.assert_kind(
-                                                    "ArrowFunction['parameters']['parameter']",
+                                                "Parameter",
+                                                ($, context) => context.parse_children(
                                                     "Parameter",
-                                                    ($, context) => context.parse_children(
-                                                        "Parameter",
-                                                        (context) => ({
+                                                    (context) => ({
 
-                                                            'identifier': context.consume_literal(
-                                                                "Parameter['identifier']",
-                                                                "Identifier",
-                                                            ),
-                                                            'type': context.construct_component(
-                                                                "Parameter['type']",
-                                                                Optional_Type
-                                                            ),
-                                                        })
-                                                    )
+                                                        'identifier': context.consume_literal(
+                                                            "Parameter['identifier']",
+                                                            "Identifier",
+                                                        ),
+                                                        'type': context.construct_component(
+                                                            "Parameter['type']",
+                                                            Optional_Type
+                                                        ),
+                                                    })
                                                 )
                                             )
                                         })
@@ -142,13 +142,15 @@ export const Expression: h.Refiner<d_out.Expression> = ($, abort, $p) => h.creat
                     ),
                     'body': context.consume_state(
                         "ArrowFunction['body']",
-                        ($) => {
+                        ($, context) => {
                             switch ($.kind) {
-                                case "Block": return ['block', Block($, abort, $p)]
-                                default: return ['expression', Expression(
-                                    $,
-                                    abort,
-                                    $p
+                                case "Block": return ['block', context.call_with_this_node(
+                                    "ArrowFunction['body']",
+                                    Block,
+                                )]
+                                default: return ['expression', context.call_with_this_node(
+                                    "ArrowFunction['body']",
+                                    Expression,
                                 )]
                             }
                         }
@@ -231,13 +233,12 @@ export const Expression: h.Refiner<d_out.Expression> = ($, abort, $p) => h.creat
                     ),
                     'arguments': context.consume_syntax_list(
                         "CallExpression['arguments']",
-                        ($) => {
+                        ($, context) => {
                             switch ($.kind) {
                                 case "CommaToken": return ['comma token', null]
-                                default: return ['expression', Expression(
-                                    $,
-                                    abort,
-                                    $p
+                                default: return ['expression', context.call_with_this_node(
+                                    "CallExpression['arguments']",
+                                    Expression
                                 )]
                             }
                         }
@@ -520,20 +521,20 @@ export const Expression: h.Refiner<d_out.Expression> = ($, abort, $p) => h.creat
             )]
             default: return abort({
                 'parent': $,
-                'context': "Expression",
+                'context': $p["location description"],
                 'cause': ['unexpected node', $],
-                'expected': ['something', "`StringLiteral` or `ArrowFunction`"]
+                'expected': ['something', "an expression"]
             })
         }
     }
 )
 
-export const Identifier: h.Refiner<d_out.Identifier> = ($, abort) => $.kind !== "Identifier"
+export const Identifier: h.Refiner<d_out.Identifier> = ($, abort, $p) => $.kind !== "Identifier"
     ? abort({
         'parent': $,
-        'context': "Identifier",
+        'context': $p["location description"],
         'cause': ['unexpected node', $],
-        'expected': ['something', "`Identifier`"]
+        'expected': ['something', "an identifier"]
     })
     : $
 
@@ -571,7 +572,7 @@ export const Modifiers: h.Production<d_out.Modifiers> = (iterator, abort, $p) =>
                                 'parent': $p.parent,
                                 'context': "Modifiers",
                                 'cause': ['unexpected node', $],
-                                'expected': ['something', "`ExportKeyword` or `ReadonlyKeyword`"]
+                                'expected': ['something', "'export' or 'readonly'"]
                             })
                         }
                     },
@@ -617,6 +618,13 @@ export const Parameters: h.Production<d_out.Parameters> = (iterator, abort, $p) 
                     case "Parameter": return ['parameter', context.parse_children(
                         "Parameter",
                         (context) => ({
+                            'dot dot dot token': context.optional(
+                                ($) => $.kind === "DotDotDotToken",
+                                (context) => context.consume_keyword(
+                                    "Parameter['dot dot dot token']",
+                                    "DotDotDotToken",
+                                )
+                            ),
                             'identifier': context.consume_literal(
                                 "Parameter['identifier']",
                                 "Identifier",
@@ -715,10 +723,9 @@ export const Statement: h.Refiner<d_out.Statement> = ($, abort, $p) => h.create_
     abort,
     (context): d_out.Statement => {
         switch ($.kind) {
-            case "Block": return ['block', Block(
-                $,
-                abort,
-                $p,
+            case "Block": return ['block', context.call_with_this_node(
+                "Block",
+                Block,
             )]
             case "BreakStatement": return ['break', context.parse_children(
                 "BreakStatement",
@@ -825,20 +832,16 @@ export const Statement: h.Refiner<d_out.Statement> = ($, abort, $p) => h.create_
             )]
             case "ExpressionStatement": return ['expression', context.parse_children(
                 "ExpressionStatement",
-                (context) => context.consume_group(
-                    "ExpressionStatement",
-                    ($) => ({
-                        'expression': Expression(
-                            $,
-                            abort,
-                            $p,
-                        ),
-                        'semicolon': context.construct_component(
-                            "ExpressionStatement['semicolon token']",
-                            Semi_Colon
-                        )
-                    })
-                )
+                (context) => ({
+                    'expression': context.consume_component(
+                        "ExpressionStatement['expression']",
+                        Expression
+                    ),
+                    'semicolon': context.construct_component(
+                        "ExpressionStatement['semicolon token']",
+                        Semi_Colon
+                    )
+                })
             )]
             case "ForStatement": return ['for', context.parse_children(
                 "ForStatement",
@@ -998,98 +1001,95 @@ export const Statement: h.Refiner<d_out.Statement> = ($, abort, $p) => h.create_
                     ),
                     'clause': context.consume_group(
                         "ImportDeclaration['clause']",
-                        ($, context): d_out.Import_Declaration['clause'] => context.assert_kind(
+                        "ImportClause",
+                        ($, context): d_out.Import_Declaration['clause'] => context.parse_children(
                             "ImportDeclaration['clause']",
-                            "ImportClause",
-                            ($, context): d_out.Import_Declaration['clause'] => context.parse_children(
-                                "ImportDeclaration['clause']",
-                                (context): d_out.Import_Declaration['clause'] => {
-                                    return {
-                                        'type': context.consume_state(
-                                            "ImportClause['type']",
-                                            ($, context) => {
+                            (context): d_out.Import_Declaration['clause'] => {
+                                return {
+                                    'type': context.consume_state(
+                                        "ImportClause['type']",
+                                        ($, context) => {
 
-                                                switch ($.kind) {
-                                                    case "Identifier": return ['identifier', $]
-                                                    case "NamedImports": return ['named imports', context.parse_children(
-                                                        "NamedImports",
-                                                        (context): d_out.Named_Imports => ({
-                                                            'open brace token': context.consume_keyword(
-                                                                "NamedImports['open brace token']",
-                                                                "OpenBraceToken"
-                                                            ),
-                                                            'entries': context.consume_syntax_list(
-                                                                "NamedImports['entries']",
-                                                                ($, context): d_out.Import_Specifier => {
-                                                                    switch ($.kind) {
-                                                                        case "CommaToken": return ['comma token', null]
-                                                                        case "ImportSpecifier": return ['import specifier', context.parse_children(
-                                                                            "ImportSpecifier",
-                                                                            (context) => ({
-                                                                                'identifier': context.consume_literal(
-                                                                                    "ImportSpecifier['identifier']",
-                                                                                    "Identifier",
-                                                                                ),
-                                                                                'as': context.optional(
-                                                                                    ($) => $.kind === "AsKeyword",
-                                                                                    (context) => ({
-                                                                                        'as keyword': context.consume_keyword(
-                                                                                            "ImportSpecifier['as']['as keyword']",
-                                                                                            "AsKeyword"
-                                                                                        ),
-                                                                                        'identifier': context.consume_literal(
-                                                                                            "ImportSpecifier['as']['identifier']",
-                                                                                            "Identifier"
-                                                                                        )
-                                                                                    })
-                                                                                )
-                                                                            })
-                                                                        )]
-                                                                        default: return abort({
-                                                                            'parent': $,
-                                                                            'context': "NamedImports['entries']",
-                                                                            'cause': ['unexpected node', $],
-                                                                            'expected': ['something', "`CommaToken` or `ImportSpecifier`"]
+                                            switch ($.kind) {
+                                                case "Identifier": return ['identifier', $]
+                                                case "NamedImports": return ['named imports', context.parse_children(
+                                                    "NamedImports",
+                                                    (context): d_out.Named_Imports => ({
+                                                        'open brace token': context.consume_keyword(
+                                                            "NamedImports['open brace token']",
+                                                            "OpenBraceToken"
+                                                        ),
+                                                        'entries': context.consume_syntax_list(
+                                                            "NamedImports['entries']",
+                                                            ($, context): d_out.Import_Specifier => {
+                                                                switch ($.kind) {
+                                                                    case "CommaToken": return ['comma token', null]
+                                                                    case "ImportSpecifier": return ['import specifier', context.parse_children(
+                                                                        "ImportSpecifier",
+                                                                        (context) => ({
+                                                                            'identifier': context.consume_literal(
+                                                                                "ImportSpecifier['identifier']",
+                                                                                "Identifier",
+                                                                            ),
+                                                                            'as': context.optional(
+                                                                                ($) => $.kind === "AsKeyword",
+                                                                                (context) => ({
+                                                                                    'as keyword': context.consume_keyword(
+                                                                                        "ImportSpecifier['as']['as keyword']",
+                                                                                        "AsKeyword"
+                                                                                    ),
+                                                                                    'identifier': context.consume_literal(
+                                                                                        "ImportSpecifier['as']['identifier']",
+                                                                                        "Identifier"
+                                                                                    )
+                                                                                })
+                                                                            )
                                                                         })
-                                                                    }
+                                                                    )]
+                                                                    default: return abort({
+                                                                        'parent': $,
+                                                                        'context': "NamedImports['entries']",
+                                                                        'cause': ['unexpected node', $],
+                                                                        'expected': ['something', "`CommaToken` or `ImportSpecifier`"]
+                                                                    })
                                                                 }
-                                                            ),
-                                                            'close brace token': context.consume_keyword(
-                                                                "NamedImports['close brace token']",
-                                                                "CloseBraceToken",
-                                                            )
-                                                        })
-                                                    )]
-                                                    case "NamespaceImport": return ['namespace import', context.parse_children(
-                                                        "NamespaceImport",
-                                                        (context): d_out.Namespace_Import => ({
-                                                            'asterisk token': context.consume_keyword(
-                                                                "NamespaceImport['asterisk token']",
-                                                                "AsteriskToken",
-                                                            ),
-                                                            'as keyword': context.consume_keyword(
-                                                                "NamespaceImport['as keyword']",
-                                                                "AsKeyword"
-                                                            ),
-                                                            'identifier': context.consume_literal(
-                                                                "NamespaceImport['identifier']",
-                                                                "Identifier"
-                                                            )
-                                                        })
-                                                    )]
-
-                                                    default: return abort({
-                                                        'parent': $,
-                                                        'context': "ImportClause['type']",
-                                                        'cause': ['unexpected node', $],
-                                                        'expected': ['something', "NamedImports or NamespaceImport"]
+                                                            }
+                                                        ),
+                                                        'close brace token': context.consume_keyword(
+                                                            "NamedImports['close brace token']",
+                                                            "CloseBraceToken",
+                                                        )
                                                     })
-                                                }
+                                                )]
+                                                case "NamespaceImport": return ['namespace import', context.parse_children(
+                                                    "NamespaceImport",
+                                                    (context): d_out.Namespace_Import => ({
+                                                        'asterisk token': context.consume_keyword(
+                                                            "NamespaceImport['asterisk token']",
+                                                            "AsteriskToken",
+                                                        ),
+                                                        'as keyword': context.consume_keyword(
+                                                            "NamespaceImport['as keyword']",
+                                                            "AsKeyword"
+                                                        ),
+                                                        'identifier': context.consume_literal(
+                                                            "NamespaceImport['identifier']",
+                                                            "Identifier"
+                                                        )
+                                                    })
+                                                )]
+
+                                                default: return abort({
+                                                    'parent': $,
+                                                    'context': "ImportClause['type']",
+                                                    'cause': ['unexpected node', $],
+                                                    'expected': ['something', "NamedImports or NamespaceImport"]
+                                                })
                                             }
-                                        ),
-                                    }
+                                        }
+                                    ),
                                 }
-                            )
+                            }
                         )
                     ),
                     'from keyword': context.consume_keyword(
@@ -1144,27 +1144,24 @@ export const Statement: h.Refiner<d_out.Statement> = ($, abort, $p) => h.create_
                     ),
                     'module block': context.consume_group(
                         "ModuleDeclaration['module block']",
-                        ($, context) => context.assert_kind(
-                            "ModuleDeclaration['module block']",
+                        "ModuleBlock",
+                        ($, context) => context.parse_children(
                             "ModuleBlock",
-                            ($, context): d_out.Module_Declaration['module block'] => context.parse_children(
-                                "ModuleBlock",
-                                (context): d_out.Module_Block => ({
-                                    'open brace token': context.consume_keyword(
-                                        "ModuleBlock['first punctuation']",
-                                        "OpenBraceToken"
-                                    ),
-                                    'statements': context.consume_component(
-                                        "ModuleBlock['statements']",
-                                        Statements
-                                    ),
-                                    'close brace token': context.consume_keyword(
-                                        "ModuleBlock['close brace token']",
-                                        "CloseBraceToken"
-                                    ),
-                                })
-                            )
-                        ),
+                            (context): d_out.Module_Block => ({
+                                'open brace token': context.consume_keyword(
+                                    "ModuleBlock['first punctuation']",
+                                    "OpenBraceToken"
+                                ),
+                                'statements': context.consume_component(
+                                    "ModuleBlock['statements']",
+                                    Statements
+                                ),
+                                'close brace token': context.consume_keyword(
+                                    "ModuleBlock['close brace token']",
+                                    "CloseBraceToken"
+                                ),
+                            })
+                        )
                     ),
                 })
             )]
@@ -1209,6 +1206,7 @@ export const Statement: h.Refiner<d_out.Statement> = ($, abort, $p) => h.create_
                     ),
                     'case block': context.consume_group(
                         "SwitchStatement['case block']",
+                        "CaseBlock",
                         ($, context) => context.parse_children(
                             "CaseBlock",
                             (context): d_out.Switch_Statement['case block'] => ({
@@ -1386,38 +1384,40 @@ export const Statements: h.Refiner<d_out.Statements> = ($, abort, $p) => h.creat
         "SyntaxList",
         ($) => context.process_children_as_list(
             "Statement",
-            ($, context): d_out.Statement => Statement(
-                $,
-                abort,
-                $p,
+            ($, context): d_out.Statement => context.call_with_this_node(
+                "foo",
+                Statement,
             )
         )
     )
 )
 
-export const String_Literal_or_Identifier: h.Refiner<d_out.String_Literal_or_Identifier> = ($, abort, $p) => {
-    switch ($.kind) {
-        case "StringLiteral": return ['string literal', $]
-        case "Identifier": return ['identifier', Identifier(
-            $,
-            abort,
-            $p
-        )]
-        default: return abort({
-            'parent': $,
-            'context': "String_Literal_Or_Identifier",
-            'cause': ['unexpected node', $],
-            'expected': ['something', "`StringLiteral` or `Identifier`"]
-        })
-    }
-}
+export const String_Literal_or_Identifier: h.Refiner<d_out.String_Literal_or_Identifier> = ($, abort, $p) => h.create_node_context(
+        $,
+        abort,
+        (context): d_out.String_Literal_or_Identifier => {
+            switch ($.kind) {
+                case "StringLiteral": return ['string literal', $]
+                case "Identifier": return ['identifier', context.call_with_this_node(
+                    "Identifier",
+                    Identifier,
+                )]
+                default: return abort({
+                    'parent': $,
+                    'context': "String_Literal_Or_Identifier",
+                    'cause': ['unexpected node', $],
+                    'expected': ['something', "`StringLiteral` or `Identifier`"]
+                })
+            }
+        }
+    )
 
 export const Type: h.Refiner<d_out.Type> = ($, abort, $p) => h.create_node_context(
     $,
     abort,
     (context): d_out.Type => {
         switch ($.kind) {
-            case "AnyKeyword": return ['any keyword', null]
+            case "AnyKeyword": return ['any', null]
             case "ArrayType": return ['array', context.parse_children(
                 "ArrayType",
                 (context) => ({
@@ -1435,7 +1435,7 @@ export const Type: h.Refiner<d_out.Type> = ($, abort, $p) => h.create_node_conte
                     ),
                 })
             )]
-            case "BooleanKeyword": return ['boolean keyword', null]
+            case "BooleanKeyword": return ['boolean', null]
             case "IndexedAccessType": return ['indexed access', context.parse_children(
                 "IndexedAccessType",
                 (context) => ({
@@ -1504,10 +1504,10 @@ export const Type: h.Refiner<d_out.Type> = ($, abort, $p) => h.create_node_conte
                     ),
                 })
             )]
-            case "NeverKeyword": return ['never keyword', null]
-            case "NumberKeyword": return ['number keyword', null]
-            case "StringKeyword": return ['string keyword', null]
-            case "SymbolKeyword": return ['symbol keyword', null]
+            case "NeverKeyword": return ['never', null]
+            case "NumberKeyword": return ['number', null]
+            case "StringKeyword": return ['string', null]
+            case "SymbolKeyword": return ['symbol', null]
             case "TupleType": return ['tuple type', context.parse_children(
                 "TupleType",
                 (context): d_out.Tuple_Type => ({
@@ -1517,13 +1517,12 @@ export const Type: h.Refiner<d_out.Type> = ($, abort, $p) => h.create_node_conte
                     ),
                     'elements': context.consume_syntax_list(
                         "TupleType['elements']",
-                        ($) => {
+                        ($, context) => {
                             switch ($.kind) {
                                 case "CommaToken": return ['comma token', null]
-                                default: return ['type', Type(
-                                    $,
-                                    abort,
-                                    $p
+                                default: return ['type', context.call_with_this_node(
+                                    "TupleType['elements']",
+                                    Type,
                                 )]
                             }
                         }
@@ -1572,20 +1571,20 @@ export const Type: h.Refiner<d_out.Type> = ($, abort, $p) => h.create_node_conte
                 (context): d_out.Union_Type => ({
                     'members': context.consume_syntax_list(
                         "UnionType['members']",
-                        ($): d_out.Union_Type_Member => {
+                        ($, context): d_out.Union_Type_Member => {
                             switch ($.kind) {
                                 case "BarToken": return ['bar token', null]
-                                default: return ['type', Type(
-                                    $,
-                                    abort,
-                                    $p
+                                default: return ['type', context.call_with_this_node(
+                                    "UnionType['members']",
+                                    Type,
                                 )]
                             }
                         }
                     )
                 })
             )]
-            case "VoidKeyword": return ['void keyword', null]
+            case "UnknownKeyword": return ['unknown', null]
+            case "VoidKeyword": return ['void', null]
             default: return abort({
                 'context': "Type",
                 'parent': $,
@@ -1610,13 +1609,12 @@ export const Type_Arguments: h.Production<d_out.Type_Arguments> = (iterator, abo
             ),
             'entries': context.consume_syntax_list(
                 "TypeArguments['entries']",
-                ($): d_out.Type_Arguments_Entry => {
+                ($, context): d_out.Type_Arguments_Entry => {
                     switch ($.kind) {
                         case "CommaToken": return ['comma token', null]
-                        default: return ['type', Type(
-                            $,
-                            abort,
-                            $p
+                        default: return ['type', context.call_with_this_node(
+                            "TypeArguments['entries']",
+                            Type,
                         )]
                     }
                 }
@@ -1642,8 +1640,68 @@ export const Type_Literal: h.Production<d_out.Type_Literal> = (iterator, abort, 
             "TypeLiteral['members']",
             ($, context): d_out.Type_Literal_Member => {
                 switch ($.kind) {
-                    case "CallSignature": return ['call signature', $]
-                    case "IndexSignature": return ['index signature', $]
+                    case "CallSignature": return ['call signature', context.parse_children(
+                        "CallSignature",
+                        (context): d_out.Call_Signature => ({
+                            'parameters': context.construct_component(
+                                "CallSignature['parameters']",
+                                Parameters
+                            ),
+                            'type': context.construct_component(
+                                "CallSignature['type']",
+                                Optional_Type
+                            )
+                        })
+                    )]
+                    case "IndexSignature": return ['index signature', context.parse_children(
+                        "IndexSignature",
+                        (context): d_out.Index_Signature => ({
+                            'open bracket token': context.consume_keyword(
+                                "IndexSignature['open bracket token']",
+                                "OpenBracketToken"
+                            ),
+                            'parameter': context.consume_group(
+                                "IndexSignature['parameter']",
+                                "SyntaxList",
+                                ($, context) => context.parse_children(
+                                    "Parameter",
+                                    (context) => context.consume_group(
+                                        "Parameter",
+                                        "Parameter",
+                                        ($, context): d_out.Index_Signature['parameter'] => context.parse_children(
+                                            "Parameter",
+                                            (context): d_out.Index_Signature['parameter'] => ({
+                                                'identifier': context.consume_literal(
+                                                    "Parameter['identifier']",
+                                                    "Identifier"
+                                                ),
+                                                'colon token': context.consume_keyword(
+                                                    "Parameter['colon token']",
+                                                    "ColonToken"
+                                                ),
+                                                'type': context.consume_component(
+                                                    "Parameter['type']",
+                                                    Type
+                                                )
+                                            })
+                                        )
+                                    )
+                                )
+                            ),
+                            'close bracket token': context.consume_keyword(
+                                "IndexSignature['close bracket token']",
+                                "CloseBracketToken"
+                            ),
+                            'colon token': context.consume_keyword(
+                                "IndexSignature['colon token']",
+                                "ColonToken"
+                            ),
+                            'type': context.consume_component(
+                                "IndexSignature['type']",
+                                Type
+                            )
+                        })
+                    )]
                     case "PropertySignature": return ['property signature', context.parse_children(
                         "PropertySignature",
                         (context): d_out.Property_Signature => ({

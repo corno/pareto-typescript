@@ -612,6 +612,10 @@ export const Parameters: p_i.Transformer<d_in.Parameters, d_out.Phrase> = ($) =>
                     switch ($[0]) {
                         case 'comma token': return p_.ss($, ($) => sh.ph.literal(", "))
                         case 'parameter': return p_.ss($, ($) => sh.ph.composed([
+                            p_.from.optional($['dot dot dot token']).decide(
+                                () => sh.ph.literal("..."),
+                                () => sh.ph.nothing()
+                            ),
                             sh.ph.literal($.identifier.text),
                             p_.from.optional($['question token']).decide(
                                 () => sh.ph.literal("?"),
@@ -648,12 +652,12 @@ export const Modifiers: p_i.Transformer<d_in.Modifiers, d_out.Phrase> = ($) => p
 export const Type: p_i.Transformer<d_in.Type, d_out.Phrase> = ($) => p_.from.state($).decide(
     ($) => {
         switch ($[0]) {
-            case 'any keyword': return p_.ss($, ($) => sh.ph.literal("any"))
+            case 'any': return p_.ss($, ($) => sh.ph.literal("any"))
             case 'array': return p_.ss($, ($) => sh.ph.composed([
                 Type($['element type']),
                 sh.ph.literal("[]"),
             ]))
-            case 'boolean keyword': return p_.ss($, ($) => sh.ph.literal("boolean"))
+            case 'boolean': return p_.ss($, ($) => sh.ph.literal("boolean"))
             case 'function': return p_.ss($, ($) => sh.ph.composed([
                 Type_Parameters($['type parameters']),
                 Parameters($['parameters']),
@@ -678,10 +682,10 @@ export const Type: p_i.Transformer<d_in.Type, d_out.Phrase> = ($) => p_.from.sta
                     }
                 }
             ))
-            case 'never keyword': return p_.ss($, ($) => sh.ph.literal("never"))
-            case 'number keyword': return p_.ss($, ($) => sh.ph.literal("number"))
-            case 'string keyword': return p_.ss($, ($) => sh.ph.literal("string"))
-            case 'symbol keyword': return p_.ss($, ($) => sh.ph.literal("symbol"))
+            case 'never': return p_.ss($, ($) => sh.ph.literal("never"))
+            case 'number': return p_.ss($, ($) => sh.ph.literal("number"))
+            case 'string': return p_.ss($, ($) => sh.ph.literal("string"))
+            case 'symbol': return p_.ss($, ($) => sh.ph.literal("symbol"))
             case 'tuple type': return p_.ss($, ($) => sh.ph.composed([
                 sh.ph.literal("["),
                 sh.ph.composed(
@@ -725,7 +729,8 @@ export const Type: p_i.Transformer<d_in.Type, d_out.Phrase> = ($) => p_.from.sta
                     )
                 ),
             ))
-            case 'void keyword': return p_.ss($, ($) => sh.ph.literal("void"))
+            case 'unknown': return p_.ss($, ($) => sh.ph.literal("unknown"))
+            case 'void': return p_.ss($, ($) => sh.ph.literal("void"))
             default: return p_.au($[0])
         }
     }
@@ -741,11 +746,24 @@ export const Type_Literal: p_i.Transformer<d_in.Type_Literal, d_out.Phrase> = ($
                         p_.from.state($).decide(
                             ($) => {
                                 switch ($[0]) {
+                                    // case 'call signature': return p_.ss($, ($) => sh.ph.composed([
+                                    //     sh.ph.literal("**FIXME: call signature**"),
+                                    // ]))
+                                    // case 'index signature': return p_.ss($, ($) => sh.ph.composed([
+                                    //     sh.ph.literal("**FIXME: index signature**"),
+                                    // ]))
                                     case 'call signature': return p_.ss($, ($) => sh.ph.composed([
-                                        sh.ph.literal("**FIXME: call signature**"),
+                                        Parameters($.parameters),
+                                        Optional_Type($.type),
                                     ]))
                                     case 'index signature': return p_.ss($, ($) => sh.ph.composed([
-                                        sh.ph.literal("**FIXME: index signature**"),
+                                        sh.ph.literal("["),
+                                        sh.ph.literal($.parameter.identifier.text),
+                                        sh.ph.literal(": "),
+                                        Type($.parameter.type),
+                                        sh.ph.literal("]"),
+                                        sh.ph.literal(": "),
+                                        Type($.type),
                                     ]))
                                     case 'property signature': return p_.ss($, ($) => sh.ph.composed([
                                         JSDoc($['jsdoc']),

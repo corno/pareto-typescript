@@ -61,6 +61,7 @@ export type Iterator_Context = {
     ) => T
     consume_group: <T extends p_di.Group>(
         location_description: string,
+        kind: string,
         callback: (
             node: d_in.Node,
             context: Node_Context,
@@ -146,6 +147,7 @@ export const create_iterator_context = <T extends p_di.Value>(
         },
         consume_group: (
             location_description,
+            kind,
             callback
         ) => {
             return consume_internal(
@@ -156,10 +158,20 @@ export const create_iterator_context = <T extends p_di.Value>(
                 ($, parent) => create_node_context(
                     $,
                     abort,
-                    (context) => callback(
-                        $,
-                        context
-                    )
+                    (context) => {
+
+                        if ($.kind !== kind) {
+                            return abort({
+                                'parent': parent,
+                                'cause': ['unexpected node', $],
+                                'expected': ['something', kind],
+                                'context': location_description
+                            })
+                        } else return callback(
+                            $,
+                            context
+                        )
+                    }
                 )
             )
         },
@@ -364,6 +376,18 @@ export type Node_Context = {
             context: Iterator_Context
         ) => T
     ) => T
+    call_with_this_node: <T extends p_di.Value>(
+        location_description: string,
+        func: p_ri.Refiner_With_Parameter<
+            T,
+            d_function.Error_Inner,
+            d_in.Node,
+            {
+                'location description': string
+                'parent': d_in.Node
+            }
+        >
+    ) => T
     process_children_as_list: <T extends p_di.Value>(
         location_description: string,
         callback: (
@@ -456,6 +480,17 @@ export const create_node_context = <T>(
                 )
             )
         },
+        call_with_this_node: (
+            location_description,
+            func
+        ) => func(
+            node,
+            abort,
+            {
+                'location description': location_description,
+                'parent': node
+            }
+        ),
 
 
         parse_children: (
