@@ -139,7 +139,7 @@ export type Function_Declaration = {
     'identifier': Identifier
     'type parameters': Type_Parameters
     'parameters': Parameters
-    'return type annotation': Optional_Type //FIXME Return Type_Annotation
+    'return type annotation': Return_Type_Annotation //FIXME Return Type_Annotation
     'body': Block
     'semicolon': Semi_Colon
 }
@@ -182,10 +182,15 @@ export type Export_Declaration = {
             'identifier': Identifier
         }>
     }]
-    | ['named exports', {
+    | ['named', {
         'open brace token': null
         'exports': p_.List<Export_Declaration_Entry>
         'close brace token': null
+    }]
+    |['namespace', {
+        'asterisk token': null
+        'as keyword': null
+        'identifier': Identifier
     }]
     'from clause': p_.Optional_Value<{
         'from keyword': null
@@ -293,15 +298,15 @@ export type Expression =
     | ['postfix unary', {
         'operand': Expression
         'operator token':
-        | ['minus minus token', null]
-        | ['plus plus token', null]
+        | ['--', null]
+        | ['++', null]
     }]
 
     | ['prefix unary', {
         'operator token':
-        | ['exclamation token', null]
-        | ['minus token', null]
-        | ['plus token', null]
+        | ['!', null]
+        | ['-', null]
+        | ['+', null]
         'operand': Expression
     }]
     | ['property access', Property_Access_Expression]
@@ -335,10 +340,13 @@ export type Binary_Expression = {
     | ['+', null]
     | ['+=', null]
     | ['<', null]
+    | ['<<', null]
     | ['<=', null]
     | ['=', null]
     | ['===', null]
     | ['>', null]
+    | ['>>', null]
+    | ['>>>', null]
     | ['>=', null]
     | ['||', null]
     | ['instanceof', null]
@@ -578,6 +586,11 @@ export type Type =
     | ['literal type', Literal_Type]
     | ['never', null]
     | ['number', null]
+    | ['parenthesized', {
+        'open parenthesis token': null
+        'type': Type
+        'close parenthesis token': null
+    }]
     | ['string', null]
     | ['symbol', null]
     | ['tuple type', Tuple_Type]
@@ -670,6 +683,7 @@ export type Call_Signature = {
 }
 
 export type Index_Signature = {
+    'modifiers': Modifiers
     'open bracket token': null
     'parameter': {
         'identifier': Identifier

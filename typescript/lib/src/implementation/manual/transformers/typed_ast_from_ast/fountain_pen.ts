@@ -56,15 +56,15 @@ export const Error: p_i.Transformer<d_in.Error, d_out.Phrase> = ($) => sh.ph.com
             }
         }
     ),
-    sh.ph.indent(sh.pg.sentences([
-        sh.sentence([
-            sh.ph.literal("snippet:"),
-        ]),
-        sh.sentence([
+    // sh.ph.indent(sh.pg.sentences([
+    //     sh.sentence([
+    //         sh.ph.literal("snippet:"),
+    //     ]),
+    //     sh.sentence([
 
-            t_ast_to_fp.Node(
-                $.inner.parent
-            ),
-        ])
-    ]))
+    //         t_ast_to_fp.Node(
+    //             $.inner.parent
+    //         ),
+    //     ])
+    // ]))
 ])

@@ -82,6 +82,11 @@ export type Iterator_Context = {
         location_description: string,
         kind: string,
     ) => d_in.Node
+    
+    /**
+     * use this one only if consume_state is not possible. This is the case if one or more of the options are not contained in a singular node.
+     * if you use this function, you will have to manually consume the node(s) that you peeked at, otherwise the iterator will be in an inconsistent state.
+     */
     peek_for_state: <T extends p_di.State>(
         location_description: string,
         callback: (
