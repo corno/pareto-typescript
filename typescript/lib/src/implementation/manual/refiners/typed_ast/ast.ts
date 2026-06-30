@@ -6,7 +6,11 @@ import * as d_out from "../../../../interface/data/typed_ast"
 export const Block: h.Refiner<d_out.Block> = ($, abort, $p) => h.create_node_context(
     $,
     abort,
-    $p,
+    {
+        'location description': $p['location description'],
+        'parent': $p.parent,
+        'module name': "Block",
+    },
     (context): d_out.Block => {
         switch ($.kind) {
             case "Block": return context.parse_children(
@@ -27,8 +31,10 @@ export const Block: h.Refiner<d_out.Block> = ($, abort, $p) => h.create_node_con
                 })
             )
             default: return abort({
-                'parent': $,
-                'location description': "Block",
+                'parent': $p.parent,
+                'external location description': $p['location description'],
+                'module name': "Block",
+                'internal path description': "-",
                 'problem': ['unexpected node', $],
             })
         }
@@ -38,7 +44,11 @@ export const Block: h.Refiner<d_out.Block> = ($, abort, $p) => h.create_node_con
 export const Entity_Name: h.Refiner<d_out.Entity_Name> = ($, abort, $p) => h.create_node_context(
     $,
     abort,
-    $p,
+    {
+        'location description': $p['location description'],
+        'parent': $p.parent,
+        'module name': "Entity_Name",
+    },
     (context): d_out.Entity_Name => {
 
         switch ($.kind) {
@@ -49,7 +59,9 @@ export const Entity_Name: h.Refiner<d_out.Entity_Name> = ($, abort, $p) => h.cre
             case "Identifier": return ['identifier', $]
             default: return abort({
                 'parent': $,
-                'location description': "TypeReference['entity name']",
+                'external location description': $p['location description'],
+                'module name': "Entity_Name",
+                'internal path description': "-",
                 'problem': ['unexpected node', $],
             })
         }
@@ -59,7 +71,11 @@ export const Entity_Name: h.Refiner<d_out.Entity_Name> = ($, abort, $p) => h.cre
 export const Expression: h.Refiner<d_out.Expression> = ($, abort, $p) => h.create_node_context(
     $,
     abort,
-    $p,
+    {
+        'location description': $p['location description'],
+        'parent': $p.parent,
+        'module name': "Expression",
+    },
     (context): d_out.Expression => {
         switch ($.kind) {
             case "ArrayLiteralExpression": return ['array literal', context.parse_children(
@@ -174,6 +190,19 @@ export const Expression: h.Refiner<d_out.Expression> = ($, abort, $p) => h.creat
                     )
                 })
             )]
+            case "AwaitExpression": return ['await', context.parse_children(
+                "AwaitExpression",
+                (context) => ({
+                    'await keyword': context.consume_keyword(
+                        "AwaitExpression['await keyword']",
+                        "AwaitKeyword"
+                    ),
+                    'expression': context.consume_component(
+                        "AwaitExpression['expression']",
+                        Expression
+                    )
+                })
+            )]
             case "BinaryExpression": return ['binary', context.parse_children(
                 "BinaryExpression",
                 (context): d_out.Binary_Expression => ({
@@ -219,7 +248,9 @@ export const Expression: h.Refiner<d_out.Expression> = ($, abort, $p) => h.creat
                                 case "SlashToken": return ['/', null]
                                 default: return abort({
                                     'parent': $,
-                                    'location description': "BinaryExpression['operator token']",
+                                    'external location description': $p['location description'],
+                                    'module name': "Expression",
+                                    'internal path description': "BinaryExpression['operator token']",
                                     'problem': ['unexpected node', $],
                                 })
                             }
@@ -398,7 +429,9 @@ export const Expression: h.Refiner<d_out.Expression> = ($, abort, $p) => h.creat
                                 )]
                                 default: return abort({
                                     'parent': $,
-                                    'location description': "ObjectLiteralExpression['properties']",
+                                    'external location description': $p['location description'],
+                                    'module name': "Expression",
+                                    'internal path description': "ObjectLiteralExpression['properties']",
                                     'problem': ['unexpected node', $],
                                 })
                             }
@@ -511,7 +544,9 @@ export const Expression: h.Refiner<d_out.Expression> = ($, abort, $p) => h.creat
                                 case "PlusPlusToken": return ['++', null]
                                 default: return abort({
                                     'parent': $,
-                                    'location description': "PostfixUnaryExpression['operator token']",
+                                    'external location description': $p['location description'],
+                                    'module name': "Expression",
+                                    'internal path description': "PostfixUnaryExpression['operator token']",
                                     'problem': ['unexpected node', $],
                                 })
                             }
@@ -531,7 +566,9 @@ export const Expression: h.Refiner<d_out.Expression> = ($, abort, $p) => h.creat
                                 case "PlusToken": return ['+', null]
                                 default: return abort({
                                     'parent': $,
-                                    'location description': "PrefixUnaryExpression['operator token']",
+                                    'external location description': $p['location description'],
+                                    'module name': "Expression",
+                                    'internal path description': "PrefixUnaryExpression['operator token']",
                                     'problem': ['unexpected node', $],
                                 })
                             }
@@ -588,7 +625,9 @@ export const Expression: h.Refiner<d_out.Expression> = ($, abort, $p) => h.creat
                                                     case "TemplateMiddle": return ['middle', $]
                                                     default: return abort({
                                                         'parent': $,
-                                                        'location description': "TemplateSpan['template middle or tail']",
+                                                        'external location description': $p['location description'],
+                                                        'module name': "Expression",
+                                                        'internal path description': "TemplateSpan['template middle or tail']",
                                                         'problem': ['unexpected node', $],
                                                     })
                                                 }
@@ -598,8 +637,9 @@ export const Expression: h.Refiner<d_out.Expression> = ($, abort, $p) => h.creat
                                 )
                                 default: return abort({
                                     'parent': $,
-
-                                    'location description': "TemplateExpression['template spans']",
+                                    'external location description': $p['location description'],
+                                    'module name': "Expression",
+                                    'internal path description': "TemplateExpression['template spans']",
                                     'problem': ['unexpected node', $],
                                 })
                             }
@@ -636,7 +676,9 @@ export const Expression: h.Refiner<d_out.Expression> = ($, abort, $p) => h.creat
             )]
             default: return abort({
                 'parent': $,
-                'location description': $p["location description"],
+                'external location description': $p['location description'],
+                'module name': "Expression",
+                'internal path description': "-",
                 'problem': ['unexpected node', $],
             })
         }
@@ -646,7 +688,9 @@ export const Expression: h.Refiner<d_out.Expression> = ($, abort, $p) => h.creat
 export const Identifier: h.Refiner<d_out.Identifier> = ($, abort, $p) => $.kind !== "Identifier"
     ? abort({
         'parent': $,
-        'location description': $p["location description"],
+        'external location description': $p['location description'],
+        'module name': "Identifier",
+        'internal path description': "-",
         'problem': ['unexpected node', $],
     })
     : $
@@ -654,7 +698,11 @@ export const Identifier: h.Refiner<d_out.Identifier> = ($, abort, $p) => $.kind 
 export const JSDoc: h.Production<d_out.JSDoc> = (iterator, abort, $p) => h.create_iterator_context(
     iterator,
     abort,
-    $p,
+    {
+        'location description': $p['location description'],
+        'parent': $p.parent,
+        'module name': "JSDoc",
+    },
     (context) => context.optional(
         ($) => $.kind === "JSDoc",
         (context) => context.consume_literal(
@@ -667,7 +715,11 @@ export const JSDoc: h.Production<d_out.JSDoc> = (iterator, abort, $p) => h.creat
 export const Modifiers: h.Production<d_out.Modifiers> = (iterator, abort, $p) => h.create_iterator_context(
     iterator,
     abort,
-    $p,
+    {
+        'location description': $p['location description'],
+        'parent': $p.parent,
+        'module name': "Modifiers",
+    },
     (context) => context.optional(
         ($) => $.kind === "SyntaxList",
         (context) => context.consume_component( //I'm misusing the 'consume_component' here, it's not really a component. I'm not sure how to do it differently for now (consume_syntax_list?)
@@ -675,7 +727,11 @@ export const Modifiers: h.Production<d_out.Modifiers> = (iterator, abort, $p) =>
             ($, abort, $p) => h.create_node_context(
                 $,
                 abort,
-                $p,
+                {
+                    'location description': $p['location description'],
+                    'parent': $p.parent,
+                    'module name': "Modifiers",
+                },
                 (context) => context.process_children_as_list(
                     "Modifiers",
                     ($): d_out.Modifier => {
@@ -687,7 +743,9 @@ export const Modifiers: h.Production<d_out.Modifiers> = (iterator, abort, $p) =>
                             case "ReadonlyKeyword": return ['readonly', null]
                             default: return abort({
                                 'parent': $p.parent,
-                                'location description': "Modifiers",
+                                'external location description': $p['location description'],
+                                'module name': "Modifiers",
+                                'internal path description': "-",
                                 'problem': ['unexpected node', $],
                             })
                         }
@@ -701,7 +759,11 @@ export const Modifiers: h.Production<d_out.Modifiers> = (iterator, abort, $p) =>
 export const Optional_Type: h.Production<d_out.Optional_Type> = (iterator, abort, $p) => h.create_iterator_context(
     iterator,
     abort,
-    $p,
+    {
+        'location description': $p['location description'],
+        'parent': $p.parent,
+        'module name': "Optional_Type",
+    },
     (context): d_out.Optional_Type => context.optional(
         ($) => $.kind === "ColonToken",
         (context) => ({
@@ -720,7 +782,11 @@ export const Optional_Type: h.Production<d_out.Optional_Type> = (iterator, abort
 export const Return_Type_Annotation: h.Production<d_out.Return_Type_Annotation> = (iterator, abort, $p) => h.create_iterator_context(
     iterator,
     abort,
-    $p,
+    {
+        'location description': $p['location description'],
+        'parent': $p.parent,
+        'module name': "Return_Type_Annotation",
+    },
     (context) => context.optional(
         ($) => $.kind === "ColonToken",
         (context) => ({
@@ -767,7 +833,11 @@ export const Return_Type_Annotation: h.Production<d_out.Return_Type_Annotation> 
 export const Binding_Pattern: h.Refiner<d_out.Binding_Pattern> = ($, abort, $p) => h.create_node_context(
     $,
     abort,
-    $p,
+    {
+        'location description': $p['location description'],
+        'parent': $p.parent,
+        'module name': "Binding_Pattern",
+    },
     (context): d_out.Binding_Pattern => {
         switch ($.kind) {
             case "Identifier": return ['identifier', $]
@@ -815,7 +885,9 @@ export const Binding_Pattern: h.Refiner<d_out.Binding_Pattern> = ($, abort, $p) 
                                 )]
                                 default: return abort({
                                     'parent': $,
-                                    'location description': "ArrayBindingElement",
+                                    'external location description': $p['location description'],
+                                    'module name': "Binding_Pattern",
+                                    'internal path description': "ArrayBindingPattern['elements']",
                                     'problem': ['unexpected node', $],
                                 })
                             }
@@ -829,12 +901,16 @@ export const Binding_Pattern: h.Refiner<d_out.Binding_Pattern> = ($, abort, $p) 
             )]
             case "ObjectBindingPattern.object": return abort({
                 'parent': $,
-                'location description': "Binding_Pattern",
+                'external location description': $p['location description'] + ">Binding_Pattern",
+                'module name': "Binding_Pattern",
+                'internal path description': "ObjectBindingPattern['elements']",
                 'problem': ['unexpected node', $],
             })
             default: return abort({
                 'parent': $,
-                'location description': "Binding_Pattern",
+                'external location description': $p['location description'] + ">Binding_Pattern",
+                'module name': "Binding_Pattern",
+                'internal path description': "-",
                 'problem': ['unexpected node', $],
             })
         }
@@ -844,7 +920,11 @@ export const Binding_Pattern: h.Refiner<d_out.Binding_Pattern> = ($, abort, $p) 
 export const Parameters: h.Production<d_out.Parameters> = (iterator, abort, $p) => h.create_iterator_context(
     iterator,
     abort,
-    $p,
+    {
+        'location description': $p['location description'],
+        'parent': $p.parent,
+        'module name': "Parameters",
+    },
     (context): d_out.Parameters => ({
         'open parenthesis token': context.consume_keyword(
             "Parameters['open parenthesis token']",
@@ -884,7 +964,9 @@ export const Parameters: h.Production<d_out.Parameters> = (iterator, abort, $p) 
                     )]
                     default: return abort({
                         'parent': $,
-                        'location description': "Parameters_Entry",
+                        'external location description': $p['location description'] + ">Parameters_Entry",
+                        'module name': "Parameters",
+                        'internal path description': "-",
                         'problem': ['unexpected node', $],
                     })
                 }
@@ -901,7 +983,11 @@ export const Parameters: h.Production<d_out.Parameters> = (iterator, abort, $p) 
 export const Qualified_Name: h.Refiner<d_out.Qualified_Name> = ($, abort, $p) => h.create_node_context(
     $,
     abort,
-    $p,
+    {
+        'location description': $p['location description'],
+        'parent': $p.parent,
+        'module name': "QualifiedName",
+    },
     (context) => context.parse_children(
         "QualifiedName",
         (context): d_out.Qualified_Name => ({
@@ -924,7 +1010,11 @@ export const Qualified_Name: h.Refiner<d_out.Qualified_Name> = ($, abort, $p) =>
 export const Semi_Colon: h.Production<d_out.Semi_Colon> = (iterator, abort, $p) => h.create_iterator_context(
     iterator,
     abort,
-    $p,
+    {
+        'location description': $p['location description'],
+        'parent': $p.parent,
+        'module name': "Semi_Colon",
+    },
     (context) => context.optional(
         ($) => $.kind === "SemicolonToken",
         (context) => context.consume_keyword(
@@ -937,7 +1027,11 @@ export const Semi_Colon: h.Production<d_out.Semi_Colon> = (iterator, abort, $p) 
 export const Source_File: h.Refiner<d_out.Source_File> = ($, abort, $p) => h.create_node_context(
     $,
     abort,
-    $p,
+    {
+        'location description': $p['location description'],
+        'parent': $p.parent,
+        'module name': "Source_File",
+    },
     (context): d_out.Source_File => context.assert_kind(
         "Source_File",
         "SourceFile",
@@ -962,7 +1056,11 @@ export const Source_File: h.Refiner<d_out.Source_File> = ($, abort, $p) => h.cre
 export const Statement: h.Refiner<d_out.Statement> = ($, abort, $p) => h.create_node_context(
     $,
     abort,
-    $p,
+    {
+        'location description': $p['location description'],
+        'parent': $p.parent,
+        'module name': "Statement",
+    },
     (context): d_out.Statement => {
         switch ($.kind) {
             case "Block": return ['block', context.call_with_this_node(
@@ -1106,7 +1204,9 @@ export const Statement: h.Refiner<d_out.Statement> = ($, abort, $p) => h.create_
                                                         )]
                                                         default: return abort({
                                                             'parent': $,
-                                                            'location description': "NamedExports['exports']",
+                                                            'external location description': $p['location description'],
+                                                            'module name': "Statement",
+                                                            'internal path description': "ExportDeclaration['type']['named']>NamedExports['exports']",
                                                             'problem': ['unexpected node', $],
                                                         })
                                                     }
@@ -1142,7 +1242,9 @@ export const Statement: h.Refiner<d_out.Statement> = ($, abort, $p) => h.create_
                                 )]
                                 default: return abort({
                                     'parent': $,
-                                    'location description': "ExportDeclaration['type']",
+                                    'external location description': $p['location description'],
+                                    'module name': "Statement",
+                                    'internal path description': "ExportDeclaration['type']",
                                     'problem': ['unexpected node', $],
                                 })
                             }
@@ -1300,9 +1402,12 @@ export const Statement: h.Refiner<d_out.Statement> = ($, abort, $p) => h.create_
                         "FunctionDeclaration['return type annotation']",
                         Return_Type_Annotation
                     ),
-                    'body': context.consume_component(
-                        "FunctionDeclaration['body']",
-                        Block
+                    'body': context.optional(
+                        ($) => $.kind === "Block",
+                        (context) => context.consume_component(
+                            "FunctionDeclaration['body']",
+                            Block
+                        )
                     ),
                     'semicolon': context.construct_component(
                         "FunctionDeclaration['semicolon']",
@@ -1410,7 +1515,9 @@ export const Statement: h.Refiner<d_out.Statement> = ($, abort, $p) => h.create_
                                                                     )]
                                                                     default: return abort({
                                                                         'parent': $,
-                                                                        'location description': "NamedImports['entries']",
+                                                                        'external location description': $p['location description'],
+                                                                        'module name': "Statement",
+                                                                        'internal path description': "ImportDeclaration['clause']>ImportClause['type']>NamedImports['entries']",
                                                                         'problem': ['unexpected node', $],
                                                                     })
                                                                 }
@@ -1442,7 +1549,9 @@ export const Statement: h.Refiner<d_out.Statement> = ($, abort, $p) => h.create_
 
                                                 default: return abort({
                                                     'parent': $,
-                                                    'location description': "ImportClause['type']",
+                                                    'external location description': $p['location description'],
+                                                    'module name': "Statement",
+                                                    'internal path description': "ImportClause['type']",
                                                     'problem': ['unexpected node', $],
                                                 })
                                             }
@@ -1469,6 +1578,10 @@ export const Statement: h.Refiner<d_out.Statement> = ($, abort, $p) => h.create_
             case "ImportEqualsDeclaration": return ['import equals', context.parse_children(
                 "ImportsEqualsDeclaration",
                 (context) => ({
+                    'modifiers': context.construct_component(
+                        "ImportsEqualsDeclaration['modifiers']",
+                        Modifiers
+                    ),
                     'import keyword': context.consume_keyword(
                         "ImportsEqualsDeclaration['import keyword']",
                         "ImportKeyword"
@@ -1563,7 +1676,9 @@ export const Statement: h.Refiner<d_out.Statement> = ($, abort, $p) => h.create_
                                 default: return abort({
 
                                     'parent': $,
-                                    'location description': "ModuleDeclaration['namespace keyword']",
+                                    'external location description': $p['location description'],
+                                    'module name': "Statement",
+                                    'internal path description': "ModuleDeclaration['namespace keyword']",
                                     'problem': ['unexpected node', $],
                                 })
                             }
@@ -1693,7 +1808,9 @@ export const Statement: h.Refiner<d_out.Statement> = ($, abort, $p) => h.create_
                                             )]
                                             default: return abort({
                                                 'parent': $,
-                                                'location description': "CaseBlock['clauses']",
+                                                'external location description': $p['location description'],
+                                                'module name': "Statement",
+                                                'internal path description': "CaseBlock['clauses']",
                                                 'problem': ['unexpected node', $],
                                             })
                                         }
@@ -1705,6 +1822,68 @@ export const Statement: h.Refiner<d_out.Statement> = ($, abort, $p) => h.create_
                                 ),
                             })
                         )
+                    ),
+                    'semicolon': context.construct_component(
+                        "ExportDeclaration['semicolon token']",
+                        Semi_Colon
+                    ),
+                })
+            )]
+            case "TryStatement": return ['try', context.parse_children(
+                "TryStatement",
+                (context): d_out.Try_Statement => ({
+                    'try keyword': context.consume_keyword(
+                        "TryStatement['try keyword']",
+                        "TryKeyword"
+                    ),
+                    'try block': context.consume_component(
+                        "TryStatement['try block']",
+                        Block
+                    ),
+                    'catch clause': context.optional(
+                        ($) => $.kind === "CatchClause",
+                        (context) => context.consume_group(
+                            "TryStatement['catch clause']",
+                            "CatchClause",
+                            ($, context) => context.parse_children(
+                                "CatchClause",
+                                (context) => ({
+                                    'catch keyword': context.consume_keyword(
+                                        "CatchClause['catch keyword']",
+                                        "CatchKeyword"
+                                    ),
+                                    'open parenthesis token': context.consume_keyword(
+                                        "CatchClause['open parenthesis token']",
+                                        "OpenParenToken"
+                                    ),
+                                    'variable declaration': context.consume_component(
+                                        "CatchClause['variable declaration']",
+                                        Variable_Declaration
+                                    ),
+                                    'close parenthesis token': context.consume_keyword(
+                                        "CatchClause['close parenthesis token']",
+                                        "CloseParenToken"
+                                    ),
+                                    'block': context.consume_component(
+                                        "CatchClause['block']",
+                                        Block
+                                    ),
+                                })
+                            )
+                        )
+                    ),
+                    'finally block': context.optional(
+                        ($) => $.kind === "FinallyKeyword",
+                        (context) => ({
+                            'finally keyword': context.consume_keyword(
+                                "TryStatement['finally block']['finally keyword']",
+                                "FinallyKeyword"
+                            ),
+                            'block': context.consume_component(
+                                "TryStatement['finally block']['block']",
+                                Block
+                            )
+                        })
                     ),
                     'semicolon': context.construct_component(
                         "ExportDeclaration['semicolon token']",
@@ -1818,7 +1997,9 @@ export const Statement: h.Refiner<d_out.Statement> = ($, abort, $p) => h.create_
             )]
             default: return abort({
                 'parent': $,
-                'location description': "Statements",
+                'external location description': $p['location description'],
+                'module name': "Statement",
+                'internal path description': "-",
                 'problem': ['unexpected node', $],
             })
         }
@@ -1828,14 +2009,18 @@ export const Statement: h.Refiner<d_out.Statement> = ($, abort, $p) => h.create_
 export const Statements: h.Refiner<d_out.Statements> = ($, abort, $p) => h.create_node_context(
     $,
     abort,
-    $p,
+    {
+        'location description': $p['location description'],
+        'parent': $p.parent,
+        'module name': "Statements",
+    },
     (context) => context.assert_kind(
         "statements",
         "SyntaxList",
         ($) => context.process_children_as_list(
             "Statement",
             ($, context): d_out.Statement => context.call_with_this_node(
-                "foo",
+                "statement",
                 Statement,
             )
         )
@@ -1845,7 +2030,11 @@ export const Statements: h.Refiner<d_out.Statements> = ($, abort, $p) => h.creat
 export const String_Literal_or_Identifier: h.Refiner<d_out.String_Literal_or_Identifier> = ($, abort, $p) => h.create_node_context(
     $,
     abort,
-    $p,
+    {
+        'location description': $p['location description'],
+        'parent': $p.parent,
+        'module name': "String_Literal_or_Identifier",
+    },
     (context): d_out.String_Literal_or_Identifier => {
         switch ($.kind) {
             case "StringLiteral": return ['string literal', $]
@@ -1855,7 +2044,9 @@ export const String_Literal_or_Identifier: h.Refiner<d_out.String_Literal_or_Ide
             )]
             default: return abort({
                 'parent': $,
-                'location description': "String_Literal_Or_Identifier",
+                'external location description': $p['location description'],
+                'module name': "String_Literal_Or_Identifier",
+                'internal path description': "-",
                 'problem': ['unexpected node', $],
             })
         }
@@ -1865,7 +2056,11 @@ export const String_Literal_or_Identifier: h.Refiner<d_out.String_Literal_or_Ide
 export const Type: h.Refiner<d_out.Type> = ($, abort, $p) => h.create_node_context(
     $,
     abort,
-    $p,
+    {
+        'location description': $p['location description'],
+        'parent': $p.parent,
+        'module name': "Type",
+    },
     (context): d_out.Type => {
         switch ($.kind) {
             case "AnyKeyword": return ['any', null]
@@ -1946,7 +2141,9 @@ export const Type: h.Refiner<d_out.Type> = ($, abort, $p) => h.create_node_conte
                                 case "TrueKeyword": return ['true keyword', null]
                                 default: return abort({
                                     'parent': $,
-                                    'location description': "LiteralType['type']",
+                                    'external location description': $p['location description'],
+                                    'module name': "Type",
+                                    'internal path description': "LiteralType['type']",
                                     'problem': ['unexpected node', $],
                                 })
                             }
@@ -2054,7 +2251,9 @@ export const Type: h.Refiner<d_out.Type> = ($, abort, $p) => h.create_node_conte
             case "UnknownKeyword": return ['unknown', null]
             case "VoidKeyword": return ['void', null]
             default: return abort({
-                'location description': "Type",
+                'external location description': $p['location description'],
+                'module name': "Type",
+                'internal path description': "-",
                 'parent': $,
                 'problem': ['unexpected node', $],
             })
@@ -2065,7 +2264,11 @@ export const Type: h.Refiner<d_out.Type> = ($, abort, $p) => h.create_node_conte
 export const Type_Arguments: h.Production<d_out.Type_Arguments> = (iterator, abort, $p) => h.create_iterator_context(
     iterator,
     abort,
-    $p,
+    {
+        'location description': $p['location description'],
+        'parent': $p.parent,
+        'module name': "Type_Arguments",
+    },
     (context): d_out.Type_Arguments => context.optional(
         ($) => $.kind === "LessThanToken",
         (context) => ({
@@ -2097,7 +2300,11 @@ export const Type_Arguments: h.Production<d_out.Type_Arguments> = (iterator, abo
 export const Type_Literal: h.Production<d_out.Type_Literal_And_Interface_And_Class_Body> = (iterator, abort, $p) => h.create_iterator_context(
     iterator,
     abort,
-    $p,
+    {
+        'location description': $p['location description'],
+        'parent': $p.parent,
+        'module name': "Type_Literal",
+    },
     (context): d_out.Type_Literal_And_Interface_And_Class_Body => ({
         'open brace token': context.consume_keyword(
             "TypeLiteral['open brace token']",
@@ -2234,7 +2441,11 @@ export const Type_Literal: h.Production<d_out.Type_Literal_And_Interface_And_Cla
 export const Type_Parameters: h.Production<d_out.Type_Parameters> = (iterator, abort, $p) => h.create_iterator_context(
     iterator,
     abort,
-    $p,
+    {
+        'location description': $p['location description'],
+        'parent': $p.parent,
+        'module name': "Type_Parameters",
+    },
     (context): d_out.Type_Parameters => context.optional(
         ($) => $.kind === "LessThanToken",
         (context) => ({
@@ -2271,7 +2482,9 @@ export const Type_Parameters: h.Production<d_out.Type_Parameters> = (iterator, a
                         )]
                         default: return abort({
                             'parent': $p.parent,
-                            'location description': "TypeParameters['entries']",
+                            'external location description': $p['location description'],
+                            'module name': "Type_Parameters",
+                            'internal path description': "'entries'",
                             'problem': ['unexpected node', $],
                         })
                     }
@@ -2286,26 +2499,95 @@ export const Type_Parameters: h.Production<d_out.Type_Parameters> = (iterator, a
 
 )
 
+export const Variable_Declaration: h.Refiner<d_out.Variable_Declaration> = ($, abort, $p) => h.create_node_context(
+    $,
+    abort,
+    {
+        'location description': $p['location description'],
+        'parent': $p.parent,
+        'module name': "Variable_Declaration",
+    },
+    (context): d_out.Variable_Declaration => context.assert_kind(
+        "VariableDeclaration",
+        "VariableDeclaration",
+        ($, context) => context.parse_children(
+            "VariableDeclaration",
+            (context): d_out.Variable_Declaration => ({
+                'name': context.consume_component(
+                    "VariableDeclaration['name']",
+                    Binding_Pattern
+                ),
+                'type': context.construct_component(
+                    "VariableDeclaration['type']",
+                    Optional_Type
+                ),
+                'assignment': context.optional(
+                    ($) => $.kind === "EqualsToken",
+                    (context) => ({
+                        'equals token': context.consume_keyword(
+                            "VariableDeclaration['assignment']['equals token']",
+                            "EqualsToken"
+                        ),
+                        'expression': context.consume_component(
+                            "VariableDeclaration['assignment']['expression']",
+                            Expression
+                        )
+                    })
+                ),
+            })
+        )
+    )
+)
+
 export const Variable_Declaration_List: h.Refiner<d_out.Variable_Declaration_List> = ($, abort, $p) => h.create_node_context(
     $,
     abort,
-    $p,
+    {
+        'location description': $p['location description'],
+        'parent': $p.parent,
+        'module name': "Variable_Declaration_List",
+    },
     (context): d_out.Variable_Declaration_List => context.assert_kind(
         "VariableDeclarationList",
         "VariableDeclarationList",
         ($, context) => context.parse_children(
             "VariableDeclarationList",
             (context): d_out.Variable_Declaration_List => ({
-                'mutability': context.consume_state(
+                'mutability': context.peek_for_state(
                     "VariableDeclarationList['mutability']",
                     ($) => {
                         switch ($.kind) {
-                            case "ConstKeyword": return ['const', null]
-                            case "LetKeyword": return ['let', null]
-                            case "VarKeyword": return ['var', null]
+                            case "AwaitKeyword": return ['await using', {
+                                'await keyword': context.consume_keyword(
+                                    "VariableDeclarationList['mutability']['await keyword']",
+                                    "AwaitKeyword"
+                                ),
+                                'using keyword': context.consume_keyword(
+                                    "VariableDeclarationList['mutability']['using keyword']",
+                                    "UsingKeyword"
+                                )
+                            }]
+                            case "ConstKeyword": return ['const', context.consume_keyword(
+                                "VariableDeclarationList['mutability']",
+                                "ConstKeyword"
+                            )]
+                            case "LetKeyword": return ['let', context.consume_keyword(
+                                "VariableDeclarationList['mutability']",
+                                "LetKeyword"
+                            )]
+                            case "UsingKeyword": return ['using', context.consume_keyword(
+                                "VariableDeclarationList['mutability']",
+                                "UsingKeyword"
+                            )]
+                            case "VarKeyword": return ['var', context.consume_keyword(
+                                "VariableDeclarationList['mutability']",
+                                "VarKeyword"
+                            )]
                             default: return abort({
                                 'parent': $,
-                                'location description': "VariableDeclarationList['mutability']",
+                                'external location description': $p['location description'],
+                                'module name': "VariableDeclarationList",
+                                'internal path description': "mutability",
                                 'problem': ['unexpected node', $],
                             })
                         }
@@ -2315,35 +2597,15 @@ export const Variable_Declaration_List: h.Refiner<d_out.Variable_Declaration_Lis
                     "VariableDeclarationList['declarations']",
                     ($, context): d_out.Variable_Declaration => {
                         switch ($.kind) {
-                            case "VariableDeclaration": return context.parse_children(
-                                "VariableDeclaration",
-                                (context): d_out.Variable_Declaration => ({
-                                    'name': context.consume_component(
-                                        "VariableDeclaration['name']",
-                                        Binding_Pattern
-                                    ),
-                                    'type': context.construct_component(
-                                        "VariableDeclaration['type']",
-                                        Optional_Type
-                                    ),
-                                    'assignment': context.optional(
-                                        ($) => $.kind === "EqualsToken",
-                                        (context) => ({
-                                            'equals token': context.consume_keyword(
-                                                "VariableDeclaration['assignment']['equals token']",
-                                                "EqualsToken"
-                                            ),
-                                            'expression': context.consume_component(
-                                                "VariableDeclaration['assignment']['expression']",
-                                                Expression
-                                            )
-                                        })
-                                    ),
-                                })
+                            case "VariableDeclaration": return context.call_with_this_node(
+                                "VariableDeclarationList['declarations']",
+                                Variable_Declaration,
                             )
                             default: return abort({
                                 'parent': $,
-                                'location description': "VariableDeclarationList['declarations']",
+                                'external location description': $p['location description'],
+                                'module name': "VariableDeclarationList",
+                                'internal path description': "declarations",
                                 'problem': ['unexpected node', $],
                             })
                         }

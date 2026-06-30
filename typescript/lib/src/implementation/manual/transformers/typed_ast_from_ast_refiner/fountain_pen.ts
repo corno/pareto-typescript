@@ -15,8 +15,10 @@ import * as t_ast_to_fp from "../ast/fountain_pen"
 import * as sh from "pareto-fountain-pen/dist/shorthands/prose/deprecated"
 
 export const Error: p_i.Transformer<d_in.Error, d_out.Phrase> = ($) => sh.ph.composed([
-    sh.ph.literal($.inner['location description']),
-    sh.ph.literal(": "),
+    sh.ph.literal($.inner['module name']),
+    sh.ph.literal(">"),
+    sh.ph.literal($.inner['internal path description']),
+    sh.ph.literal(" : "),
     p_.from.state($.inner.problem).decide(
         ($) => {
             switch ($[0]) {
@@ -30,6 +32,9 @@ export const Error: p_i.Transformer<d_in.Error, d_out.Phrase> = ($) => sh.ph.com
             }
         }
     ),
+    sh.ph.literal(" @"),
+    sh.ph.literal($.inner['external location description']),
+    sh.ph.literal(" "),
     sh.ph.literal(" @ "),
     sh.ph.literal(t_path_to_text.Node_Path($.path)),
 

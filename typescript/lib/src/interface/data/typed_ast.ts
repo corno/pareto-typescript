@@ -63,6 +63,7 @@ export type Statement =
     }]
     | ['import', Import_Declaration]
     | ['import equals', {
+        'modifiers': Modifiers
         'import keyword': null
         'identifier': Identifier
         'equals token': null
@@ -83,6 +84,7 @@ export type Statement =
         'expression': Expression
         'semicolon': Semi_Colon
     }]
+    | ['try', Try_Statement]
     | ['type alias', Type_Alias_Declaration]
     | ['variable', Variable_Statement]
     | ['while', {
@@ -92,6 +94,23 @@ export type Statement =
         'close parenthesis token': null
         'statement': Statement
     }]
+
+export type Try_Statement = {
+    'try keyword': null
+    'try block': Block
+    'catch clause': p_.Optional_Value<{
+        'catch keyword': null
+        'open parenthesis token': null
+        'variable declaration': Variable_Declaration
+        'close parenthesis token': null
+        'block': Block
+    }>
+    'finally block': p_.Optional_Value<{
+        'finally keyword': null
+        'block': Block
+    }>
+    'semicolon': Semi_Colon
+}
 
 export type Class_Declaration = {
     'class keyword': null
@@ -153,7 +172,7 @@ export type Function_Declaration = {
     'type parameters': Type_Parameters
     'parameters': Parameters
     'return type annotation': Return_Type_Annotation //FIXME Return Type_Annotation
-    'body': Block
+    'body': p_.Optional_Value<Block>
     'semicolon': Semi_Colon
 }
 
@@ -257,8 +276,13 @@ export type Variable_Statement = {
 
 export type Variable_Declaration_List = {
     'mutability':
+    | ['await using', {
+        'await keyword': null
+        'using keyword': null
+    }]
     | ['const', null]
     | ['let', null]
+    | ['using', null]
     | ['var', null]
     'declarations': p_.List<Variable_Declaration>
 }
@@ -279,6 +303,10 @@ export type Expression =
         'expression': Expression
         'as keyword': null
         'type': Type
+    }]
+    | ['await', {
+        'await keyword': null
+        'expression': Expression
     }]
     | ['binary', Binary_Expression]
     | ['call', Call_Expression]

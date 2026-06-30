@@ -14,7 +14,7 @@ import * as d_fp from "pareto-fountain-pen/dist/interface/generated/liana/schema
 import * as t_prose_to_loc from "pareto-fountain-pen/dist/implementation/manual/transformers/prose/list_of_characters"
 import * as t_ast_to_prose from "../transformers/ast/fountain_pen"
 import * as r_typed_ast_from_ast from "../refiners/typed_ast/temp_wrapper"
-import * as t_typed_ast_from_ast_to_prose from "../transformers/typed_ast_from_ast/fountain_pen"
+import * as t_typed_ast_from_ast_to_prose from "../transformers/typed_ast_from_ast_refiner/fountain_pen"
 import * as t_typed_ast_to_prose from "../transformers/typed_ast/fountain_pen"
 import * as t_path_to_string from "pareto-resources/dist/implementation/manual/transformers/unrestricted_path/text"
 
@@ -35,12 +35,15 @@ export const $$: interface_.functions.analyze_typescript_file = p_.query_functio
                 switch ($[0]) {
                     case 'syntax errors': return p_temp.ss($, ($) => sh.ph.composed(p_.literal.segmented_list([
                         p_.literal.list([
-
-                            sh.ph.literal("Syntax errors>>>> :"),
+                            sh.ph.literal("Syntax errors:"),
+                            sh.ph.indent(
+                                sh.pg.sentences(p_temp.from.list($.messages).map(
+                                    ($) => sh.sentence([
+                                        sh.ph.literal($)
+                                    ])
+                                ))
+                            )
                         ]),
-                        p_temp.from.list($.messages).map(
-                            ($) => sh.ph.literal($)
-                        )
                     ])))
                     default: return p_temp.au($[0])
                 }

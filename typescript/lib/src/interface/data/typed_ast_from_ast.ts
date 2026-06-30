@@ -14,7 +14,9 @@ export type Error_Inner = {
     'problem':
     | ['end of node list', null]
     | ['unexpected node', d_ast.Node]
-    'location description': string
+    'external location description': string
+    'module name': string
+    'internal path description': string
 }
 
 export type Expected =

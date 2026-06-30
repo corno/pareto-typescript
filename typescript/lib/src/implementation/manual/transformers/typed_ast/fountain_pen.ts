@@ -146,6 +146,10 @@ export const Expression: p_i.Transformer<d_in.Expression, d_out.Phrase> = ($) =>
                 sh.ph.literal(" as "),
                 Type($['type']),
             ])))
+            case 'await': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
+                sh.ph.literal("await "),
+                Expression($['expression']),
+            ])))
             case 'binary': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                 Expression($['left']),
                 p_.from.state($['operator token']).decide(
@@ -597,7 +601,10 @@ export const Statement: p_i.Transformer<d_in.Statement, d_out.Phrase> = ($) => s
                     Parameters($['parameters']),
                     Return_Type_Annotation($['return type annotation']),
                     sh.ph.literal(" "),
-                    Block($['body']),
+                    p_.from.optional($['body']).decide(
+                        ($) => Block($),
+                        () => sh.ph.nothing()
+                    ),
                 ])))
                 case 'if': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                     sh.ph.literal("if ("),
@@ -657,6 +664,7 @@ export const Statement: p_i.Transformer<d_in.Statement, d_out.Phrase> = ($) => s
                     sh.ph.literal($['string literal'].text)
                 ])))
                 case 'import equals': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
+                    Modifiers($['modifiers']),
                     sh.ph.literal("import "),
                     sh.ph.literal($['identifier'].text),
                     sh.ph.literal(" = "),
@@ -746,6 +754,31 @@ export const Statement: p_i.Transformer<d_in.Statement, d_out.Phrase> = ($) => s
                         ),
                     ),
                     sh.ph.literal("}")
+                ])))
+                case 'try': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
+                    sh.ph.literal("try "),
+                    Block($['try block']),
+                    sh.ph.composed(p_.literal.list([
+                        sh.ph.literal(" catch ("),
+                        p_.from.optional($['catch clause']).decide(
+                            ($) => sh.ph.composed(p_.literal.list([
+                                Variable_Declaration($['variable declaration']),
+                            ])),
+                            () => sh.ph.nothing()
+                        ),
+                        sh.ph.literal(") "),
+                        p_.from.optional($['catch clause']).decide(
+                            ($) => Block($['block']),
+                            () => sh.ph.nothing()
+                        ),
+                        p_.from.optional($['finally block']).decide(
+                            ($) => sh.ph.composed(p_.literal.list([
+                                sh.ph.literal(" finally "),
+                                Block($['block']),
+                            ])),
+                            () => sh.ph.nothing()
+                        )
+                    ])),
                 ])))
                 case 'throw': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                     sh.ph.literal("throw "),
@@ -1005,30 +1038,35 @@ export const Type_Parameters: p_i.Transformer<d_in.Type_Parameters, d_out.Phrase
     () => sh.ph.nothing()
 )
 
+export const Variable_Declaration: p_i.Transformer<d_in.Variable_Declaration, d_out.Phrase> = ($) => sh.ph.composed(
+    p_.literal.list([
+        Binding_Pattern($.name),
+        Optional_Type($.type),
+        p_.from.optional($['assignment']).decide(
+            ($) => sh.ph.composed(p_.literal.list([
+                sh.ph.literal(" = "),
+                Expression($['expression']),
+            ])),
+            () => sh.ph.nothing()
+        )
+    ])
+)
+
 export const Variable_Declaration_List: p_i.Transformer<d_in.Variable_Declaration_List, d_out.Phrase> = ($) => sh.ph.composed(p_.literal.list([
     p_.from.state($.mutability).decide(
         ($) => {
             switch ($[0]) {
+                case 'await using': return sh.ph.literal("await using ")
                 case 'const': return sh.ph.literal("const ")
                 case 'let': return sh.ph.literal("let ")
+                case 'using': return sh.ph.literal("using ")
                 case 'var': return sh.ph.literal("var ")
-                default: return sh.ph.nothing()
+                default: return p_.au($[0])
             }
         }
     ),
     sh.ph.composed(
         p_.from.list($['declarations']).map(
-            ($) => sh.ph.composed(p_.literal.list([
-                Binding_Pattern($.name),
-                Optional_Type($.type),
-                p_.from.optional($['assignment']).decide(
-                    ($) => sh.ph.composed(p_.literal.list([
-                        sh.ph.literal(" = "),
-                        Expression($['expression']),
-                    ])),
-                    () => sh.ph.nothing()
-                )
-            ])
-            )
+            ($) => Variable_Declaration($)
         ))
 ]))
