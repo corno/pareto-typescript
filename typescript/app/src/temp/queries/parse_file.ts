@@ -5,10 +5,10 @@ import p_query from 'pareto-core/dist/implementation/query/__internal/query'
 import p_query_result from 'pareto-core/dist/implementation/query/__internal/query_result'
 
 //interface
-import * as resources from "lib/dist/modules/typescript_parser/interface/queries"
+import * as resources from "lib/dist/modules/typescript_parser_api/interface/queries"
 
 
-import * as d_ast from "lib/dist/modules/typescript_parser/interface/data/ast"
+import * as d_ast from "lib/dist/modules/typescript_parser_api/interface/data/dynamic_ast"
 
 import * as ts from "typescript"
 

@@ -1,6 +1,6 @@
 
 //data types
-import * as d_ast from "./ast"
+import * as d_ast from "./dynamic_ast"
 
 export type Parameters = {
     'data': string

@@ -6,7 +6,7 @@ import p_iterate from 'pareto-core/dist/implementation/refiner/specials/iterate'
 import P_unreachable_code_path from 'pareto-core/dist/implementation/transformer/specials/unreachable_code_path'
 
 //data types
-import * as d_in from "./modules/typescript_parser/interface/data/ast"
+import * as d_in from "./modules/typescript_parser_api/interface/data/dynamic_ast"
 import * as d_function from "./interface/data/typed_ast_from_ast"
 import { Abort } from 'pareto-core/dist/interface/__internal/Abort'
 

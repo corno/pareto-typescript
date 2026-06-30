@@ -3,7 +3,7 @@ import * as p_ from 'pareto-core/dist/interface/command'
 //data types
 import * as d_main from "pareto-resources/dist/interface/data/temp_main"
 
-import * as queries_typescript_parser from "../modules/typescript_parser/interface/queries"
+import * as queries_typescript_parser from "../modules/typescript_parser_api/interface/queries"
 import * as commands_stream from "pareto-stream/dist/interface/commands"
 import * as commands_resources from "pareto-resources/dist/interface/resources"
 

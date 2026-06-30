@@ -1,5 +1,5 @@
 import * as p_ from 'pareto-core/dist/interface/data'
-import * as d_ast from "../../modules/typescript_parser/interface/data/ast"
+import * as d_ast from "../../modules/typescript_parser_api/interface/data/dynamic_ast"
 
 export type Source_File = {
     'statements': Statements

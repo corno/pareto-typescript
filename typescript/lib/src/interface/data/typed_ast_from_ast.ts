@@ -2,7 +2,7 @@
 
 //data types
 import * as d_path from "pareto-resources/dist/interface/generated/liana/schemas/fs_unrestricted_path/data"
-import * as d_ast from "../../modules/typescript_parser/interface/data/ast"
+import * as d_ast from "../../modules/typescript_parser_api/interface/data/dynamic_ast"
 
 export type Error = {
     'path': d_path.Node_Path
