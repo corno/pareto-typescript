@@ -265,7 +265,7 @@ export const create_iterator_context = <T extends p_di.Value>(
                             'parent': parent,
                             'problem': ['unexpected node', $],
                             'external location description': $p['location description'],
-                            'module name': "Keyword",
+                            'module name': $p['module name'],
                             'internal path description': internal_path_description,
                         })
                     } else return null

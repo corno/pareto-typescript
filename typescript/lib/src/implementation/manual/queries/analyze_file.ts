@@ -65,10 +65,10 @@ export const $$: interface_.functions.analyze_typescript_file = p_.query_functio
 
 
             return sh.pg.composed([
-                t_ast_to_prose.AST($.ast),
-                t_typed_ast_to_prose.Source_File(
-                    typed,
-                )
+                // t_ast_to_prose.AST($.ast),
+                // t_typed_ast_to_prose.Source_File(
+                //     typed,
+                // )
             ])
         }
     ).transform(
