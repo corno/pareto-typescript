@@ -82,7 +82,7 @@ export type Iterator_Context = {
         location_description: string,
         kind: string,
     ) => d_in.Node
-    
+
     /**
      * use this one only if consume_state is not possible. This is the case if one or more of the options are not contained in a singular node.
      * if you use this function, you will have to manually consume the node(s) that you peeked at, otherwise the iterator will be in an inconsistent state.
@@ -109,26 +109,22 @@ export type Iterator_Context = {
 export const create_iterator_context = <T extends p_di.Value>(
     iterator: p_pi.Iterator<d_in.Node, null>,
     abort: Abort<d_function.Error_Inner>,
-    parent: d_in.Node,
+    $p: Parameters,
     callback: (context: Iterator_Context) => T
 ): T => {
 
     const consume_internal = <T extends p_di.Value>(
-        iterator: p_pi.Iterator<d_in.Node, null>,
-        abort: Abort<d_function.Error_Inner>,
-        parent: d_in.Node,
         location_description: string,
         callback: (node: d_in.Node, parent: d_in.Node) => T
     ): T => iterator.consume(
         ($) => abort({
-            'context': location_description,
-            'parent': parent,
-            'cause': ['end of node list', null],
-            'expected': ['something', location_description]
+            'parent': $p.parent,
+            'problem': ['end of node list', null],
+            'location description': location_description,
         }),
         ($) => callback(
             $,
-            parent,
+            $p.parent,
         )
     )
 
@@ -140,10 +136,9 @@ export const create_iterator_context = <T extends p_di.Value>(
         ) => {
             return iterator.peek(
                 ($) => abort({
-                    'context': location_description,
-                    'parent': parent,
-                    'cause': ['end of node list', null],
-                    'expected': ['something', location_description]
+                    'parent': $p.parent,
+                    'problem': ['end of node list', null],
+                    'location description': location_description,
                 }),
                 ($) => callback(
                     $,
@@ -156,21 +151,21 @@ export const create_iterator_context = <T extends p_di.Value>(
             callback
         ) => {
             return consume_internal(
-                iterator,
-                abort,
-                parent,
                 location_description,
                 ($, parent) => create_node_context(
                     $,
                     abort,
+                    {
+                        'location description': $p['location description'] + ":" + location_description,
+                        'parent': parent,
+                    },
                     (context) => {
 
                         if ($.kind !== kind) {
                             return abort({
                                 'parent': parent,
-                                'cause': ['unexpected node', $],
-                                'expected': ['something', kind],
-                                'context': location_description
+                                'problem': ['unexpected node', $],
+                                'location description': location_description,
                             })
                         } else return callback(
                             $,
@@ -185,13 +180,14 @@ export const create_iterator_context = <T extends p_di.Value>(
             callback
         ) => {
             return consume_internal(
-                iterator,
-                abort,
-                parent,
                 location_description,
                 ($, parent) => create_node_context(
                     $,
                     abort,
+                    {
+                        'location description': $p['location description'] + ":" + location_description,
+                        'parent': parent
+                    },
                     (context) => callback(
                         $,
                         context
@@ -204,13 +200,14 @@ export const create_iterator_context = <T extends p_di.Value>(
             func
         ) => {
             return consume_internal(
-                iterator,
-                abort,
-                parent,
                 location_description,
                 ($, parent) => create_node_context(
                     $,
                     abort,
+                    {
+                        'location description': $p['location description'] + ":" + location_description,
+                        'parent': parent
+                    },
                     (context) => func(
                         $,
                         abort,
@@ -227,9 +224,6 @@ export const create_iterator_context = <T extends p_di.Value>(
             kind,
         ) => {
             return consume_internal(
-                iterator,
-                abort,
-                parent,
                 location_description,
                 ($, parent) => {
                     // if ($.type[0] !== 'literal') {
@@ -238,9 +232,8 @@ export const create_iterator_context = <T extends p_di.Value>(
                     if ($.kind !== kind) {
                         return abort({
                             'parent': parent,
-                            'cause': ['unexpected node', $],
-                            'expected': ['something', kind],
-                            'context': location_description
+                            'problem': ['unexpected node', $],
+                            'location description': location_description,
                         })
                     } else return $
                 }
@@ -251,9 +244,6 @@ export const create_iterator_context = <T extends p_di.Value>(
             kind,
         ) => {
             return consume_internal(
-                iterator,
-                abort,
-                parent,
                 location_description,
                 ($, parent) => {
                     // if ($.type[0] !== 'keyword or punctuation') {
@@ -262,9 +252,8 @@ export const create_iterator_context = <T extends p_di.Value>(
                     if ($.kind !== kind) {
                         return abort({
                             'parent': parent,
-                            'cause': ['unexpected node', $],
-                            'expected': ['something', kind],
-                            'context': location_description
+                            'problem': ['unexpected node', $],
+                            'location description': location_description,
                         })
                     } else return null
                 }
@@ -283,9 +272,8 @@ export const create_iterator_context = <T extends p_di.Value>(
             ): p_di.List<T> => $.kind !== "SyntaxList"
                     ? abort({
                         'parent': parent,
-                        'context': location_description,
-                        'cause': ['unexpected node', $],
-                        'expected': ['something', `SyntaxList (${location_description})`]
+                        'problem': ['unexpected node', $],
+                        'location description': location_description,
                     })
                     : p_iterate({
                         list: $.children,
@@ -298,26 +286,23 @@ export const create_iterator_context = <T extends p_di.Value>(
                             )
                         }),
                         on_dangling_item: ($) => abort({
-                            'context': location_description,
                             'parent': parent,
-                            'cause': ['unexpected node', $],
-                            'expected': ['nothing', null]
+                            'problem': ['unexpected node', $],
+                            'location description': location_description,
                         }),
                     })
             return consume_internal(
-                iterator,
-                abort,
-                parent,
                 location_description,
                 ($) => {
                     return list_with_syntaxlist_wrapper_x(
                         $,
-                        parent,
+                        $p.parent,
                         abort,
                         location_description,
                         ($) => create_node_context(
                             $,
                             abort,
+                            $p,
                             (context) => callback(
                                 $,
                                 context
@@ -336,8 +321,8 @@ export const create_iterator_context = <T extends p_di.Value>(
                 iterator,
                 abort,
                 {
-                    'location description': location_description,
-                    'parent': parent
+                    'location description': $p['location description'] + ":" + location_description,
+                    'parent': $p.parent
                 }
             )
         },
@@ -352,7 +337,7 @@ export const create_iterator_context = <T extends p_di.Value>(
                         return p_.literal.set(create_iterator_context(
                             iterator,
                             abort,
-                            parent,
+                            $p,
                             callback
                         ))
                     } else {
@@ -403,8 +388,9 @@ export type Node_Context = {
 }
 
 export const create_node_context = <T>(
-    node: d_in.Node,
+    context_node: d_in.Node,
     abort: Abort<d_function.Error_Inner>,
+    $p: Parameters,
     callback: (context: Node_Context) => T
 ): T => {
     const process_children_as_group_x = <T extends p_di.Value>(
@@ -423,16 +409,15 @@ export const create_node_context = <T>(
             assign: (iterator): T => create_iterator_context(
                 iterator,
                 abort,
-                parent,
+                $p,
                 (context) => callback(
                     context
                 )
             ),
             on_dangling_item: ($) => abort({
                 'parent': parent,
-                'context': location_description,
-                'cause': ['unexpected node', $],
-                'expected': ['nothing', null]
+                'problem': ['unexpected node', $],
+                'location description': location_description,
             }),
         })
     }
@@ -455,6 +440,7 @@ export const create_node_context = <T>(
                     ($): T => create_node_context(
                         $,
                         abort,
+                        $p,
                         (context) => callback($, context)
                     )
                 )
@@ -468,19 +454,19 @@ export const create_node_context = <T>(
             expected_kind,
             callback
         ) => {
-            if (node.kind !== expected_kind) {
+            if (context_node.kind !== expected_kind) {
                 return abort({
-                    'parent': node,
-                    'cause': ['unexpected node', node],
-                    'expected': ['something', expected_kind],
-                    'context': location_description
+                    'parent': context_node,
+                    'problem': ['unexpected node', context_node],
+                    'location description': location_description,
                 })
             }
             return create_node_context(
-                node,
+                context_node,
                 abort,
+                $p,
                 (context) => callback(
-                    node,
+                    context_node,
                     context
                 )
             )
@@ -489,11 +475,11 @@ export const create_node_context = <T>(
             location_description,
             func
         ) => func(
-            node,
+            context_node,
             abort,
             {
                 'location description': location_description,
-                'parent': node
+                'parent': context_node
             }
         ),
 
@@ -502,7 +488,7 @@ export const create_node_context = <T>(
             location_description,
             callback
         ) => process_children_as_group_x(
-            node,
+            context_node,
             abort,
             location_description,
             (context) => callback(context)
@@ -512,15 +498,14 @@ export const create_node_context = <T>(
             location_description,
             callback
         ) => process_children_as_list_x(
-            node,
+            context_node,
             abort,
             (node, context) => callback(node, context)
         ),
-        'abort': ($) => abort({
-            'parent': node,
-            'cause': ['unexpected node', node],
-            'expected': ['something', $],
-            'context': $
+        abort: (location_description) => abort({
+            'parent': context_node,
+            'problem': ['unexpected node', context_node],
+            'location description': location_description,
         })
     })
 }

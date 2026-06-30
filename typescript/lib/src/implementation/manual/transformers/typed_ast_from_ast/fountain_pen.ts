@@ -15,40 +15,14 @@ import * as t_ast_to_fp from "../ast/fountain_pen"
 import * as sh from "pareto-fountain-pen/dist/shorthands/prose/deprecated"
 
 export const Error: p_i.Transformer<d_in.Error, d_out.Phrase> = ($) => sh.ph.composed([
-    sh.ph.literal(t_path_to_text.Node_Path($.path)),
-    p_variables(() => {
-        const parent = $.inner.parent
-        return p_.from.state($.inner.cause).decide(
-            ($) => {
-                switch ($[0]) {
-                    case 'end of node list': return p_.option($, ($) => sh.ph.literal(`:${parent.location.line}:${parent.location.column}`))
-                    case 'unexpected node': return p_.option($, ($) => sh.ph.literal(`:${$.location.line}:${$.location.column}`))
-                    default: return p_.au($[0])
-                }
-            }
-        )
-    }),
+    sh.ph.literal($.inner['location description']),
     sh.ph.literal(": "),
-    sh.ph.literal("expected "),
-    p_.from.state($.inner.expected).decide(
+    p_.from.state($.inner.problem).decide(
         ($) => {
             switch ($[0]) {
-                case 'nothing': return p_.option($, ($) => sh.ph.literal("nothing"))
-                case 'something': return p_.option($, ($) => sh.ph.literal($))
-                case 'nothing': return p_.option($, ($) => sh.ph.literal("nothing"))
-                default: return p_.au($[0])
-            }
-        }
-    ),
-    sh.ph.literal(" in "),
-    sh.ph.literal($.inner.context),
-    sh.ph.literal(" but found "),
-    p_.from.state($.inner.cause).decide(
-        ($) => {
-            switch ($[0]) {
-                case 'end of node list': return p_.option($, ($) => sh.ph.literal("nothing"))
+                case 'end of node list': return p_.option($, ($) => sh.ph.literal("expected more nodes"))
                 case 'unexpected node': return p_.option($, ($) => sh.ph.composed([
-                    sh.ph.literal("'"),
+                    sh.ph.literal("unexpected node '"),
                     sh.ph.literal($.kind),
                     sh.ph.literal("'"),
                 ]))
@@ -56,15 +30,30 @@ export const Error: p_i.Transformer<d_in.Error, d_out.Phrase> = ($) => sh.ph.com
             }
         }
     ),
-    // sh.ph.indent(sh.pg.sentences([
-    //     sh.sentence([
-    //         sh.ph.literal("snippet:"),
-    //     ]),
-    //     sh.sentence([
+    sh.ph.literal(" @ "),
+    sh.ph.literal(t_path_to_text.Node_Path($.path)),
 
-    //         t_ast_to_fp.Node(
-    //             $.inner.parent
-    //         ),
-    //     ])
-    // ]))
+    p_variables(() => {
+        const $v_parent = $.inner.parent
+        return p_.from.state($.inner.problem).decide(
+            ($) => {
+                switch ($[0]) {
+                    case 'end of node list': return p_.option($, ($) => sh.ph.literal(`:${$v_parent.location.line}:${$v_parent.location.column}`))
+                    case 'unexpected node': return p_.option($, ($) => sh.ph.literal(`:${$.location.line}:${$.location.column}`))
+                    default: return p_.au($[0])
+                }
+            }
+        )
+    }),
+    sh.ph.literal(": "),
+    sh.ph.indent(sh.pg.sentences([
+        sh.sentence([
+            sh.ph.literal("snippet:"),
+        ]),
+        sh.sentence([
+            t_ast_to_fp.Node(
+                $.inner.parent
+            ),
+        ])
+    ]))
 ])

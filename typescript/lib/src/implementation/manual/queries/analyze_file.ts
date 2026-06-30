@@ -33,7 +33,15 @@ export const $$: interface_.functions.analyze_typescript_file = p_.query_functio
         ($): d_process_file_data.Error => p_temp.from.state($).decide(
             ($) => {
                 switch ($[0]) {
-                    case 'to be implemented': return p_temp.ss($, ($) => sh.ph.literal("to be implemented"))
+                    case 'syntax errors': return p_temp.ss($, ($) => sh.ph.composed(p_.literal.segmented_list([
+                        p_.literal.list([
+
+                            sh.ph.literal("Syntax errors>>>> :"),
+                        ]),
+                        p_temp.from.list($.messages).map(
+                            ($) => sh.ph.literal($)
+                        )
+                    ])))
                     default: return p_temp.au($[0])
                 }
             }

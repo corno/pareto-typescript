@@ -45,7 +45,7 @@ class My_Node_Implementation implements d_ast.Node {
     //             'type': ['identifier', null]
     //         }]
     //     }
-        
+
     //     // Check for string literals
     //     if (ts.isStringLiteral(this.tsNode)) {
     //         return ['literal', {
@@ -59,7 +59,7 @@ class My_Node_Implementation implements d_ast.Node {
     //             }]
     //         }]
     //     }
-        
+
     //     // Check for numeric literals
     //     if (ts.isNumericLiteral(this.tsNode)) {
     //         return ['literal', {
@@ -67,7 +67,7 @@ class My_Node_Implementation implements d_ast.Node {
     //             'type': ['number', null]
     //         }]
     //     }
-        
+
     //     // Check for template literals (check specific types directly)
     //     if (ts.isTemplateHead(this.tsNode)) {
     //         return ['literal', {
@@ -75,28 +75,28 @@ class My_Node_Implementation implements d_ast.Node {
     //             'type': ['template', ['head', null]]
     //         }]
     //     }
-        
+
     //     if (ts.isTemplateMiddle(this.tsNode)) {
     //         return ['literal', {
     //             'value': this.tsNode.getText(),
     //             'type': ['template', ['middle', null]]
     //         }]
     //     }
-        
+
     //     if (ts.isTemplateTail(this.tsNode)) {
     //         return ['literal', {
     //             'value': this.tsNode.getText(),
     //             'type': ['template', ['tail', null]]
     //         }]
     //     }
-        
+
     //     if (ts.isNoSubstitutionTemplateLiteral(this.tsNode)) {
     //         return ['literal', {
     //             'value': this.tsNode.getText(),
     //             'type': ['template', ['no substitution', null]]
     //         }]
     //     }
-        
+
     //     // Check for JSDoc
     //     if (kind === ts.SyntaxKind.JSDoc) {
     //         return ['literal', {
@@ -104,17 +104,17 @@ class My_Node_Implementation implements d_ast.Node {
     //             'type': ['jsdoc', null]
     //         }]
     //     }
-        
+
     //     // Check for keywords and punctuation
     //     if (kind >= ts.SyntaxKind.FirstKeyword && kind <= ts.SyntaxKind.LastKeyword) {
     //         return ['keyword or punctuation', null]
     //     }
-        
+
     //     // Check for other tokens (punctuation/operators)
     //     if (ts.isToken(this.tsNode)) {
     //         return ['keyword or punctuation', null]
     //     }
-        
+
     //     // Everything else is structural
     //     return ['structural', null]
     // }
@@ -179,20 +179,50 @@ class My_Node_Implementation implements d_ast.Node {
 }
 
 
+
 export const $$: resources.queries.parse_file = p_query(
     ($) => {
         return p_query_result(
-            (on_value) => {
+            (on_value, on_error) => {
+
+                const dummy_fileName = "input.ts"
 
                 const data = $.data
 
                 // Read the file and parse it with TypeScript
                 const sourceFile = ts.createSourceFile(
-                    "input.ts",
+                    dummy_fileName,
                     data,
                     ts.ScriptTarget.Latest,
                     true // setParentNodes, needed to be able to call .getChildren()
                 )
+
+
+
+                const host: ts.CompilerHost = {
+                    getSourceFile: (name) => (name === dummy_fileName ? sourceFile : undefined),
+                    getDefaultLibFileName: () => "lib.d.ts",
+                    writeFile: () => { },
+                    getCurrentDirectory: () => "",
+                    getDirectories: () => [],
+                    fileExists: (name) => name === dummy_fileName,
+                    readFile: () => "",
+                    getCanonicalFileName: (name) => name,
+                    useCaseSensitiveFileNames: () => true,
+                    getNewLine: () => "\n",
+                };
+
+                const program = ts.createProgram([dummy_fileName], {}, host);
+
+                if (program.getSyntacticDiagnostics().length > 0) {
+                    on_error(['syntax errors', {
+                        'messages': p_.literal.list(
+                            program.getSyntacticDiagnostics().map(($): string => typeof $.messageText === "string" ? $.messageText : $.messageText.messageText)
+                        )
+                    }])
+                    return
+                }
+
 
                 // Get trailing comments at the end of the file
                 const fullText = sourceFile.getFullText()

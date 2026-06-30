@@ -6,6 +6,7 @@ import * as d_out from "../../../../interface/data/typed_ast"
 export const Block: h.Refiner<d_out.Block> = ($, abort, $p) => h.create_node_context(
     $,
     abort,
+    $p,
     (context): d_out.Block => {
         switch ($.kind) {
             case "Block": return context.parse_children(
@@ -27,9 +28,8 @@ export const Block: h.Refiner<d_out.Block> = ($, abort, $p) => h.create_node_con
             )
             default: return abort({
                 'parent': $,
-                'context': "Block",
-                'cause': ['unexpected node', $],
-                'expected': ['something', "`Block`"]
+                'location description': "Block",
+                'problem': ['unexpected node', $],
             })
         }
     }
@@ -38,6 +38,7 @@ export const Block: h.Refiner<d_out.Block> = ($, abort, $p) => h.create_node_con
 export const Entity_Name: h.Refiner<d_out.Entity_Name> = ($, abort, $p) => h.create_node_context(
     $,
     abort,
+    $p,
     (context): d_out.Entity_Name => {
 
         switch ($.kind) {
@@ -48,9 +49,8 @@ export const Entity_Name: h.Refiner<d_out.Entity_Name> = ($, abort, $p) => h.cre
             case "Identifier": return ['identifier', $]
             default: return abort({
                 'parent': $,
-                'context': "TypeReference['entity name']",
-                'cause': ['unexpected node', $],
-                'expected': ['something', "`QualifiedName` or `Identifier`"]
+                'location description': "TypeReference['entity name']",
+                'problem': ['unexpected node', $],
             })
         }
     }
@@ -59,6 +59,7 @@ export const Entity_Name: h.Refiner<d_out.Entity_Name> = ($, abort, $p) => h.cre
 export const Expression: h.Refiner<d_out.Expression> = ($, abort, $p) => h.create_node_context(
     $,
     abort,
+    $p,
     (context): d_out.Expression => {
         switch ($.kind) {
             case "ArrayLiteralExpression": return ['array literal', context.parse_children(
@@ -184,17 +185,27 @@ export const Expression: h.Refiner<d_out.Expression> = ($, abort, $p) => h.creat
                         "BinaryExpression['operator token']",
                         ($) => {
                             switch ($.kind) {
-                                case "AsteriskEqualsToken": return ['*=', null]
-                                case "AsteriskToken": return ['*', null]
+                                case "AmpersandToken": return ['&', null]
+                                case "AmpersandEqualsToken": return ['&=', null]
                                 case "AmpersandAmpersandToken": return ['&&', null]
+                                case "AsteriskEqualsToken": return ['*=', null]
+                                case "AsteriskAsteriskEqualsToken": return ['**=', null]
+                                case "AsteriskToken": return ['*', null]
+                                case "AsteriskAsteriskToken": return ['**', null]
+                                case "BarBarEqualsToken": return ['||=', null]
                                 case "BarBarToken": return ['||', null]
-                                case "EqualsToken": return ['=', null]
+                                case "BarEqualsToken": return ['|=', null]
+                                case "BarToken": return ['|', null]
+                                case "CaretEqualsToken": return ['^=', null]
                                 case "EqualsEqualsEqualsToken": return ['===', null]
+                                case "EqualsEqualsToken": return ['==', null]
+                                case "EqualsToken": return ['=', null]
+                                case "ExclamationEqualsToken": return ['!=', null]
                                 case "ExclamationEqualsEqualsToken": return ['!==', null]
                                 case "GreaterThanEqualsToken": return ['>=', null]
-                                case "GreaterThanToken": return ['>', null]
-                                case "GreaterThanGreaterThanToken": return ['>>', null]
                                 case "GreaterThanGreaterThanGreaterThanToken": return ['>>>', null]
+                                case "GreaterThanGreaterThanToken": return ['>>', null]
+                                case "GreaterThanToken": return ['>', null]
                                 case "InstanceOfKeyword": return ['instanceof', null]
                                 case "LessThanEqualsToken": return ['<=', null]
                                 case "LessThanLessThanToken": return ['<<', null]
@@ -204,13 +215,12 @@ export const Expression: h.Refiner<d_out.Expression> = ($, abort, $p) => h.creat
                                 case "PercentToken": return ['%', null]
                                 case "PlusEqualsToken": return ['+=', null]
                                 case "PlusToken": return ['+', null]
-                                case "SlashToken": return ['/', null]
                                 case "QuestionQuestionToken": return ['??', null]
+                                case "SlashToken": return ['/', null]
                                 default: return abort({
                                     'parent': $,
-                                    'context': "BinaryExpression['operator token']",
-                                    'cause': ['unexpected node', $],
-                                    'expected': ['something', "a binary operator"]
+                                    'location description': "BinaryExpression['operator token']",
+                                    'problem': ['unexpected node', $],
                                 })
                             }
                         }
@@ -316,7 +326,28 @@ export const Expression: h.Refiner<d_out.Expression> = ($, abort, $p) => h.creat
                     ),
                 })
             )]
-            case "FalseKeyword": return ['false keyword', null]
+            case "ExternalModuleReference": return ['external module reference', context.parse_children(
+                "ExternalModuleReference",
+                (context) => ({
+                    'require keyword': context.consume_keyword(
+                        "ExternalModuleReference['require keyword']",
+                        "RequireKeyword",
+                    ),
+                    'open parenthesis token': context.consume_keyword(
+                        "ExternalModuleReference['open parenthesis token']",
+                        "OpenParenToken",
+                    ),
+                    'module name': context.consume_literal(
+                        "ExternalModuleReference['module name']",
+                        "StringLiteral",
+                    ),
+                    'close parenthesis token': context.consume_keyword(
+                        "ExternalModuleReference['close parenthesis token']",
+                        "CloseParenToken",
+                    ),
+                })
+            )]
+            case "FalseKeyword": return ['false', null]
             case "Identifier": return ['identifier', $]
             case "ObjectLiteralExpression": return ['object literal', context.parse_children(
                 "ObjectLiteralExpression",
@@ -367,9 +398,8 @@ export const Expression: h.Refiner<d_out.Expression> = ($, abort, $p) => h.creat
                                 )]
                                 default: return abort({
                                     'parent': $,
-                                    'context': "ObjectLiteralExpression['properties']",
-                                    'cause': ['unexpected node', $],
-                                    'expected': ['something', "`CommaToken` or `PropertyAssignment`"]
+                                    'location description': "ObjectLiteralExpression['properties']",
+                                    'problem': ['unexpected node', $],
                                 })
                             }
                         }
@@ -481,9 +511,8 @@ export const Expression: h.Refiner<d_out.Expression> = ($, abort, $p) => h.creat
                                 case "PlusPlusToken": return ['++', null]
                                 default: return abort({
                                     'parent': $,
-                                    'context': "PostfixUnaryExpression['operator token']",
-                                    'cause': ['unexpected node', $],
-                                    'expected': ['something', "`ExclamationToken` or `MinusMinusToken`"]
+                                    'location description': "PostfixUnaryExpression['operator token']",
+                                    'problem': ['unexpected node', $],
                                 })
                             }
                         }
@@ -502,9 +531,8 @@ export const Expression: h.Refiner<d_out.Expression> = ($, abort, $p) => h.creat
                                 case "PlusToken": return ['+', null]
                                 default: return abort({
                                     'parent': $,
-                                    'context': "PrefixUnaryExpression['operator token']",
-                                    'cause': ['unexpected node', $],
-                                    'expected': ['something', "a prefix unary operator"]
+                                    'location description': "PrefixUnaryExpression['operator token']",
+                                    'problem': ['unexpected node', $],
                                 })
                             }
                         }
@@ -560,9 +588,8 @@ export const Expression: h.Refiner<d_out.Expression> = ($, abort, $p) => h.creat
                                                     case "TemplateMiddle": return ['middle', $]
                                                     default: return abort({
                                                         'parent': $,
-                                                        'context': "TemplateSpan['template middle or tail']",
-                                                        'cause': ['unexpected node', $],
-                                                        'expected': ['something', "`TemplateTail` or `TemplateMiddle`"]
+                                                        'location description': "TemplateSpan['template middle or tail']",
+                                                        'problem': ['unexpected node', $],
                                                     })
                                                 }
                                             }
@@ -572,9 +599,8 @@ export const Expression: h.Refiner<d_out.Expression> = ($, abort, $p) => h.creat
                                 default: return abort({
                                     'parent': $,
 
-                                    'context': "TemplateExpression['template spans']",
-                                    'cause': ['unexpected node', $],
-                                    'expected': ['something', "TemplateSpan"]
+                                    'location description': "TemplateExpression['template spans']",
+                                    'problem': ['unexpected node', $],
                                 })
                             }
                         }
@@ -595,11 +621,23 @@ export const Expression: h.Refiner<d_out.Expression> = ($, abort, $p) => h.creat
                     ),
                 })
             )]
+            case "VoidExpression": return ['void', context.parse_children(
+                "VoidExpression",
+                (context) => ({
+                    'void keyword': context.consume_keyword(
+                        "VoidExpression['void keyword']",
+                        "VoidKeyword",
+                    ),
+                    'expression': context.consume_component(
+                        "VoidExpression['expression']",
+                        Expression
+                    ),
+                })
+            )]
             default: return abort({
                 'parent': $,
-                'context': $p["location description"],
-                'cause': ['unexpected node', $],
-                'expected': ['something', "an expression"]
+                'location description': $p["location description"],
+                'problem': ['unexpected node', $],
             })
         }
     }
@@ -608,16 +646,15 @@ export const Expression: h.Refiner<d_out.Expression> = ($, abort, $p) => h.creat
 export const Identifier: h.Refiner<d_out.Identifier> = ($, abort, $p) => $.kind !== "Identifier"
     ? abort({
         'parent': $,
-        'context': $p["location description"],
-        'cause': ['unexpected node', $],
-        'expected': ['something', "an identifier"]
+        'location description': $p["location description"],
+        'problem': ['unexpected node', $],
     })
     : $
 
 export const JSDoc: h.Production<d_out.JSDoc> = (iterator, abort, $p) => h.create_iterator_context(
     iterator,
     abort,
-    $p.parent,
+    $p,
     (context) => context.optional(
         ($) => $.kind === "JSDoc",
         (context) => context.consume_literal(
@@ -630,7 +667,7 @@ export const JSDoc: h.Production<d_out.JSDoc> = (iterator, abort, $p) => h.creat
 export const Modifiers: h.Production<d_out.Modifiers> = (iterator, abort, $p) => h.create_iterator_context(
     iterator,
     abort,
-    $p.parent,
+    $p,
     (context) => context.optional(
         ($) => $.kind === "SyntaxList",
         (context) => context.consume_component( //I'm misusing the 'consume_component' here, it's not really a component. I'm not sure how to do it differently for now (consume_syntax_list?)
@@ -638,18 +675,20 @@ export const Modifiers: h.Production<d_out.Modifiers> = (iterator, abort, $p) =>
             ($, abort, $p) => h.create_node_context(
                 $,
                 abort,
+                $p,
                 (context) => context.process_children_as_list(
                     "Modifiers",
                     ($): d_out.Modifier => {
                         switch ($.kind) {
+                            case "AsyncKeyword": return ['async', null]
+                            case "DeclareKeyword": return ['declare', null]
                             case "DefaultKeyword": return ['default', null]
                             case "ExportKeyword": return ['export', null]
                             case "ReadonlyKeyword": return ['readonly', null]
                             default: return abort({
                                 'parent': $p.parent,
-                                'context': "Modifiers",
-                                'cause': ['unexpected node', $],
-                                'expected': ['something', "'export' or 'readonly'"]
+                                'location description': "Modifiers",
+                                'problem': ['unexpected node', $],
                             })
                         }
                     },
@@ -662,7 +701,7 @@ export const Modifiers: h.Production<d_out.Modifiers> = (iterator, abort, $p) =>
 export const Optional_Type: h.Production<d_out.Optional_Type> = (iterator, abort, $p) => h.create_iterator_context(
     iterator,
     abort,
-    $p.parent,
+    $p,
     (context): d_out.Optional_Type => context.optional(
         ($) => $.kind === "ColonToken",
         (context) => ({
@@ -681,7 +720,7 @@ export const Optional_Type: h.Production<d_out.Optional_Type> = (iterator, abort
 export const Return_Type_Annotation: h.Production<d_out.Return_Type_Annotation> = (iterator, abort, $p) => h.create_iterator_context(
     iterator,
     abort,
-    $p.parent,
+    $p,
     (context) => context.optional(
         ($) => $.kind === "ColonToken",
         (context) => ({
@@ -728,6 +767,7 @@ export const Return_Type_Annotation: h.Production<d_out.Return_Type_Annotation> 
 export const Binding_Pattern: h.Refiner<d_out.Binding_Pattern> = ($, abort, $p) => h.create_node_context(
     $,
     abort,
+    $p,
     (context): d_out.Binding_Pattern => {
         switch ($.kind) {
             case "Identifier": return ['identifier', $]
@@ -775,9 +815,8 @@ export const Binding_Pattern: h.Refiner<d_out.Binding_Pattern> = ($, abort, $p) 
                                 )]
                                 default: return abort({
                                     'parent': $,
-                                    'context': "ArrayBindingElement",
-                                    'cause': ['unexpected node', $],
-                                    'expected': ['something', "`CommaToken`, `OmittedExpression`, or `BindingElement`"]
+                                    'location description': "ArrayBindingElement",
+                                    'problem': ['unexpected node', $],
                                 })
                             }
                         }
@@ -788,17 +827,15 @@ export const Binding_Pattern: h.Refiner<d_out.Binding_Pattern> = ($, abort, $p) 
                     ),
                 })
             )]
-            case "ObjectBindingPattern": return abort({
+            case "ObjectBindingPattern.object": return abort({
                 'parent': $,
-                'context': "Binding_Pattern",
-                'cause': ['unexpected node', $],
-                'expected': ['something', "ObjectBindingPattern support"]
+                'location description': "Binding_Pattern",
+                'problem': ['unexpected node', $],
             })
             default: return abort({
                 'parent': $,
-                'context': "Binding_Pattern",
-                'cause': ['unexpected node', $],
-                'expected': ['something', "`Identifier`, `ArrayBindingPattern`, or `ObjectBindingPattern`"]
+                'location description': "Binding_Pattern",
+                'problem': ['unexpected node', $],
             })
         }
     }
@@ -807,7 +844,7 @@ export const Binding_Pattern: h.Refiner<d_out.Binding_Pattern> = ($, abort, $p) 
 export const Parameters: h.Production<d_out.Parameters> = (iterator, abort, $p) => h.create_iterator_context(
     iterator,
     abort,
-    $p.parent,
+    $p,
     (context): d_out.Parameters => ({
         'open parenthesis token': context.consume_keyword(
             "Parameters['open parenthesis token']",
@@ -847,9 +884,8 @@ export const Parameters: h.Production<d_out.Parameters> = (iterator, abort, $p) 
                     )]
                     default: return abort({
                         'parent': $,
-                        'context': "Parameters_Entry",
-                        'cause': ['unexpected node', $],
-                        'expected': ['something', "`CommaToken` or `Parameter`"]
+                        'location description': "Parameters_Entry",
+                        'problem': ['unexpected node', $],
                     })
                 }
             }
@@ -862,9 +898,10 @@ export const Parameters: h.Production<d_out.Parameters> = (iterator, abort, $p) 
 
 )
 
-export const Qualified_Name: h.Refiner<d_out.Qualified_Name> = ($, abort) => h.create_node_context(
+export const Qualified_Name: h.Refiner<d_out.Qualified_Name> = ($, abort, $p) => h.create_node_context(
     $,
     abort,
+    $p,
     (context) => context.parse_children(
         "QualifiedName",
         (context): d_out.Qualified_Name => ({
@@ -887,7 +924,7 @@ export const Qualified_Name: h.Refiner<d_out.Qualified_Name> = ($, abort) => h.c
 export const Semi_Colon: h.Production<d_out.Semi_Colon> = (iterator, abort, $p) => h.create_iterator_context(
     iterator,
     abort,
-    $p.parent,
+    $p,
     (context) => context.optional(
         ($) => $.kind === "SemicolonToken",
         (context) => context.consume_keyword(
@@ -900,6 +937,7 @@ export const Semi_Colon: h.Production<d_out.Semi_Colon> = (iterator, abort, $p) 
 export const Source_File: h.Refiner<d_out.Source_File> = ($, abort, $p) => h.create_node_context(
     $,
     abort,
+    $p,
     (context): d_out.Source_File => context.assert_kind(
         "Source_File",
         "SourceFile",
@@ -924,6 +962,7 @@ export const Source_File: h.Refiner<d_out.Source_File> = ($, abort, $p) => h.cre
 export const Statement: h.Refiner<d_out.Statement> = ($, abort, $p) => h.create_node_context(
     $,
     abort,
+    $p,
     (context): d_out.Statement => {
         switch ($.kind) {
             case "Block": return ['block', context.call_with_this_node(
@@ -972,7 +1011,28 @@ export const Statement: h.Refiner<d_out.Statement> = ($, abort, $p) => h.create_
                         "CloseParenToken",
                     ),
                     'semicolon': context.construct_component(
-                        "ExportDeclaration['semicolon token']",
+                        "DoStatement['semicolon token']",
+                        Semi_Colon
+                    ),
+                })
+            )]
+            case "ExportAssignment": return ['export assignment', context.parse_children(
+                "ExportAssignment",
+                (context) => ({
+                    'export keyword': context.consume_keyword(
+                        "ExportAssignment['export keyword']",
+                        "ExportKeyword"
+                    ),
+                    'equals token': context.consume_keyword(
+                        "ExportAssignment['equals token']",
+                        "EqualsToken"
+                    ),
+                    'expression': context.consume_component(
+                        "ExportAssignment['expression']",
+                        Expression
+                    ),
+                    'semicolon': context.construct_component(
+                        "ExportAssignment['semicolon token']",
                         Semi_Colon
                     ),
                 })
@@ -1046,9 +1106,8 @@ export const Statement: h.Refiner<d_out.Statement> = ($, abort, $p) => h.create_
                                                         )]
                                                         default: return abort({
                                                             'parent': $,
-                                                            'context': "NamedExports['exports']",
-                                                            'cause': ['unexpected node', $],
-                                                            'expected': ['something', "`CommaToken` or `ExportSpecifier`"]
+                                                            'location description': "NamedExports['exports']",
+                                                            'problem': ['unexpected node', $],
                                                         })
                                                     }
                                                 }
@@ -1083,9 +1142,8 @@ export const Statement: h.Refiner<d_out.Statement> = ($, abort, $p) => h.create_
                                 )]
                                 default: return abort({
                                     'parent': $,
-                                    'context': "ExportDeclaration['type']",
-                                    'cause': ['unexpected node', $],
-                                    'expected': ['something', "`AsteriskToken` or `NamedExports`"]
+                                    'location description': "ExportDeclaration['type']",
+                                    'problem': ['unexpected node', $],
                                 })
                             }
 
@@ -1352,9 +1410,8 @@ export const Statement: h.Refiner<d_out.Statement> = ($, abort, $p) => h.create_
                                                                     )]
                                                                     default: return abort({
                                                                         'parent': $,
-                                                                        'context': "NamedImports['entries']",
-                                                                        'cause': ['unexpected node', $],
-                                                                        'expected': ['something', "`CommaToken` or `ImportSpecifier`"]
+                                                                        'location description': "NamedImports['entries']",
+                                                                        'problem': ['unexpected node', $],
                                                                     })
                                                                 }
                                                             }
@@ -1385,9 +1442,8 @@ export const Statement: h.Refiner<d_out.Statement> = ($, abort, $p) => h.create_
 
                                                 default: return abort({
                                                     'parent': $,
-                                                    'context': "ImportClause['type']",
-                                                    'cause': ['unexpected node', $],
-                                                    'expected': ['something', "NamedImports or NamespaceImport"]
+                                                    'location description': "ImportClause['type']",
+                                                    'problem': ['unexpected node', $],
                                                 })
                                             }
                                         }
@@ -1409,6 +1465,32 @@ export const Statement: h.Refiner<d_out.Statement> = ($, abort, $p) => h.create_
                         Semi_Colon
                     ),
                 })
+            )]
+            case "ImportEqualsDeclaration": return ['import equals', context.parse_children(
+                "ImportsEqualsDeclaration",
+                (context) => ({
+                    'import keyword': context.consume_keyword(
+                        "ImportsEqualsDeclaration['import keyword']",
+                        "ImportKeyword"
+                    ),
+                    'identifier': context.consume_literal(
+                        "ImportsEqualsDeclaration['identifier']",
+                        "Identifier"
+                    ),
+                    'equals token': context.consume_keyword(
+                        "ImportsEqualsDeclaration['equals token']",
+                        "EqualsToken"
+                    ),
+                    'expression': context.consume_component(
+                        "ImportsEqualsDeclaration['expression']",
+                        Expression
+                    ),
+                    'semicolon': context.construct_component(
+                        "ImportsEqualsDeclaration['semicolon']",
+                        Semi_Colon
+                    )
+                })
+
             )]
             case "InterfaceDeclaration": return ['interface', context.parse_children(
                 "InterfaceDeclaration",
@@ -1443,7 +1525,7 @@ export const Statement: h.Refiner<d_out.Statement> = ($, abort, $p) => h.create_
                     ),
                 })
             )]
-            case "ModuleDeclaration": return ['namespace', context.parse_children(
+            case "ModuleDeclaration": return ['module', context.parse_children(
                 "ModuleDeclaration",
                 (context): d_out.Module_Declaration => ({
                     'jsdoc': context.construct_component(
@@ -1454,13 +1536,38 @@ export const Statement: h.Refiner<d_out.Statement> = ($, abort, $p) => h.create_
                         "ModuleDeclaration['modifiers']",
                         Modifiers
                     ),
-                    'namespace keyword': context.consume_keyword(
+                    'type': context.peek_for_state(
                         "ModuleDeclaration['namespace keyword']",
-                        "NamespaceKeyword"
-                    ),
-                    'identifier': context.consume_literal(
-                        "ModuleDeclaration['identifier']",
-                        "Identifier"
+                        ($) => {
+                            switch ($.kind) {
+                                case "ModuleKeyword": return ['module', {
+                                    'keyword': context.consume_keyword(
+                                        "ModuleDeclaration['namespace keyword']['keyword']",
+                                        "ModuleKeyword"
+                                    ),
+                                    'name': context.consume_component(
+                                        "ModuleDeclaration['namespace keyword']['name']",
+                                        String_Literal_or_Identifier
+                                    )
+                                }]
+                                case "NamespaceKeyword": return ['namespace', {
+                                    'keyword': context.consume_keyword(
+                                        "ModuleDeclaration['namespace keyword']['keyword']",
+                                        "NamespaceKeyword"
+                                    ),
+                                    'name': context.consume_component(
+                                        "ModuleDeclaration['namespace keyword']['name']",
+                                        Identifier
+                                    )
+                                }]
+                                default: return abort({
+
+                                    'parent': $,
+                                    'location description': "ModuleDeclaration['namespace keyword']",
+                                    'problem': ['unexpected node', $],
+                                })
+                            }
+                        }
                     ),
                     'module block': context.consume_group(
                         "ModuleDeclaration['module block']",
@@ -1586,9 +1693,8 @@ export const Statement: h.Refiner<d_out.Statement> = ($, abort, $p) => h.create_
                                             )]
                                             default: return abort({
                                                 'parent': $,
-                                                'context': "CaseBlock['clauses']",
-                                                'cause': ['unexpected node', $],
-                                                'expected': ['something', "`CaseClause` or `DefaultClause`"]
+                                                'location description': "CaseBlock['clauses']",
+                                                'problem': ['unexpected node', $],
                                             })
                                         }
                                     }
@@ -1712,9 +1818,8 @@ export const Statement: h.Refiner<d_out.Statement> = ($, abort, $p) => h.create_
             )]
             default: return abort({
                 'parent': $,
-                'context': "Statements",
-                'cause': ['unexpected node', $],
-                'expected': ['something', "a statement"]
+                'location description': "Statements",
+                'problem': ['unexpected node', $],
             })
         }
     }
@@ -1723,6 +1828,7 @@ export const Statement: h.Refiner<d_out.Statement> = ($, abort, $p) => h.create_
 export const Statements: h.Refiner<d_out.Statements> = ($, abort, $p) => h.create_node_context(
     $,
     abort,
+    $p,
     (context) => context.assert_kind(
         "statements",
         "SyntaxList",
@@ -1739,6 +1845,7 @@ export const Statements: h.Refiner<d_out.Statements> = ($, abort, $p) => h.creat
 export const String_Literal_or_Identifier: h.Refiner<d_out.String_Literal_or_Identifier> = ($, abort, $p) => h.create_node_context(
     $,
     abort,
+    $p,
     (context): d_out.String_Literal_or_Identifier => {
         switch ($.kind) {
             case "StringLiteral": return ['string literal', $]
@@ -1748,9 +1855,8 @@ export const String_Literal_or_Identifier: h.Refiner<d_out.String_Literal_or_Ide
             )]
             default: return abort({
                 'parent': $,
-                'context': "String_Literal_Or_Identifier",
-                'cause': ['unexpected node', $],
-                'expected': ['something', "`StringLiteral` or `Identifier`"]
+                'location description': "String_Literal_Or_Identifier",
+                'problem': ['unexpected node', $],
             })
         }
     }
@@ -1759,6 +1865,7 @@ export const String_Literal_or_Identifier: h.Refiner<d_out.String_Literal_or_Ide
 export const Type: h.Refiner<d_out.Type> = ($, abort, $p) => h.create_node_context(
     $,
     abort,
+    $p,
     (context): d_out.Type => {
         switch ($.kind) {
             case "AnyKeyword": return ['any', null]
@@ -1839,9 +1946,8 @@ export const Type: h.Refiner<d_out.Type> = ($, abort, $p) => h.create_node_conte
                                 case "TrueKeyword": return ['true keyword', null]
                                 default: return abort({
                                     'parent': $,
-                                    'context': "LiteralType['type']",
-                                    'cause': ['unexpected node', $],
-                                    'expected': ['something', "`NullKeyword` or `StringLiteral`"]
+                                    'location description': "LiteralType['type']",
+                                    'problem': ['unexpected node', $],
                                 })
                             }
                         },
@@ -1948,10 +2054,9 @@ export const Type: h.Refiner<d_out.Type> = ($, abort, $p) => h.create_node_conte
             case "UnknownKeyword": return ['unknown', null]
             case "VoidKeyword": return ['void', null]
             default: return abort({
-                'context': "Type",
+                'location description': "Type",
                 'parent': $,
-                'cause': ['unexpected node', $],
-                'expected': ['something', "a Type"]
+                'problem': ['unexpected node', $],
             })
         }
     }
@@ -1960,7 +2065,7 @@ export const Type: h.Refiner<d_out.Type> = ($, abort, $p) => h.create_node_conte
 export const Type_Arguments: h.Production<d_out.Type_Arguments> = (iterator, abort, $p) => h.create_iterator_context(
     iterator,
     abort,
-    $p.parent,
+    $p,
     (context): d_out.Type_Arguments => context.optional(
         ($) => $.kind === "LessThanToken",
         (context) => ({
@@ -1992,7 +2097,7 @@ export const Type_Arguments: h.Production<d_out.Type_Arguments> = (iterator, abo
 export const Type_Literal: h.Production<d_out.Type_Literal_And_Interface_And_Class_Body> = (iterator, abort, $p) => h.create_iterator_context(
     iterator,
     abort,
-    $p.parent,
+    $p,
     (context): d_out.Type_Literal_And_Interface_And_Class_Body => ({
         'open brace token': context.consume_keyword(
             "TypeLiteral['open brace token']",
@@ -2129,7 +2234,7 @@ export const Type_Literal: h.Production<d_out.Type_Literal_And_Interface_And_Cla
 export const Type_Parameters: h.Production<d_out.Type_Parameters> = (iterator, abort, $p) => h.create_iterator_context(
     iterator,
     abort,
-    $p.parent,
+    $p,
     (context): d_out.Type_Parameters => context.optional(
         ($) => $.kind === "LessThanToken",
         (context) => ({
@@ -2166,9 +2271,8 @@ export const Type_Parameters: h.Production<d_out.Type_Parameters> = (iterator, a
                         )]
                         default: return abort({
                             'parent': $p.parent,
-                            'context': "TypeParameters['entries']",
-                            'cause': ['unexpected node', $],
-                            'expected': ['something', "`CommaToken` or `TypeParameter`"]
+                            'location description': "TypeParameters['entries']",
+                            'problem': ['unexpected node', $],
                         })
                     }
                 }
@@ -2182,9 +2286,10 @@ export const Type_Parameters: h.Production<d_out.Type_Parameters> = (iterator, a
 
 )
 
-export const Variable_Declaration_List: h.Refiner<d_out.Variable_Declaration_List> = ($, abort) => h.create_node_context(
+export const Variable_Declaration_List: h.Refiner<d_out.Variable_Declaration_List> = ($, abort, $p) => h.create_node_context(
     $,
     abort,
+    $p,
     (context): d_out.Variable_Declaration_List => context.assert_kind(
         "VariableDeclarationList",
         "VariableDeclarationList",
@@ -2195,13 +2300,13 @@ export const Variable_Declaration_List: h.Refiner<d_out.Variable_Declaration_Lis
                     "VariableDeclarationList['mutability']",
                     ($) => {
                         switch ($.kind) {
-                            case "ConstKeyword": return ['const keyword', null]
-                            case "LetKeyword": return ['let keyword', null]
+                            case "ConstKeyword": return ['const', null]
+                            case "LetKeyword": return ['let', null]
+                            case "VarKeyword": return ['var', null]
                             default: return abort({
                                 'parent': $,
-                                'context': "VariableDeclarationList['mutability']",
-                                'cause': ['unexpected node', $],
-                                'expected': ['something', "`ConstKeyword` or `LetKeyword`"]
+                                'location description': "VariableDeclarationList['mutability']",
+                                'problem': ['unexpected node', $],
                             })
                         }
                     }
@@ -2238,9 +2343,8 @@ export const Variable_Declaration_List: h.Refiner<d_out.Variable_Declaration_Lis
                             )
                             default: return abort({
                                 'parent': $,
-                                'context': "VariableDeclarationList['declarations']",
-                                'cause': ['unexpected node', $],
-                                'expected': ['something', "VariableDeclaration"]
+                                'location description': "VariableDeclarationList['declarations']",
+                                'problem': ['unexpected node', $],
                             })
                         }
                     }

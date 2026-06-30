@@ -26,6 +26,12 @@ export type Statement =
         'close parenthesis token': null
         'semicolon': Semi_Colon
     }]
+    | ['export assignment', {
+        'export keyword': null
+        'equals token': null
+        'expression': Expression
+        'semicolon': Semi_Colon
+    }]
     | ['export declaration', Export_Declaration]
     | ['expression', {
         'expression': Expression
@@ -56,8 +62,15 @@ export type Statement =
         'semicolon': Semi_Colon
     }]
     | ['import', Import_Declaration]
+    | ['import equals', {
+        'import keyword': null
+        'identifier': Identifier
+        'equals token': null
+        'expression': Expression
+        'semicolon': Semi_Colon
+    }]
     | ['interface', Interface_Declaration]
-    | ['namespace', Module_Declaration] //aka 'module'
+    | ['module', Module_Declaration]
     | ['return', {
         'jsdoc': JSDoc
         'return keyword': null
@@ -187,7 +200,7 @@ export type Export_Declaration = {
         'exports': p_.List<Export_Declaration_Entry>
         'close brace token': null
     }]
-    |['namespace', {
+    | ['namespace', {
         'asterisk token': null
         'as keyword': null
         'identifier': Identifier
@@ -244,8 +257,9 @@ export type Variable_Statement = {
 
 export type Variable_Declaration_List = {
     'mutability':
-    | ['const keyword', null]
-    | ['let keyword', null]
+    | ['const', null]
+    | ['let', null]
+    | ['var', null]
     'declarations': p_.List<Variable_Declaration>
 }
 
@@ -275,7 +289,13 @@ export type Expression =
         'argument expression': Expression
         'close bracket token': null
     }]
-    | ['false keyword', null]
+    | ['external module reference', {
+        'require keyword': null
+        'open parenthesis token': null
+        'module name': String_Literal
+        'close parenthesis token': null
+    }]
+    | ['false', null]
     | ['identifier', Identifier]
     | ['new', {
         'new keyword': null
@@ -318,6 +338,9 @@ export type Expression =
         'type of keyword': null
         'expression': Expression
     }]
+    | ['void', {
+        'void keyword': null
+    }]
 
 export type Block = {
     'open brace token': null
@@ -328,13 +351,19 @@ export type Block = {
 export type Binary_Expression = {
     'left': Expression
     'operator token':
+    | ['^=', null]
     | ['-', null]
     | ['-=', null]
+    | ['!=', null]
     | ['!==', null]
     | ['??', null]
     | ['*', null]
+    | ['**', null]
+    | ['**=', null]
     | ['*=', null]
     | ['/', null]
+    | ['&', null]
+    | ['&=', null]
     | ['&&', null]
     | ['%', null]
     | ['+', null]
@@ -343,12 +372,16 @@ export type Binary_Expression = {
     | ['<<', null]
     | ['<=', null]
     | ['=', null]
+    | ['==', null]
     | ['===', null]
     | ['>', null]
+    | ['>=', null]
     | ['>>', null]
     | ['>>>', null]
-    | ['>=', null]
+    | ['|', null]
+    | ['|=', null]
     | ['||', null]
+    | ['||=', null]
     | ['instanceof', null]
     'right': Expression
 }
@@ -538,8 +571,15 @@ export type Import_Specifier =
 export type Module_Declaration = {
     'jsdoc': JSDoc
     'modifiers': Modifiers
-    'namespace keyword': null
-    'identifier': Identifier
+    'type':
+    | ['module', {
+        'keyword': null
+        'name': String_Literal_or_Identifier
+    }]
+    | ['namespace', {
+        'keyword': null
+        'name': Identifier
+    }]
     'module block': Module_Block
     'semicolon': Semi_Colon
 }
@@ -547,6 +587,8 @@ export type Module_Declaration = {
 export type Modifiers = p_.Optional_Value<p_.List<Modifier>>
 
 export type Modifier =
+    | ['async', null]
+    | ['declare', null]
     | ['default', null]
     | ['export', null]
     | ['readonly', null]
