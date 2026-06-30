@@ -21,8 +21,8 @@ export const Error: p_i.Transformer<d_in.Error, d_out.Phrase> = ($) => sh.ph.com
         return p_.from.state($.inner.cause).decide(
             ($) => {
                 switch ($[0]) {
-                    case 'end of node list': return p_.ss($, ($) => sh.ph.literal(`:${parent.location.line}:${parent.location.column}`))
-                    case 'unexpected node': return p_.ss($, ($) => sh.ph.literal(`:${$.location.line}:${$.location.column}`))
+                    case 'end of node list': return p_.option($, ($) => sh.ph.literal(`:${parent.location.line}:${parent.location.column}`))
+                    case 'unexpected node': return p_.option($, ($) => sh.ph.literal(`:${$.location.line}:${$.location.column}`))
                     default: return p_.au($[0])
                 }
             }
@@ -33,9 +33,9 @@ export const Error: p_i.Transformer<d_in.Error, d_out.Phrase> = ($) => sh.ph.com
     p_.from.state($.inner.expected).decide(
         ($) => {
             switch ($[0]) {
-                case 'nothing': return p_.ss($, ($) => sh.ph.literal("nothing"))
-                case 'something': return p_.ss($, ($) => sh.ph.literal($))
-                case 'nothing': return p_.ss($, ($) => sh.ph.literal("nothing"))
+                case 'nothing': return p_.option($, ($) => sh.ph.literal("nothing"))
+                case 'something': return p_.option($, ($) => sh.ph.literal($))
+                case 'nothing': return p_.option($, ($) => sh.ph.literal("nothing"))
                 default: return p_.au($[0])
             }
         }
@@ -46,8 +46,8 @@ export const Error: p_i.Transformer<d_in.Error, d_out.Phrase> = ($) => sh.ph.com
     p_.from.state($.inner.cause).decide(
         ($) => {
             switch ($[0]) {
-                case 'end of node list': return p_.ss($, ($) => sh.ph.literal("nothing"))
-                case 'unexpected node': return p_.ss($, ($) => sh.ph.composed([
+                case 'end of node list': return p_.option($, ($) => sh.ph.literal("nothing"))
+                case 'unexpected node': return p_.option($, ($) => sh.ph.composed([
                     sh.ph.literal("'"),
                     sh.ph.literal($.kind),
                     sh.ph.literal("'"),

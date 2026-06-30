@@ -17,9 +17,9 @@ export const Arguments: p_i.Transformer<d_in.Arguments, d_out.Phrase> = ($) => s
                     p_.from.state($).decide(
                         ($) => {
                             switch ($[0]) {
-                                case 'expression': return p_.ss($, ($) => Expression($))
-                                case 'comma token': return p_.ss($, ($) => sh.ph.literal(", "))
-                                case 'spread': return p_.ss($, ($) => sh.ph.composed(p_.literal.list([
+                                case 'expression': return p_.option($, ($) => Expression($))
+                                case 'comma token': return p_.option($, ($) => sh.ph.literal(", "))
+                                case 'spread': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                                     sh.ph.literal("..."),
                                     Expression($['expression']),
                                 ])))
@@ -37,17 +37,17 @@ export const Arguments: p_i.Transformer<d_in.Arguments, d_out.Phrase> = ($) => s
 export const Binding_Pattern: p_i.Transformer<d_in.Binding_Pattern, d_out.Phrase> = ($) => p_.from.state($).decide(
     ($) => {
         switch ($[0]) {
-            case 'identifier': return p_.ss($, ($) => sh.ph.literal($.text))
-            case 'array binding pattern': return p_.ss($, ($) => sh.ph.composed(p_.literal.list([
+            case 'identifier': return p_.option($, ($) => sh.ph.literal($.text))
+            case 'array binding pattern': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                 sh.ph.literal("["),
                 sh.ph.composed(
                     p_.from.list($['elements']).map(
                         ($) => p_.from.state($).decide(
                             ($) => {
                                 switch ($[0]) {
-                                    case 'comma token': return p_.ss($, ($) => sh.ph.literal(", "))
-                                    case 'omitted expression': return p_.ss($, ($) => sh.ph.nothing())
-                                    case 'binding element': return p_.ss($, ($) => sh.ph.composed(p_.literal.list([
+                                    case 'comma token': return p_.option($, ($) => sh.ph.literal(", "))
+                                    case 'omitted expression': return p_.option($, ($) => sh.ph.nothing())
+                                    case 'binding element': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                                         p_.from.optional($['dot dot dot token']).decide(
                                             () => sh.ph.literal("..."),
                                             () => sh.ph.nothing()
@@ -69,7 +69,7 @@ export const Binding_Pattern: p_i.Transformer<d_in.Binding_Pattern, d_out.Phrase
                 ),
                 sh.ph.literal("]"),
             ])))
-            case 'object binding pattern': return p_.ss($, ($) => sh.ph.literal("/* TODO: object binding pattern */"))
+            case 'object binding pattern': return p_.option($, ($) => sh.ph.literal("/* TODO: object binding pattern */"))
             default: return p_.au($[0])
         }
     }
@@ -86,8 +86,8 @@ export const Block: p_i.Transformer<d_in.Block, d_out.Phrase> = ($) => sh.ph.com
 export const Entity_Name: p_i.Transformer<d_in.Entity_Name, d_out.Phrase> = ($) => p_.from.state($).decide(
     ($) => {
         switch ($[0]) {
-            case 'identifier': return p_.ss($, ($) => sh.ph.literal($.text))
-            case 'qualified name': return p_.ss($, ($) => Qualified_Name($))
+            case 'identifier': return p_.option($, ($) => sh.ph.literal($.text))
+            case 'qualified name': return p_.option($, ($) => Qualified_Name($))
             default: return p_.au($[0])
         }
     }
@@ -96,7 +96,7 @@ export const Entity_Name: p_i.Transformer<d_in.Entity_Name, d_out.Phrase> = ($) 
 export const Expression: p_i.Transformer<d_in.Expression, d_out.Phrase> = ($) => p_.from.state($).decide(
     ($) => {
         switch ($[0]) {
-            case 'array literal': return p_.ss($, ($) => sh.ph.composed(p_.literal.list([
+            case 'array literal': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                 sh.ph.literal("["),
                 sh.ph.composed(
                     p_.from.list($['elements']).map(
@@ -104,8 +104,8 @@ export const Expression: p_i.Transformer<d_in.Expression, d_out.Phrase> = ($) =>
                             p_.from.state($).decide(
                                 ($) => {
                                     switch ($[0]) {
-                                        case 'comma token': return p_.ss($, ($) => sh.ph.literal(", "))
-                                        case 'expression': return p_.ss($, ($) => Expression($))
+                                        case 'comma token': return p_.option($, ($) => sh.ph.literal(", "))
+                                        case 'expression': return p_.option($, ($) => Expression($))
                                         default: return p_.au($[0])
                                     }
                                 }
@@ -115,13 +115,13 @@ export const Expression: p_i.Transformer<d_in.Expression, d_out.Phrase> = ($) =>
                 ),
                 sh.ph.literal("]"),
             ])))
-            case 'arrow function': return p_.ss($, ($) => sh.ph.composed(p_.literal.list([
+            case 'arrow function': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                 Type_Parameters($['type parameters']),
                 p_.from.state($['parameters']).decide(
                     ($) => {
                         switch ($[0]) {
-                            case 'with parentheses': return p_.ss($, ($) => Parameters($))
-                            case 'without parentheses': return p_.ss($, ($) => sh.ph.composed(p_.literal.list([
+                            case 'with parentheses': return p_.option($, ($) => Parameters($))
+                            case 'without parentheses': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                                 Binding_Pattern($.parameter.name),
                                 Optional_Type($.parameter.type)
                             ])))
@@ -134,88 +134,88 @@ export const Expression: p_i.Transformer<d_in.Expression, d_out.Phrase> = ($) =>
                 p_.from.state($['body']).decide(
                     ($) => {
                         switch ($[0]) {
-                            case 'block': return p_.ss($, ($) => Block($))
-                            case 'expression': return p_.ss($, ($) => Expression($))
+                            case 'block': return p_.option($, ($) => Block($))
+                            case 'expression': return p_.option($, ($) => Expression($))
                             default: return p_.au($[0])
                         }
                     }
                 ),
             ])))
-            case 'as expression': return p_.ss($, ($) => sh.ph.composed(p_.literal.list([
+            case 'as expression': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                 Expression($['expression']),
                 sh.ph.literal(" as "),
                 Type($['type']),
             ])))
-            case 'binary': return p_.ss($, ($) => sh.ph.composed(p_.literal.list([
+            case 'binary': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                 Expression($['left']),
                 p_.from.state($['operator token']).decide(
                     ($) => {
                         switch ($[0]) {
-                            case '-': return p_.ss($, ($) => sh.ph.literal(" - "))
-                            case '-=': return p_.ss($, ($) => sh.ph.literal(" -= "))
-                            case '!==': return p_.ss($, ($) => sh.ph.literal(" !== "))
-                            case '??': return p_.ss($, ($) => sh.ph.literal(" ?? "))
-                            case '*': return p_.ss($, ($) => sh.ph.literal(" * "))
-                            case '*=': return p_.ss($, ($) => sh.ph.literal(" *= "))
-                            case '/': return p_.ss($, ($) => sh.ph.literal(" / "))
-                            case '&&': return p_.ss($, ($) => sh.ph.literal(" && "))
-                            case '%': return p_.ss($, ($) => sh.ph.literal(" % "))
-                            case '+': return p_.ss($, ($) => sh.ph.literal(" + "))
-                            case '+=': return p_.ss($, ($) => sh.ph.literal(" += "))
-                            case '<': return p_.ss($, ($) => sh.ph.literal(" < "))
-                            case '<<': return p_.ss($, ($) => sh.ph.literal(" << "))
-                            case '<=': return p_.ss($, ($) => sh.ph.literal(" <= "))
-                            case '=': return p_.ss($, ($) => sh.ph.literal(" = "))
-                            case '===': return p_.ss($, ($) => sh.ph.literal(" === "))
-                            case '>': return p_.ss($, ($) => sh.ph.literal(" > "))
-                            case '>=': return p_.ss($, ($) => sh.ph.literal(" >= "))
-                            case '>>': return p_.ss($, ($) => sh.ph.literal(" >> "))
-                            case '>>>': return p_.ss($, ($) => sh.ph.literal(" >>> "))
-                            case '||': return p_.ss($, ($) => sh.ph.literal(" || "))
-                            case 'instanceof': return p_.ss($, ($) => sh.ph.literal(" instanceof "))
+                            case '-': return p_.option($, ($) => sh.ph.literal(" - "))
+                            case '-=': return p_.option($, ($) => sh.ph.literal(" -= "))
+                            case '!==': return p_.option($, ($) => sh.ph.literal(" !== "))
+                            case '??': return p_.option($, ($) => sh.ph.literal(" ?? "))
+                            case '*': return p_.option($, ($) => sh.ph.literal(" * "))
+                            case '*=': return p_.option($, ($) => sh.ph.literal(" *= "))
+                            case '/': return p_.option($, ($) => sh.ph.literal(" / "))
+                            case '&&': return p_.option($, ($) => sh.ph.literal(" && "))
+                            case '%': return p_.option($, ($) => sh.ph.literal(" % "))
+                            case '+': return p_.option($, ($) => sh.ph.literal(" + "))
+                            case '+=': return p_.option($, ($) => sh.ph.literal(" += "))
+                            case '<': return p_.option($, ($) => sh.ph.literal(" < "))
+                            case '<<': return p_.option($, ($) => sh.ph.literal(" << "))
+                            case '<=': return p_.option($, ($) => sh.ph.literal(" <= "))
+                            case '=': return p_.option($, ($) => sh.ph.literal(" = "))
+                            case '===': return p_.option($, ($) => sh.ph.literal(" === "))
+                            case '>': return p_.option($, ($) => sh.ph.literal(" > "))
+                            case '>=': return p_.option($, ($) => sh.ph.literal(" >= "))
+                            case '>>': return p_.option($, ($) => sh.ph.literal(" >> "))
+                            case '>>>': return p_.option($, ($) => sh.ph.literal(" >>> "))
+                            case '||': return p_.option($, ($) => sh.ph.literal(" || "))
+                            case 'instanceof': return p_.option($, ($) => sh.ph.literal(" instanceof "))
                             default: return p_.au($[0])
                         }
                     }
                 ),
                 Expression($['right']),
             ])))
-            case 'call': return p_.ss($, ($) => sh.ph.composed(p_.literal.list([
+            case 'call': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                 Expression($['expression']),
                 Arguments($.arguments)
             ])))
-            case 'conditional': return p_.ss($, ($) => sh.ph.composed(p_.literal.list([
+            case 'conditional': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                 Expression($['condition']),
                 sh.ph.literal(" ? "),
                 Expression($['when true']),
                 sh.ph.literal(" : "),
                 Expression($['when false']),
             ])))
-            case 'element access': return p_.ss($, ($) => sh.ph.composed(p_.literal.list([
+            case 'element access': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                 Expression($['expression']),
                 sh.ph.literal("["),
                 Expression($['argument expression']),
                 sh.ph.literal("]"),
             ])))
-            case 'false keyword': return p_.ss($, ($) => sh.ph.literal("false"))
-            case 'identifier': return p_.ss($, ($) => sh.ph.literal($.text))
-            case 'object literal': return p_.ss($, ($) => sh.ph.composed(p_.literal.list([
+            case 'false keyword': return p_.option($, ($) => sh.ph.literal("false"))
+            case 'identifier': return p_.option($, ($) => sh.ph.literal($.text))
+            case 'object literal': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                 sh.ph.literal("{"),
                 sh.ph.composed(
                     p_.from.list($['properties']).map(
                         ($) => p_.from.state($).decide(
                             ($) => {
                                 switch ($[0]) {
-                                    case 'comma token': return p_.ss($, ($) => sh.ph.literal(", "))
-                                    case 'method': return p_.ss($, ($) => sh.ph.composed(p_.literal.list([
+                                    case 'comma token': return p_.option($, ($) => sh.ph.literal(", "))
+                                    case 'method': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                                         sh.ph.literal("FIXME: method"),
                                     ])))
-                                    case 'property assignment': return p_.ss($, ($) => sh.ph.composed(p_.literal.list([
+                                    case 'property assignment': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                                         JSDoc($['jsdoc']),
                                         String_Literal_Or_Identifier($['name']),
                                         sh.ph.literal(": "),
                                         Expression($['initializer']),
                                     ])))
-                                    case 'shorthand property assignment': return p_.ss($, ($) => sh.ph.composed(p_.literal.list([
+                                    case 'shorthand property assignment': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                                         String_Literal_Or_Identifier($['name']),
                                     ])))
                                     default: return p_.au($[0])
@@ -226,57 +226,57 @@ export const Expression: p_i.Transformer<d_in.Expression, d_out.Phrase> = ($) =>
                 ),
                 sh.ph.literal("}"),
             ])))
-            case 'new': return p_.ss($, ($) => sh.ph.composed(p_.literal.list([
+            case 'new': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                 sh.ph.literal("new "),
                 Expression($['expression']),
                 Arguments($['arguments']),
             ])))
-            case 'no substitution template literal': return p_.ss($, ($) => sh.ph.literal($.text))
-            case 'non null': return p_.ss($, ($) => sh.ph.composed(p_.literal.list([
+            case 'no substitution template literal': return p_.option($, ($) => sh.ph.literal($.text))
+            case 'non null': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                 Expression($['expression']),
                 sh.ph.literal("!"),
             ])))
 
-            case 'null keyword': return p_.ss($, ($) => sh.ph.literal("null"))
-            case 'numeric literal': return p_.ss($, ($) => sh.ph.literal($.text))
-            case 'parenthesized': return p_.ss($, ($) => sh.ph.composed(p_.literal.list([
+            case 'null keyword': return p_.option($, ($) => sh.ph.literal("null"))
+            case 'numeric literal': return p_.option($, ($) => sh.ph.literal($.text))
+            case 'parenthesized': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                 sh.ph.literal("("),
                 Expression($['expression']),
                 sh.ph.literal(")"),
             ])))
-            case 'postfix unary': return p_.ss($, ($) => sh.ph.composed(p_.literal.list([
+            case 'postfix unary': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                 Expression($['operand']),
                 p_.from.state($['operator token']).decide(
                     ($) => {
                         switch ($[0]) {
-                            case '--': return p_.ss($, ($) => sh.ph.literal("-"))
-                            case '++': return p_.ss($, ($) => sh.ph.literal("+"))
+                            case '--': return p_.option($, ($) => sh.ph.literal("-"))
+                            case '++': return p_.option($, ($) => sh.ph.literal("+"))
                             default: return p_.au($[0])
                         }
                     }
                 )
             ])))
-            case 'prefix unary': return p_.ss($, ($) => sh.ph.composed(p_.literal.list([
+            case 'prefix unary': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                 p_.from.state($['operator token']).decide(
                     ($) => {
                         switch ($[0]) {
-                            case '!': return p_.ss($, ($) => sh.ph.literal("!"))
-                            case '-': return p_.ss($, ($) => sh.ph.literal("-"))
-                            case '+': return p_.ss($, ($) => sh.ph.literal("+"))
+                            case '!': return p_.option($, ($) => sh.ph.literal("!"))
+                            case '-': return p_.option($, ($) => sh.ph.literal("-"))
+                            case '+': return p_.option($, ($) => sh.ph.literal("+"))
                             default: return p_.au($[0])
                         }
                     }
                 ),
                 Expression($['operand']),
             ])))
-            case 'property access': return p_.ss($, ($) => sh.ph.composed(p_.literal.list([
+            case 'property access': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                 Expression($['expression']),
                 sh.ph.literal("."),
                 sh.ph.literal($['name'].text),
             ])))
-            case 'regular expression literal': return p_.ss($, ($) => sh.ph.literal($.text))
-            case 'string literal': return p_.ss($, ($) => sh.ph.literal($.text))
-            case 'template': return p_.ss($, ($) => sh.ph.composed(p_.literal.list([
+            case 'regular expression literal': return p_.option($, ($) => sh.ph.literal($.text))
+            case 'string literal': return p_.option($, ($) => sh.ph.literal($.text))
+            case 'template': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                 sh.ph.literal($.head.text),
                 sh.ph.composed(
                     p_.from.list($['template spans']).map(
@@ -285,8 +285,8 @@ export const Expression: p_i.Transformer<d_in.Expression, d_out.Phrase> = ($) =>
                             p_.from.state($['suffix']).decide(
                                 ($) => {
                                     switch ($[0]) {
-                                        case 'middle': return p_.ss($, ($) => sh.ph.literal($.text))
-                                        case 'tail': return p_.ss($, ($) => sh.ph.literal($.text))
+                                        case 'middle': return p_.option($, ($) => sh.ph.literal($.text))
+                                        case 'tail': return p_.option($, ($) => sh.ph.literal($.text))
                                         default: return p_.au($[0])
                                     }
                                 }
@@ -295,8 +295,8 @@ export const Expression: p_i.Transformer<d_in.Expression, d_out.Phrase> = ($) =>
                     )
                 )
             ])))
-            case 'true keyword': return p_.ss($, ($) => sh.ph.literal("true"))
-            case 'type of': return p_.ss($, ($) => sh.ph.composed(p_.literal.list([
+            case 'true keyword': return p_.option($, ($) => sh.ph.literal("true"))
+            case 'type of': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                 sh.ph.literal("typeof "),
                 Expression($['expression']),
             ])))
@@ -320,9 +320,9 @@ export const Modifiers: p_i.Transformer<d_in.Modifiers, d_out.Phrase> = ($) => p
             ($) => p_.from.state($).decide(
                 ($) => {
                     switch ($[0]) {
-                        case 'default': return p_.ss($, ($) => sh.ph.literal("default "))
-                        case 'export': return p_.ss($, ($) => sh.ph.literal("export "))
-                        case 'readonly': return p_.ss($, ($) => sh.ph.literal("readonly "))
+                        case 'default': return p_.option($, ($) => sh.ph.literal("default "))
+                        case 'export': return p_.option($, ($) => sh.ph.literal("export "))
+                        case 'readonly': return p_.option($, ($) => sh.ph.literal("readonly "))
                         default: return p_.au($[0])
                     }
                 }
@@ -347,8 +347,8 @@ export const Parameters: p_i.Transformer<d_in.Parameters, d_out.Phrase> = ($) =>
             ($) => p_.from.state($).decide(
                 ($) => {
                     switch ($[0]) {
-                        case 'comma token': return p_.ss($, ($) => sh.ph.literal(", "))
-                        case 'parameter': return p_.ss($, ($) => sh.ph.composed(p_.literal.list([
+                        case 'comma token': return p_.option($, ($) => sh.ph.literal(", "))
+                        case 'parameter': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                             p_.from.optional($['dot dot dot token']).decide(
                                 () => sh.ph.literal("..."),
                                 () => sh.ph.nothing()
@@ -381,8 +381,8 @@ export const Return_Type_Annotation: p_i.Transformer<d_in.Return_Type_Annotation
         p_.from.state($['kind']).decide(
             ($) => {
                 switch ($[0]) {
-                    case 'type': return p_.ss($, ($) => Type($))
-                    case 'type predicate': return p_.ss($, ($) => sh.ph.composed(p_.literal.list([
+                    case 'type': return p_.option($, ($) => Type($))
+                    case 'type predicate': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                         sh.ph.literal($.identifier.text),
                         sh.ph.literal(" is "),
                         Type($['type']),
@@ -398,54 +398,54 @@ export const Return_Type_Annotation: p_i.Transformer<d_in.Return_Type_Annotation
 export const Type: p_i.Transformer<d_in.Type, d_out.Phrase> = ($) => p_.from.state($).decide(
     ($) => {
         switch ($[0]) {
-            case 'any': return p_.ss($, ($) => sh.ph.literal("any"))
-            case 'array': return p_.ss($, ($) => sh.ph.composed(p_.literal.list([
+            case 'any': return p_.option($, ($) => sh.ph.literal("any"))
+            case 'array': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                 Type($['element type']),
                 sh.ph.literal("[]"),
             ])))
-            case 'boolean': return p_.ss($, ($) => sh.ph.literal("boolean"))
-            case 'function': return p_.ss($, ($) => sh.ph.composed(p_.literal.list([
+            case 'boolean': return p_.option($, ($) => sh.ph.literal("boolean"))
+            case 'function': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                 Type_Parameters($['type parameters']),
                 Parameters($['parameters']),
                 Optional_Type($['type']),
                 sh.ph.literal(" => "),
                 Type($['return type']),
             ])))
-            case 'indexed access': return p_.ss($, ($) => sh.ph.composed(p_.literal.list([
+            case 'indexed access': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                 Type($['object type']),
                 sh.ph.literal("["),
                 Type($['index type']),
                 sh.ph.literal("]"),
             ])))
-            case 'literal type': return p_.ss($, ($) => p_.from.state($.type).decide(
+            case 'literal type': return p_.option($, ($) => p_.from.state($.type).decide(
                 ($) => {
                     switch ($[0]) {
-                        case 'false keyword': return p_.ss($, ($) => sh.ph.literal("false"))
-                        case 'null': return p_.ss($, ($) => sh.ph.literal("null"))
-                        case 'string literal': return p_.ss($, ($) => sh.ph.literal($.text))
-                        case 'true keyword': return p_.ss($, ($) => sh.ph.literal("true"))
+                        case 'false keyword': return p_.option($, ($) => sh.ph.literal("false"))
+                        case 'null': return p_.option($, ($) => sh.ph.literal("null"))
+                        case 'string literal': return p_.option($, ($) => sh.ph.literal($.text))
+                        case 'true keyword': return p_.option($, ($) => sh.ph.literal("true"))
                         default: return p_.au($[0])
                     }
                 }
             ))
-            case 'never': return p_.ss($, ($) => sh.ph.literal("never"))
-            case 'number': return p_.ss($, ($) => sh.ph.literal("number"))
-            case 'parenthesized': return p_.ss($, ($) => sh.ph.composed(p_.literal.list([
+            case 'never': return p_.option($, ($) => sh.ph.literal("never"))
+            case 'number': return p_.option($, ($) => sh.ph.literal("number"))
+            case 'parenthesized': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                 sh.ph.literal("("),
                 Type($['type']),
                 sh.ph.literal(")"),
             ])))
-            case 'string': return p_.ss($, ($) => sh.ph.literal("string"))
-            case 'symbol': return p_.ss($, ($) => sh.ph.literal("symbol"))
-            case 'tuple type': return p_.ss($, ($) => sh.ph.composed(p_.literal.list([
+            case 'string': return p_.option($, ($) => sh.ph.literal("string"))
+            case 'symbol': return p_.option($, ($) => sh.ph.literal("symbol"))
+            case 'tuple type': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                 sh.ph.literal("["),
                 sh.ph.composed(
                     p_.from.list($['elements']).map(
                         ($) => p_.from.state($).decide(
                             ($) => {
                                 switch ($[0]) {
-                                    case 'comma token': return p_.ss($, ($) => sh.ph.literal(", "))
-                                    case 'type': return p_.ss($, ($) => Type($))
+                                    case 'comma token': return p_.option($, ($) => sh.ph.literal(", "))
+                                    case 'type': return p_.option($, ($) => Type($))
                                     default: return p_.au($[0])
                                 }
                             }
@@ -454,35 +454,35 @@ export const Type: p_i.Transformer<d_in.Type, d_out.Phrase> = ($) => p_.from.sta
                 ),
                 sh.ph.literal("]"),
             ])))
-            case 'type literal': return p_.ss($, ($) => Type_Literal_And_Interface_And_Class_Body($))
-            case 'type operator': return p_.ss($, ($) => sh.ph.composed(p_.literal.list([
+            case 'type literal': return p_.option($, ($) => Type_Literal_And_Interface_And_Class_Body($))
+            case 'type operator': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                 sh.ph.literal("readonly "),
                 Type($['type']),
             ])))
-            case 'type reference': return p_.ss($, ($) => sh.ph.composed(p_.literal.list([
+            case 'type reference': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                 Entity_Name($['entity name']),
                 Type_Arguments($['type arguments']),
 
             ])))
-            case 'union type': return p_.ss($, ($) => sh.ph.composed(
+            case 'union type': return p_.option($, ($) => sh.ph.composed(
                 p_.from.list($['members']).map(
                     ($) => p_.from.state($).decide(
                         ($) => {
                             switch ($[0]) {
-                                case 'type': return p_.ss($, ($) => sh.ph.composed(p_.literal.list([
+                                case 'type': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                                     Type($),
                                     sh.ph.literal(" "),
                                 ])))
-                                case 'bar token': return p_.ss($, ($) => sh.ph.literal("| "))
+                                case 'bar token': return p_.option($, ($) => sh.ph.literal("| "))
                                 default: return p_.au($[0])
                             }
                         }
                     )
                 ),
             ))
-            case 'undefined': return p_.ss($, ($) => sh.ph.literal("undefined"))
-            case 'unknown': return p_.ss($, ($) => sh.ph.literal("unknown"))
-            case 'void': return p_.ss($, ($) => sh.ph.literal("void"))
+            case 'undefined': return p_.option($, ($) => sh.ph.literal("undefined"))
+            case 'unknown': return p_.option($, ($) => sh.ph.literal("unknown"))
+            case 'void': return p_.option($, ($) => sh.ph.literal("void"))
             default: return p_.au($[0])
         }
     }
@@ -496,8 +496,8 @@ export const Type_Arguments: p_i.Transformer<d_in.Type_Arguments, d_out.Phrase> 
                 ($) => p_.from.state($).decide(
                     ($) => {
                         switch ($[0]) {
-                            case 'comma token': return p_.ss($, ($) => sh.ph.literal(", "))
-                            case 'type': return p_.ss($, ($) => Type($))
+                            case 'comma token': return p_.option($, ($) => sh.ph.literal(", "))
+                            case 'type': return p_.option($, ($) => Type($))
                             default: return p_.au($[0])
                         }
                     }
@@ -519,11 +519,11 @@ export const Type_Literal_And_Interface_And_Class_Body: p_i.Transformer<d_in.Typ
                         p_.from.state($).decide(
                             ($) => {
                                 switch ($[0]) {
-                                    case 'call signature': return p_.ss($, ($) => sh.ph.composed(p_.literal.list([
+                                    case 'call signature': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                                         Parameters($.parameters),
                                         Optional_Type($.type),
                                     ])))
-                                    case 'index signature': return p_.ss($, ($) => sh.ph.composed(p_.literal.list([
+                                    case 'index signature': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                                         Modifiers($.modifiers),
                                         sh.ph.literal("["),
                                         sh.ph.literal($.parameter.identifier.text),
@@ -533,7 +533,7 @@ export const Type_Literal_And_Interface_And_Class_Body: p_i.Transformer<d_in.Typ
                                         sh.ph.literal(": "),
                                         Type($.type),
                                     ])))
-                                    case 'property signature': return p_.ss($, ($) => sh.ph.composed(p_.literal.list([
+                                    case 'property signature': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                                         JSDoc($['jsdoc']),
                                         Modifiers($.modifiers),
                                         String_Literal_Or_Identifier($['id']),
@@ -544,7 +544,7 @@ export const Type_Literal_And_Interface_And_Class_Body: p_i.Transformer<d_in.Typ
                                         sh.ph.literal(": "),
                                         Type($['type']),
                                     ])))
-                                    case 'method signature': return p_.ss($, ($) => sh.ph.composed(p_.literal.list([
+                                    case 'method signature': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                                         sh.ph.literal("method FIXME"),
                                     ])))
                                     default: return p_.au($[0])
@@ -565,8 +565,8 @@ export const Type_Parameters: p_i.Transformer<d_in.Type_Parameters, d_out.Phrase
             ($) => p_.from.state($).decide(
                 ($) => {
                     switch ($[0]) {
-                        case 'comma token': return p_.ss($, ($) => sh.ph.literal(", "))
-                        case 'type parameter': return p_.ss($, ($) => sh.ph.composed(p_.literal.list([
+                        case 'comma token': return p_.option($, ($) => sh.ph.literal(", "))
+                        case 'type parameter': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                             sh.ph.literal($.identifier.text),
                             p_.from.optional($['extends']).decide(
                                 ($) => sh.ph.composed(p_.literal.list([
@@ -600,14 +600,14 @@ export const Statement: p_i.Transformer<d_in.Statement, d_out.Phrase> = ($) => s
     p_.from.state($).decide(
         ($) => {
             switch ($[0]) {
-                case 'block': return p_.ss($, ($) => Block($))
-                case 'break': return p_.ss($, ($) => sh.ph.composed(p_.literal.list([
+                case 'block': return p_.option($, ($) => Block($))
+                case 'break': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                     sh.ph.literal("break"),
                 ])))
-                case 'class': return p_.ss($, ($) => sh.ph.composed(p_.literal.list([
+                case 'class': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                     sh.ph.literal("class FIXME"),
                 ])))
-                // case 'class declaration': return p_.ss($, ($) => sh.ph.composed(p_.literal.list([
+                // case 'class declaration': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                 //     sh.ph.literal("class "),
                 //     sh.ph.literal($.identifier.text),
                 //     Type_Parameters($['type parameters']),
@@ -635,19 +635,19 @@ export const Statement: p_i.Transformer<d_in.Statement, d_out.Phrase> = ($) => s
                 //                             p_.from.state($).decide(
                 //                                 ($) => {
                 //                                     switch ($[0]) {
-                //                                         case 'constructor': return p_.ss($, ($) => sh.ph.composed(p_.literal.list([
+                //                                         case 'constructor': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                 //                                             sh.ph.literal("constructor"),
                 //                                             Parameters($['parameters']),
                 //                                             Block($['body']),
 
                 //                                         ]))
-                //                                         case 'method': return p_.ss($, ($) => sh.ph.composed(p_.literal.list([
+                //                                         case 'method': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                 //                                             sh.ph.literal($.identifier.text),
                 //                                             Parameters($['parameters']),
                 //                                             Optional_Type($['type']),
                 //                                             Block($['body']),
                 //                                         ]))
-                //                                         case 'property': return p_.ss($, ($) => sh.ph.composed(p_.literal.list([
+                //                                         case 'property': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                 //                                             sh.ph.literal($.identifier.text),
                 //                                             Optional_Type($['type']),
                 //                                         ]))
@@ -664,19 +664,19 @@ export const Statement: p_i.Transformer<d_in.Statement, d_out.Phrase> = ($) => s
 
                 //     ),
                 // ]))
-                case 'do': return p_.ss($, ($) => sh.ph.composed(p_.literal.list([
+                case 'do': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                     sh.ph.literal("do "),
                     Statement($['statement']),
                     sh.ph.literal(" while ("),
                     Expression($['expression']),
                     sh.ph.literal(")"),
                 ])))
-                case 'export declaration': return p_.ss($, ($) => sh.ph.composed(p_.literal.list([
+                case 'export declaration': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                     sh.ph.literal("export "),
                     p_.from.state($['type']).decide(
                         ($) => {
                             switch ($[0]) {
-                                case 'all': return p_.ss($, ($) => sh.ph.composed(p_.literal.list([
+                                case 'all': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                                     sh.ph.literal("*"),
                                     p_.from.optional($['as']).decide(
                                         ($) => sh.ph.composed(p_.literal.list([
@@ -686,15 +686,15 @@ export const Statement: p_i.Transformer<d_in.Statement, d_out.Phrase> = ($) => s
                                         () => sh.ph.nothing()
                                     )
                                 ])))
-                                case 'named': return p_.ss($, ($) => sh.ph.composed(p_.literal.list([
+                                case 'named': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                                     sh.ph.literal("{"),
                                     sh.ph.composed(
                                         p_.from.list($['exports']).map(
                                             ($) => p_.from.state($).decide(
                                                 ($) => {
                                                     switch ($[0]) {
-                                                        case 'comma token': return p_.ss($, ($) => sh.ph.literal(", "))
-                                                        case 'export specifier': return p_.ss($, ($) => sh.ph.composed(p_.literal.list([
+                                                        case 'comma token': return p_.option($, ($) => sh.ph.literal(", "))
+                                                        case 'export specifier': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                                                             sh.ph.literal($.identifier.text),
                                                             p_.from.optional($['as']).decide(
                                                                 ($) => sh.ph.composed(p_.literal.list([
@@ -712,7 +712,7 @@ export const Statement: p_i.Transformer<d_in.Statement, d_out.Phrase> = ($) => s
                                     ),
                                     sh.ph.literal("}"),
                                 ])))
-                                case 'namespace': return p_.ss($, ($) => sh.ph.composed(p_.literal.list([
+                                case 'namespace': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                                     sh.ph.literal("*"),
                                     sh.ph.literal(" as "),
                                     sh.ph.literal($['identifier'].text),
@@ -729,11 +729,11 @@ export const Statement: p_i.Transformer<d_in.Statement, d_out.Phrase> = ($) => s
                         () => sh.ph.nothing()
                     )
                 ])))
-                case 'expression': return p_.ss($, ($) => sh.ph.composed(p_.literal.list([
+                case 'expression': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                     Expression($['expression']),
                     Semi_Colon($['semicolon']),
                 ])))
-                case 'for': return p_.ss($, ($) => sh.ph.composed(p_.literal.list([
+                case 'for': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                     sh.ph.literal("for ("),
                     Variable_Declaration_List($['variable declaration list']),
                     sh.ph.literal("; "),
@@ -749,7 +749,7 @@ export const Statement: p_i.Transformer<d_in.Statement, d_out.Phrase> = ($) => s
                     sh.ph.literal(") "),
                     Statement($['statement']),
                 ])))
-                case 'for in': return p_.ss($, ($) => sh.ph.composed(p_.literal.list([
+                case 'for in': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                     sh.ph.literal("for ("),
                     Variable_Declaration_List($['variable declaration list']),
                     sh.ph.literal(" in "),
@@ -757,7 +757,7 @@ export const Statement: p_i.Transformer<d_in.Statement, d_out.Phrase> = ($) => s
                     sh.ph.literal(") "),
                     Statement($['statement']),
                 ])))
-                case 'function': return p_.ss($, ($) => sh.ph.composed(p_.literal.list([
+                case 'function': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                     JSDoc($['jsdoc']),
                     Modifiers($['modifiers']),
                     sh.ph.literal("function "),
@@ -768,7 +768,7 @@ export const Statement: p_i.Transformer<d_in.Statement, d_out.Phrase> = ($) => s
                     sh.ph.literal(" "),
                     Block($['body']),
                 ])))
-                case 'if': return p_.ss($, ($) => sh.ph.composed(p_.literal.list([
+                case 'if': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                     sh.ph.literal("if ("),
                     Expression($['expression']),
                     sh.ph.literal(") "),
@@ -781,21 +781,21 @@ export const Statement: p_i.Transformer<d_in.Statement, d_out.Phrase> = ($) => s
                         () => sh.ph.nothing()
                     )
                 ])))
-                case 'import': return p_.ss($, ($) => sh.ph.composed(p_.literal.list([
+                case 'import': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                     sh.ph.literal("import "),
                     p_.from.state($.clause.type).decide(
                         ($) => {
                             switch ($[0]) {
-                                case 'identifier': return p_.ss($, ($) => sh.ph.literal($.text))
-                                case 'named imports': return p_.ss($, ($) => sh.ph.composed(p_.literal.list([
+                                case 'identifier': return p_.option($, ($) => sh.ph.literal($.text))
+                                case 'named imports': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                                     sh.ph.literal("{"),
                                     sh.ph.composed(
                                         p_.from.list($.entries).map(
                                             ($): d_out.Phrase => p_.from.state($).decide(
                                                 ($) => {
                                                     switch ($[0]) {
-                                                        case 'comma token': return p_.ss($, ($) => sh.ph.literal(", "))
-                                                        case 'import specifier': return p_.ss($, ($) => sh.ph.composed(p_.literal.list([
+                                                        case 'comma token': return p_.option($, ($) => sh.ph.literal(", "))
+                                                        case 'import specifier': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                                                             sh.ph.literal($.identifier.text),
                                                             p_.from.optional($['as']).decide(
                                                                 ($) => sh.ph.composed(p_.literal.list([
@@ -814,7 +814,7 @@ export const Statement: p_i.Transformer<d_in.Statement, d_out.Phrase> = ($) => s
                                     sh.ph.literal("}"),
 
                                 ])))
-                                case 'namespace import': return p_.ss($, ($) => sh.ph.composed(p_.literal.list([
+                                case 'namespace import': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                                     sh.ph.literal("* as "),
                                     sh.ph.literal($['identifier'].text)
                                 ])))
@@ -825,7 +825,7 @@ export const Statement: p_i.Transformer<d_in.Statement, d_out.Phrase> = ($) => s
                     sh.ph.literal(" from "),
                     sh.ph.literal($['string literal'].text)
                 ])))
-                case 'interface': return p_.ss($, ($) => sh.ph.composed(p_.literal.list([
+                case 'interface': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                     JSDoc($['jsdoc']),
                     Modifiers($['modifiers']),
                     sh.ph.literal("interface "),
@@ -834,7 +834,7 @@ export const Statement: p_i.Transformer<d_in.Statement, d_out.Phrase> = ($) => s
                     sh.ph.literal(" "),
                     Type_Literal_And_Interface_And_Class_Body($['body']),
                 ])))
-                case 'namespace': return p_.ss($, ($) => sh.ph.composed(p_.literal.list([
+                case 'namespace': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                     JSDoc($['jsdoc']),
                     Modifiers($['modifiers']),
                     sh.ph.literal("namespace "),
@@ -850,7 +850,7 @@ export const Statement: p_i.Transformer<d_in.Statement, d_out.Phrase> = ($) => s
                     ),
                     sh.ph.literal("}")
                 ])))
-                case 'return': return p_.ss($, ($) => sh.ph.composed(p_.literal.list([
+                case 'return': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                     JSDoc($['jsdoc']),
                     sh.ph.literal("return "),
                     p_.from.optional($['expression']).decide(
@@ -858,7 +858,7 @@ export const Statement: p_i.Transformer<d_in.Statement, d_out.Phrase> = ($) => s
                         () => sh.ph.nothing()
                     )
                 ])))
-                case 'switch': return p_.ss($, ($) => sh.ph.composed(p_.literal.list([
+                case 'switch': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                     sh.ph.literal("switch ("),
                     Expression($['expression']),
                     sh.ph.literal(") {"),
@@ -869,7 +869,7 @@ export const Statement: p_i.Transformer<d_in.Statement, d_out.Phrase> = ($) => s
                                     p_.from.state($).decide(
                                         ($) => {
                                             switch ($[0]) {
-                                                case 'case': return p_.ss($, ($) => sh.ph.composed(p_.literal.list([
+                                                case 'case': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                                                     sh.ph.literal("case "),
                                                     Expression($['expression']),
                                                     sh.ph.literal(":"),
@@ -877,7 +877,7 @@ export const Statement: p_i.Transformer<d_in.Statement, d_out.Phrase> = ($) => s
                                                         Statements($['statements'])
                                                     )
                                                 ])))
-                                                case 'default': return p_.ss($, ($) => sh.ph.composed(p_.literal.list([
+                                                case 'default': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                                                     sh.ph.literal("default:"),
                                                     sh.ph.indent(
                                                         Statements($['statements'])
@@ -893,12 +893,12 @@ export const Statement: p_i.Transformer<d_in.Statement, d_out.Phrase> = ($) => s
                     ),
                     sh.ph.literal("}")
                 ])))
-                case 'throw': return p_.ss($, ($) => sh.ph.composed(p_.literal.list([
+                case 'throw': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                     sh.ph.literal("throw "),
                     Expression($['expression']),
                     Semi_Colon($['semicolon']),
                 ])))
-                case 'type alias': return p_.ss($, ($) => sh.ph.composed(p_.literal.list([
+                case 'type alias': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                     JSDoc($['jsdoc']),
                     Modifiers($['modifiers']),
                     sh.ph.literal("type "),
@@ -907,7 +907,7 @@ export const Statement: p_i.Transformer<d_in.Statement, d_out.Phrase> = ($) => s
                     sh.ph.literal(" = "),
                     Type($['type']),
                 ])))
-                case 'variable': return p_.ss($, ($) => sh.ph.composed(p_.literal.list([
+                case 'variable': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                     p_.from.optional($['jsdoc']).decide(
                         ($) => sh.ph.composed(p_.literal.list([
                             sh.ph.literal("/**"),
@@ -919,7 +919,7 @@ export const Statement: p_i.Transformer<d_in.Statement, d_out.Phrase> = ($) => s
                     Modifiers($['modifiers']),
                     Variable_Declaration_List($['variable declaration list']),
                 ])))
-                case 'while': return p_.ss($, ($) => sh.ph.composed(p_.literal.list([
+                case 'while': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                     sh.ph.literal("while ("),
                     Expression($['expression']),
                     sh.ph.literal(") "),
@@ -949,8 +949,8 @@ export const Statements: p_i.Transformer<d_in.Statements, d_out.Paragraph> = ($)
 export const String_Literal_Or_Identifier: p_i.Transformer<d_in.String_Literal_or_Identifier, d_out.Phrase> = ($) => p_.from.state($).decide(
     ($) => {
         switch ($[0]) {
-            case 'string literal': return p_.ss($, ($) => sh.ph.literal($.text))
-            case 'identifier': return p_.ss($, ($) => sh.ph.literal($.text))
+            case 'string literal': return p_.option($, ($) => sh.ph.literal($.text))
+            case 'identifier': return p_.option($, ($) => sh.ph.literal($.text))
             default: return p_.au($[0])
         }
     }
