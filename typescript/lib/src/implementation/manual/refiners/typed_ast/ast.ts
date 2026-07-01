@@ -72,7 +72,7 @@ export const Binding_Pattern: h.Refiner<d_out.Binding_Pattern> = ($, abort, $p) 
                 })
             )]
             case "Identifier": return ['identifier', $]
-
+            case "NumberKeyword": return ['number keyword', null]
             case "ObjectBindingPattern": return ['object binding pattern', context.parse_children(
                 "ObjectBindingPattern",
                 (context): d_out.Binding_Pattern__Object => ({
@@ -103,7 +103,7 @@ export const Binding_Pattern: h.Refiner<d_out.Binding_Pattern> = ($, abort, $p) 
                                             "ColonToken"
                                         ),
                                         'name': context.consume_component(
-                                            "BindingElement['name']",
+                                            "'name'",
                                             Binding_Pattern
                                         ),
                                         // 'initializer': context.optional(
@@ -139,6 +139,7 @@ export const Binding_Pattern: h.Refiner<d_out.Binding_Pattern> = ($, abort, $p) 
                     ),
                 })
             )]
+            case "StringKeyword": return ['string keyword', null]
 
             default: return abort({
                 'parent': $,
@@ -310,6 +311,36 @@ export const Expression: h.Refiner<d_out.Expression> = ($, abort, $p) => h.creat
             case "ArrowFunction": return ['arrow function', context.parse_children(
                 "ArrowFunction",
                 (context): d_out.Expression__Arrow_Function => ({
+                    'modifiers': context.optional(
+                        ($) => $.kind === "SyntaxList",
+                        (context) => context.consume_component( //I'm misusing the 'consume_component' here, it's not really a component. I'm not sure how to do it differently for now (consume_syntax_list?)
+                            "Modifiers",
+                            ($, abort, $p) => h.create_node_context(
+                                $,
+                                abort,
+                                {
+                                    'location description': $p['location description'],
+                                    'parent': $p.parent,
+                                    'module name': "['arrow function']['modifiers']",
+                                },
+                                (context) => context.process_children_as_list(
+                                    "Modifiers",
+                                    ($) => {
+                                        switch ($.kind) {
+                                            case "AsyncKeyword": return ['async', null]
+                                            default: return abort({
+                                                'parent': $p.parent,
+                                                'external location description': $p['location description'],
+                                                'module name': "Modifiers",
+                                                'internal path description': "-",
+                                                'problem': ['unexpected node', $],
+                                            })
+                                        }
+                                    },
+                                )
+                            )
+                        )
+                    ),
                     'type parameters': context.construct_component(
                         "ArrowFunction['type parameters']",
                         Type_Parameters
@@ -482,9 +513,17 @@ export const Expression: h.Refiner<d_out.Expression> = ($, abort, $p) => h.creat
             case "CallExpression": return ['call', context.parse_children(
                 "CallExpression",
                 (context): d_out.Expression__Call => ({
-                    'expression': context.consume_component(
-                        "CallExpression['expression']",
-                        Expression
+                    'callee': context.consume_state(
+                        "'callee'",
+                        ($, context) => {
+                            switch ($.kind) {
+                                case "ImportKeyword": return ['import', null]
+                                default: return ['expression', context.call_with_this_node(
+                                    "CallExpression['callee']",
+                                    Expression
+                                )]
+                            }
+                        }
                     ),
                     'type arguments': context.construct_component(
                         "CallExpression['type arguments']",
@@ -580,7 +619,7 @@ export const Expression: h.Refiner<d_out.Expression> = ($, abort, $p) => h.creat
                     'expression': context.consume_component(
                         "DeleteExpression['expression']",
                         Expression
-                    )   
+                    )
                 })
             )]
             case "ElementAccessExpression": return ['element access', context.parse_children(
@@ -602,6 +641,19 @@ export const Expression: h.Refiner<d_out.Expression> = ($, abort, $p) => h.creat
                         "ElementAccessExpression['close bracket token']",
                         "CloseBracketToken",
                     ),
+                })
+            )]
+            case "ExpressionWithTypeArguments": return ['with type arguments', context.parse_children(
+                "ExpressionWithTypeArguments",
+                (context) => ({
+                    'expression': context.consume_component(
+                        "ExpressionWithTypeArguments['expression']",
+                        Expression
+                    ),
+                    'type arguments': context.construct_component(
+                        "ExpressionWithTypeArguments['type arguments']",
+                        Type_Arguments
+                    )
                 })
             )]
             case "ExternalModuleReference": return ['external module reference', context.parse_children(
@@ -626,6 +678,23 @@ export const Expression: h.Refiner<d_out.Expression> = ($, abort, $p) => h.creat
                 })
             )]
             case "FalseKeyword": return ['false', null]
+            case "FunctionExpression": return ['function', context.parse_children(
+                "FunctionExpression",
+                (context) => ({
+                    'function keyword': context.consume_keyword(
+                        "FunctionExpression['function keyword']",
+                        "FunctionKeyword",
+                    ),
+                    'parameters': context.construct_component(
+                        "FunctionExpression['parameters']",
+                        Parameters
+                    ),
+                    'body': context.consume_component(
+                        "FunctionExpression['body']",
+                        Block
+                    )
+                })
+            )]
             case "Identifier": return ['identifier', $]
             case "ObjectLiteralExpression": return ['object literal', context.parse_children(
                 "ObjectLiteralExpression",
@@ -1265,11 +1334,11 @@ export const Return_Type_Annotation: h.Production<d_out.Return_Type_Annotation> 
         ($) => $.kind === "ColonToken",
         (context) => ({
             'colon token': context.consume_keyword(
-                "Optional_Type['colon token']",
+                "'colon token'",
                 "ColonToken",
             ),
             'kind': context.peek_for_state(
-                "Return_Type_Annotation['kind']",
+                "'kind'",
                 ($) => {
                     switch ($.kind) {
                         case "TypePredicate": return ['type predicate', context.consume_group(
@@ -1825,9 +1894,20 @@ export const Statement: h.Refiner<d_out.Statement> = ($, abort, $p) => h.create_
                         "ForStatement['open parenthesis token']",
                         "OpenParenToken"
                     ),
-                    'variable declaration list': context.consume_component(
-                        "ForStatement['variable declaration list']",
-                        Variable_Declaration_List
+                    'initializer': context.consume_state(
+                        "ForStatement['initializer']",
+                        ($, context) => {
+                            switch ($.kind) {
+                                case "VariableDeclarationList": return ['variable declaration list', context.call_with_this_node(
+                                    "ForStatement['initializer']['variable declaration list']",
+                                    Variable_Declaration_List
+                                )]
+                                default: return ['expression', context.call_with_this_node(
+                                    "ForStatement['initializer']['expression']",
+                                    Expression
+                                )]
+                            }
+                        }
                     ),
                     'semicolon token': context.consume_keyword(
                         "ForStatement['semicolon token']",
@@ -1894,6 +1974,44 @@ export const Statement: h.Refiner<d_out.Statement> = ($, abort, $p) => h.create_
                     ),
                     'statement': context.consume_component(
                         "ForInStatement['statement']",
+                        Statement
+                    ),
+                    'semicolon': context.construct_component(
+                        "ExportDeclaration['semicolon token']",
+                        Semi_Colon
+                    ),
+                })
+            )]
+            case "ForOfStatement": return ['for of', context.parse_children(
+                "ForOfStatement",
+                (context): d_out.Statement__For_Of => ({
+                    'for keyword': context.consume_keyword(
+                        "ForOfStatement['for keyword']",
+                        "ForKeyword"
+                    ),
+                    'open parenthesis token': context.consume_keyword(
+                        "ForOfStatement['open parenthesis token']",
+                        "OpenParenToken"
+                    ),
+                    'variable declaration list': context.consume_component(
+                        "ForOfStatement['variable declaration list']",
+
+                        Variable_Declaration_List
+                    ),
+                    'of keyword': context.consume_keyword(
+                        "ForOfStatement['of keyword']",
+                        "OfKeyword"
+                    ),
+                    'expression': context.consume_component(
+                        "ForOfStatement['expression']",
+                        Expression
+                    ),
+                    'close parenthesis token': context.consume_keyword(
+                        "ForOfStatement['close parenthesis token']",
+                        "CloseParenToken"
+                    ),
+                    'statement': context.consume_component(
+                        "ForOfStatement['statement']",
                         Statement
                     ),
                     'semicolon': context.construct_component(
@@ -2220,7 +2338,7 @@ export const Statement: h.Refiner<d_out.Statement> = ($, abort, $p) => h.create_
                         "ModuleBlock",
                         ($, context) => context.parse_children(
                             "ModuleBlock",
-                            (context): d_out.Statement__Module__Declaration__Block => ({
+                            (context): d_out.Statement__Module_Declaration__Block => ({
                                 // 'jsdoc': context.construct_component(
                                 //     "ModuleBlock['jsdoc']",
                                 //     JSDoc
@@ -2587,7 +2705,7 @@ export const Type: h.Refiner<d_out.Type> = ($, abort, $p) => h.create_node_conte
             case "AnyKeyword": return ['any', null]
             case "ArrayType": return ['array', context.parse_children(
                 "ArrayType",
-                (context) => ({
+                (context): d_out.Type__Array => ({
                     'element type': context.consume_component(
                         "ArrayType['element type']",
                         Type
@@ -2605,7 +2723,7 @@ export const Type: h.Refiner<d_out.Type> = ($, abort, $p) => h.create_node_conte
             case "BooleanKeyword": return ['boolean', null]
             case "IndexedAccessType": return ['indexed access', context.parse_children(
                 "IndexedAccessType",
-                (context) => ({
+                (context): d_out.Type__Indexed_Access => ({
                     'object type': context.consume_component(
                         "IndexedAccessType['object type']",
                         Type
@@ -2621,6 +2739,87 @@ export const Type: h.Refiner<d_out.Type> = ($, abort, $p) => h.create_node_conte
                     'close bracket token': context.consume_keyword(
                         "IndexedAccessType['close bracket token']",
                         "CloseBracketToken",
+                    ),
+                })
+            )]
+            case "JSDocAllType": return ['jsdoc all', context.parse_children(
+                "JSDocAllType",
+                (context): d_out.Type__JSDoc_All => ({
+                    'asterisk token': context.consume_keyword(
+                        "JSDocAllType['asterisk token']",
+                        "AsteriskToken",
+                    ),
+                })
+            )]
+            case "JSDocFunctionType": return ['jsdoc function', context.parse_children(
+                "JSDocFunctionType",
+                (context): d_out.Type__JSDoc_Function => ({
+                    'function keyword': context.consume_keyword(
+                        "JSDocFunctionType['function keyword']",
+                        "FunctionKeyword",
+                    ),
+                    'parameters': context.construct_component(
+                        "JSDocFunctionType['parameters']",
+                        Parameters
+                    ),
+                    'type': context.construct_component(
+                        "JSDocFunctionType['type']",
+                        Optional_Type
+                    )
+                })
+            )]
+            case "JSDocNonNullableType": return ['jsdoc non nullable', context.parse_children(
+                "JSDocNonNullableType",
+                (context): d_out.Type__JSDoc_Non_Nullable => ({
+                    'exclamation token before': context.optional(
+                        ($) => $.kind === "ExclamationToken",
+                        ($) => context.consume_keyword(
+                            "JSDocNonNullableType['exclamation token before']",
+                            "ExclamationToken"
+                        )
+                    ),
+                    'type': context.consume_component(
+                        "JSDocNonNullableType['type']",
+                        Type
+                    ),
+                    'exclamation token after': context.optional(
+                        ($) => $.kind === "ExclamationToken",
+                        ($) => context.consume_keyword(
+                            "JSDocNonNullableType['exclamation token after']",
+                            "ExclamationToken"
+                        )
+                    )
+                })
+            )]
+            case "JSDocNullableType": return ['jsdoc nullable', context.parse_children(
+                "JSDocNullableType",
+                (context): d_out.Type__JSDoc_Nullable => ({
+                    'question token before': context.optional(
+                        ($) => $.kind === "QuestionToken",
+                        ($) => context.consume_keyword(
+                            "JSDocNullableType['question token before']",
+                            "QuestionToken"
+                        )
+                    ),
+                    'type': context.consume_component(
+                        "JSDocNullableType['type']",
+                        Type
+                    ),
+                    'question token after': context.optional(
+                        ($) => $.kind === "QuestionToken",
+                        ($) => context.consume_keyword(
+                            "JSDocNullableType['question token after']",
+                            "QuestionToken"
+                        )
+                    )
+                })
+            )]
+            case "JSDocUnknownType": return ['jsdoc unknown', context.parse_children(
+                "JSDocUnknownType",
+                (context): d_out.Type__JSDoc_Unknown => ({
+                    'question token': context.consume_keyword(
+                        "JSDocUnknownType['question token']",
+                        "QuestionToken",
                     ),
                 })
             )]
@@ -2677,7 +2876,7 @@ export const Type: h.Refiner<d_out.Type> = ($, abort, $p) => h.create_node_conte
             case "NumberKeyword": return ['number', null]
             case "ParenthesizedType": return ['parenthesized', context.parse_children(
                 "ParenthesizedType",
-                (context) => ({
+                (context): d_out.Type__Parenthesized => ({
                     'open parenthesis token': context.consume_keyword(
                         "ParenthesizedType['open parenthesis token']",
                         "OpenParenToken"
@@ -2728,7 +2927,7 @@ export const Type: h.Refiner<d_out.Type> = ($, abort, $p) => h.create_node_conte
             )]
             case "TypeOperator": return ['type operator', context.parse_children(
                 "TypeOperator",
-                (context) => ({
+                (context): d_out.Type__Type_Operator => ({
                     'readonly keyword': context.consume_keyword(
                         "TypeOperator['readonly keyword']",
                         "ReadonlyKeyword"
@@ -2745,6 +2944,13 @@ export const Type: h.Refiner<d_out.Type> = ($, abort, $p) => h.create_node_conte
                     'entity name': context.consume_component(
                         "TypeReference['entity name']",
                         Entity_Name
+                    ),
+                    'dot token': context.optional(
+                        ($) => $.kind === "DotToken",
+                        ($) => context.consume_keyword(
+                            "TypeReference['dot token']",
+                            "DotToken"
+                        )
                     ),
                     'type arguments': context.construct_component(
                         "TypeReference['type arguments']",
@@ -2897,6 +3103,13 @@ export const Variable_Declaration: h.Refiner<d_out.Variable_Declaration> = ($, a
                 'name': context.consume_component(
                     "VariableDeclaration['name']",
                     Binding_Pattern
+                ),
+                'exclamation token': context.optional(
+                    ($) => $.kind === "ExclamationToken",
+                    ($) => context.consume_keyword(
+                        "VariableDeclaration['exclamation token']",
+                        "ExclamationToken"
+                    )
                 ),
                 'type': context.construct_component(
                     "VariableDeclaration['type']",

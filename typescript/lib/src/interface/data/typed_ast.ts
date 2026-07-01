@@ -17,9 +17,11 @@ export type Block = {
 }
 
 export type Binding_Pattern =
-    | ['identifier', Identifier]
     | ['array binding pattern', Binding_Pattern__Array]
+    | ['identifier', Identifier]
+    | ['number keyword', null]
     | ['object binding pattern', Binding_Pattern__Object]
+    | ['string keyword', null]
 
 export type Binding_Pattern__Array = {
     'open bracket token': null
@@ -61,8 +63,8 @@ export type Class_Body = {
 
 export type Class_Body__Member =
     | ['constructor', Class_Body__Member__Constructor]
-    // | ['method', Class_Body__Member__Method]
-    // | ['property', Class_Body__Member__Property]
+// | ['method', Class_Body__Member__Method]
+// | ['property', Class_Body__Member__Property]
 
 export type Class_Body__Member__Constructor = {
     'jsdoc': JSDoc
@@ -134,6 +136,11 @@ export type Expression =
         'close parenthesis token': null
     }]
     | ['false', null]
+    | ['function', {
+        'function keyword': null
+        'parameters': Parameters
+        'body': Block
+    }]
     | ['identifier', Identifier]
     | ['new', {
         'new keyword': null
@@ -180,6 +187,10 @@ export type Expression =
     | ['void', {
         'void keyword': null
     }]
+    | ['with type arguments', {
+        'expression': Expression
+        'type arguments': Type_Arguments
+    }]
 
 export type Expression__Array_Literal = {
     'open bracket token': null
@@ -192,6 +203,9 @@ export type Expression__Array_Literal__Element =
     | ['expression', Expression]
 
 export type Expression__Arrow_Function = {
+    'modifiers': p_.Optional_Value<p_.List<
+        ['async', null]
+    >>
     'type parameters': Type_Parameters
     'parameters': Expression__Arrow_Function_Parameters
     'type': Optional_Type
@@ -260,7 +274,9 @@ export type Expression__Binary = {
 }
 
 export type Expression__Call = {
-    'expression': Expression
+    'callee':
+    | ['import', null]
+    | ['expression', Expression]
     'type arguments': Type_Arguments
     'arguments': Arguments
 }
@@ -488,16 +504,8 @@ export type Statement =
         'semicolon': Semi_Colon
     }]
     | ['for', Statement__For]
-    | ['for in', {
-        'for keyword': null
-        'open parenthesis token': null
-        'variable declaration list': Variable_Declaration_List
-        'in keyword': null
-        'expression': Expression
-        'close parenthesis token': null
-        'statement': Statement
-        'semicolon': Semi_Colon
-    }]
+    | ['for in', Statement__For_In]
+    | ['for of', Statement__For_Of]
     | ['function', Statement__Function_Declaration]
     | ['if', {
         'if keyword': null
@@ -554,24 +562,6 @@ export type Statement__Class_Declaration = {
     'semicolon': Semi_Colon
 }
 
-export type Statement__Try = {
-    'jsdoc': JSDoc
-    'try keyword': null
-    'try block': Block
-    'catch clause': p_.Optional_Value<{
-        'catch keyword': null
-        'open parenthesis token': null
-        'variable declaration': Variable_Declaration
-        'close parenthesis token': null
-        'block': Block
-    }>
-    'finally block': p_.Optional_Value<{
-        'finally keyword': null
-        'block': Block
-    }>
-    'semicolon': Semi_Colon
-}
-
 export type Statement__Class__Heritage_Clause = {
     'extends or implements keyword': null
     'types': p_.List<Statement__Class__Heritage_Clause_Type>
@@ -606,32 +596,6 @@ export type Statement__Enum_Declaration__Member = {
     'identifier': Identifier
     // 'initializer': p_.Optional_Value<Initializer>
     // 'comma token': p_.Optional_Value<null>
-}
-
-export type Statement__Function_Declaration = {
-    'jsdoc': JSDoc
-    'modifiers': Modifiers
-    'function keyword': null
-    'identifier': Identifier
-    'type parameters': Type_Parameters
-    'parameters': Parameters
-    'return type annotation': Return_Type_Annotation //FIXME Return Type_Annotation
-    'body': p_.Optional_Value<Block>
-    'semicolon': Semi_Colon
-}
-
-export type Statement__For = {
-    'jsdoc': JSDoc
-    'for keyword': null
-    'open parenthesis token': null
-    'variable declaration list': Variable_Declaration_List
-    'semicolon token': null
-    'condition': p_.Optional_Value<Expression>
-    'semicolon token 2': null
-    'incrementor': p_.Optional_Value<Expression>
-    'close parenthesis token': null
-    'statement': Statement
-    'semicolon': Semi_Colon
 }
 
 export type Statement__Export_Declaration = {
@@ -671,6 +635,57 @@ export type Statement__Export_Declaration_Entry =
             'identifier': Identifier
         }>
     }]
+
+export type Statement__For = {
+    'jsdoc': JSDoc
+    'for keyword': null
+    'open parenthesis token': null
+    'initializer':
+    | ['variable declaration list', Variable_Declaration_List]
+    | ['expression', Expression]
+    // | ['empty', null]
+    'semicolon token': null
+    'condition': p_.Optional_Value<Expression>
+    'semicolon token 2': null
+    'incrementor': p_.Optional_Value<Expression>
+    'close parenthesis token': null
+    'statement': Statement
+    'semicolon': Semi_Colon
+}
+
+export type Statement__For_In = {
+    'for keyword': null
+    'open parenthesis token': null
+    'variable declaration list': Variable_Declaration_List
+    'in keyword': null
+    'expression': Expression
+    'close parenthesis token': null
+    'statement': Statement
+    'semicolon': Semi_Colon
+}
+
+export type Statement__For_Of = {
+    'for keyword': null
+    'open parenthesis token': null
+    'variable declaration list': Variable_Declaration_List
+    'of keyword': null
+    'expression': Expression
+    'close parenthesis token': null
+    'statement': Statement
+    'semicolon': Semi_Colon
+}
+
+export type Statement__Function_Declaration = {
+    'jsdoc': JSDoc
+    'modifiers': Modifiers
+    'function keyword': null
+    'identifier': Identifier
+    'type parameters': Type_Parameters
+    'parameters': Parameters
+    'return type annotation': Return_Type_Annotation //FIXME Return Type_Annotation
+    'body': p_.Optional_Value<Block>
+    'semicolon': Semi_Colon
+}
 
 export type Statement__Import_Declaration = {
     'jsdoc': JSDoc
@@ -725,11 +740,11 @@ export type Statement__Module_Declaration = {
         'keyword': null
         'name': Identifier
     }]
-    'block': Statement__Module__Declaration__Block
+    'block': Statement__Module_Declaration__Block
     'semicolon': Semi_Colon
 }
 
-export type Statement__Module__Declaration__Block = { //FIXME; is this different from 'Block'?
+export type Statement__Module_Declaration__Block = { //FIXME; is this different from 'Block'?
     'open brace token': null
     'statements': Statements
     'close brace token': null
@@ -763,6 +778,24 @@ export type Statement__Switch_Case_Clause =
         'statements': Statements
     }]
 
+export type Statement__Try = {
+    'jsdoc': JSDoc
+    'try keyword': null
+    'try block': Block
+    'catch clause': p_.Optional_Value<{
+        'catch keyword': null
+        'open parenthesis token': null
+        'variable declaration': Variable_Declaration
+        'close parenthesis token': null
+        'block': Block
+    }>
+    'finally block': p_.Optional_Value<{
+        'finally keyword': null
+        'block': Block
+    }>
+    'semicolon': Semi_Colon
+}
+
 export type Statement__Type_Alias_Declaration = {
     'jsdoc': JSDoc
     'modifiers': Modifiers
@@ -787,40 +820,35 @@ export type String_Literal = d_ast.Node
 
 export type Type =
     | ['any', null]
-    | ['array', {
-        'element type': Type
-        'open bracket token': null
-        'close bracket token': null
-    }]
+    | ['array', Type__Array]
     | ['boolean', null]
     | ['function', Type__Function_Type]
-    | ['indexed access', {
-        'object type': Type
-        'open bracket token': null
-        'index type': Type
-        'close bracket token': null
-    }]
+    | ['indexed access', Type__Indexed_Access]
+    | ['jsdoc all', Type__JSDoc_All]
+    | ['jsdoc function', Type__JSDoc_Function]
+    | ['jsdoc non nullable', Type__JSDoc_Non_Nullable]
+    | ['jsdoc nullable', Type__JSDoc_Nullable]
+    | ['jsdoc unknown', Type__JSDoc_Unknown]
     | ['literal type', Type__Literal]
     | ['never', null]
     | ['number', null]
-    | ['parenthesized', {
-        'open parenthesis token': null
-        'type': Type
-        'close parenthesis token': null
-    }]
+    | ['parenthesized', Type__Parenthesized]
     | ['string', null]
     | ['symbol', null]
     | ['tuple type', Type__Tuple]
     | ['type literal', Object_Type]
-    | ['type operator', {
-        'readonly keyword': null
-        'type': Type
-    }]
+    | ['type operator', Type__Type_Operator]
     | ['type reference', Type__Type_Reference]
     | ['union type', Type__Union]
     | ['undefined', null]
     | ['unknown', null]
     | ['void', null]
+
+export type Type__Array = {
+    'element type': Type
+    'open bracket token': null
+    'close bracket token': null
+}
 
 export type Type__Function_Type = {
     'type parameters': Type_Parameters
@@ -829,6 +857,40 @@ export type Type__Function_Type = {
     'equals greater than token': null
     'return type': Type
 }
+
+export type Type__Indexed_Access = {
+    'object type': Type
+    'open bracket token': null
+    'index type': Type
+    'close bracket token': null
+}
+
+export type Type__JSDoc_All = {
+    'asterisk token': null
+}
+
+export type Type__JSDoc_Function = {
+    'function keyword': null
+    'parameters': Parameters
+    'type': Optional_Type
+}
+
+export type Type__JSDoc_Non_Nullable = {
+    'exclamation token before': p_.Optional_Value<null>
+    'type': Type
+    'exclamation token after': p_.Optional_Value<null>
+}
+
+export type Type__JSDoc_Nullable = {
+    'question token before': p_.Optional_Value<null>
+    'type': Type
+    'question token after': p_.Optional_Value<null>
+}
+
+export type Type__JSDoc_Unknown = {
+    'question token': null
+}
+
 export type Type__Literal = {
     'type':
     | ['false keyword', null]
@@ -836,6 +898,12 @@ export type Type__Literal = {
     | ['numeric literal', Numeric_Literal]
     | ['string literal', String_Literal]
     | ['true keyword', null]
+}
+
+export type Type__Parenthesized = {
+    'open parenthesis token': null
+    'type': Type
+    'close parenthesis token': null
 }
 
 export type Type__Union = {
@@ -856,9 +924,15 @@ export type Type__Union__Member =
     | ['type', Type]
     | ['bar token', null]
 
+export type Type__Type_Operator = {
+    'readonly keyword': null
+    'type': Type
+}
+
 export type Type__Type_Reference = {
     // 'entity name': null
     'entity name': Entity_Name
+    'dot token': p_.Optional_Value<null>
     'type arguments': Type_Arguments
 }
 
@@ -888,6 +962,15 @@ export type Type_Parameters_Entry =
         }>
     }]
 
+export type Variable_Declaration = {
+    'name': Binding_Pattern
+    'exclamation token': p_.Optional_Value<null>
+    'type': Optional_Type
+    'assignment': p_.Optional_Value<{
+        'initializer': Initializer
+    }>
+}
+
 export type Variable_Declaration_List = {
     'mutability':
     | ['await using', {
@@ -899,12 +982,4 @@ export type Variable_Declaration_List = {
     | ['using', null]
     | ['var', null]
     'declarations': p_.List<Variable_Declaration>
-}
-
-export type Variable_Declaration = {
-    'name': Binding_Pattern
-    'type': Optional_Type
-    'assignment': p_.Optional_Value<{
-        'initializer': Initializer
-    }>
 }
