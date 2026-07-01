@@ -82,6 +82,46 @@ export const Block: p_i.Transformer<d_in.Block, d_out.Phrase> = ($) => sh.ph.com
     sh.ph.literal("}"),
 ]))
 
+export const Class_Body: p_i.Transformer<d_in.Class_Body, d_out.Phrase> = ($) => sh.ph.composed(p_.literal.list([
+    sh.ph.literal("{"),
+    sh.ph.indent(
+        sh.pg.sentences(
+            p_.from.list($['members']).map(
+                ($) => sh.sentence(
+                    p_.literal.list([
+                        sh.ph.composed(p_.literal.list([
+                            p_.from.state($).decide(
+                                ($) => {
+                                    switch ($[0]) {
+                                        case 'constructor': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
+                                            sh.ph.literal("constructor"),
+                                            Parameters($['parameters']),
+                                            Block($['body']),
+                                        ])))
+                                        // case 'method': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
+                                        //     sh.ph.literal($.identifier.text),
+                                        //     Parameters($['parameters']),
+                                        //     // Optional_Type($['type']),
+                                        //     Block($['body']),
+                                        // ])))
+                                        // case 'property': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
+                                        //     sh.ph.literal($.identifier.text),
+                                        //     Type($['type']),
+                                        // ])))
+                                        default: return p_.au($[0])
+                                    }
+                                }
+                            )
+                        ])
+                        )
+                    ])
+                )
+            )
+        ),
+    ),
+    sh.ph.literal("}"),
+]))
+
 export const Entity_Name: p_i.Transformer<d_in.Entity_Name, d_out.Phrase> = ($) => p_.from.state($).decide(
     ($) => {
         switch ($[0]) {
@@ -150,30 +190,36 @@ export const Expression: p_i.Transformer<d_in.Expression, d_out.Phrase> = ($) =>
                 sh.ph.literal("await "),
                 Expression($['expression']),
             ])))
+            case 'big int literal': return p_.option($, ($) => sh.ph.literal($.text))
             case 'binary': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                 Expression($['left']),
                 p_.from.state($['operator token']).decide(
                     ($) => {
                         switch ($[0]) {
-                            case '^=': return p_.option($, ($) => sh.ph.literal(" ^= "))
                             case '-': return p_.option($, ($) => sh.ph.literal(" - "))
                             case '-=': return p_.option($, ($) => sh.ph.literal(" -= "))
                             case '!=': return p_.option($, ($) => sh.ph.literal(" != "))
                             case '!==': return p_.option($, ($) => sh.ph.literal(" !== "))
                             case '??': return p_.option($, ($) => sh.ph.literal(" ?? "))
+                            case '??=': return p_.option($, ($) => sh.ph.literal(" ??= "))
                             case '*': return p_.option($, ($) => sh.ph.literal(" * "))
                             case '**': return p_.option($, ($) => sh.ph.literal(" ** "))
-                            case '*=': return p_.option($, ($) => sh.ph.literal(" *= "))
                             case '**=': return p_.option($, ($) => sh.ph.literal(" **= "))
+                            case '*=': return p_.option($, ($) => sh.ph.literal(" *= "))
                             case '/': return p_.option($, ($) => sh.ph.literal(" / "))
+                            case '/=': return p_.option($, ($) => sh.ph.literal(" /= "))
                             case '&': return p_.option($, ($) => sh.ph.literal(" & "))
-                            case '&=': return p_.option($, ($) => sh.ph.literal(" &= "))
                             case '&&': return p_.option($, ($) => sh.ph.literal(" && "))
+                            case '&&=': return p_.option($, ($) => sh.ph.literal(" &&= "))
+                            case '&=': return p_.option($, ($) => sh.ph.literal(" &= "))
                             case '%': return p_.option($, ($) => sh.ph.literal(" % "))
+                            case '^': return p_.option($, ($) => sh.ph.literal(" ^ "))
+                            case '^=': return p_.option($, ($) => sh.ph.literal(" ^= "))
                             case '+': return p_.option($, ($) => sh.ph.literal(" + "))
                             case '+=': return p_.option($, ($) => sh.ph.literal(" += "))
                             case '<': return p_.option($, ($) => sh.ph.literal(" < "))
                             case '<<': return p_.option($, ($) => sh.ph.literal(" << "))
+                            case '<<=': return p_.option($, ($) => sh.ph.literal(" <<= "))
                             case '<=': return p_.option($, ($) => sh.ph.literal(" <= "))
                             case '=': return p_.option($, ($) => sh.ph.literal(" = "))
                             case '==': return p_.option($, ($) => sh.ph.literal(" == "))
@@ -181,11 +227,14 @@ export const Expression: p_i.Transformer<d_in.Expression, d_out.Phrase> = ($) =>
                             case '>': return p_.option($, ($) => sh.ph.literal(" > "))
                             case '>=': return p_.option($, ($) => sh.ph.literal(" >= "))
                             case '>>': return p_.option($, ($) => sh.ph.literal(" >> "))
+                            case '>>=': return p_.option($, ($) => sh.ph.literal(" >>= "))
                             case '>>>': return p_.option($, ($) => sh.ph.literal(" >>> "))
+                            case '>>>=': return p_.option($, ($) => sh.ph.literal(" >>>= "))
                             case '|': return p_.option($, ($) => sh.ph.literal(" | "))
                             case '|=': return p_.option($, ($) => sh.ph.literal(" |= "))
                             case '||': return p_.option($, ($) => sh.ph.literal(" || "))
                             case '||=': return p_.option($, ($) => sh.ph.literal(" ||= "))
+                            case 'in': return p_.option($, ($) => sh.ph.literal(" in "))
                             case 'instanceof': return p_.option($, ($) => sh.ph.literal(" instanceof "))
                             default: return p_.au($[0])
                         }
@@ -197,12 +246,22 @@ export const Expression: p_i.Transformer<d_in.Expression, d_out.Phrase> = ($) =>
                 Expression($['expression']),
                 Arguments($.arguments)
             ])))
+            case 'class expression': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
+                sh.ph.literal("class "),
+
+                Identifier($['identifier']),
+                Class_Body($['body'])
+            ])))
             case 'conditional': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                 Expression($['condition']),
                 sh.ph.literal(" ? "),
                 Expression($['when true']),
                 sh.ph.literal(" : "),
                 Expression($['when false']),
+            ])))
+            case 'delete': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
+                sh.ph.literal("delete "),
+                Expression($['expression']),
             ])))
             case 'element access': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                 Expression($['expression']),
@@ -376,6 +435,13 @@ export const Object_Type: p_i.Transformer<d_in.Object_Type, d_out.Phrase> = ($) 
                                         Parameters($.parameters),
                                         Optional_Type($.type),
                                     ])))
+                                    case 'construct signature': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
+                                        sh.ph.literal("new "),
+                                        Parameters($.parameters),
+                                        // Optional_Type($.type),
+                                        Semi_Colon($.semicolon),
+                                    ])))
+
                                     case 'index signature': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                                         Modifiers($.modifiers),
                                         sh.ph.literal("["),
@@ -575,6 +641,55 @@ export const Statement: p_i.Transformer<d_in.Statement, d_out.Phrase> = ($) => s
                     sh.ph.literal(" while ("),
                     Expression($['expression']),
                     sh.ph.literal(")"),
+                ])))
+                case 'enum': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
+                    JSDoc($['jsdoc']),
+                    p_.from.optional($['modifiers']).decide(
+                        ($) => sh.ph.composed(p_.from.list($).map(
+                            ($) => p_.from.state($).decide(
+                                ($) => {
+                                    switch ($[0]) {
+                                        case 'const': return p_.option($, ($) => sh.ph.literal("const "))
+                                        case 'declare': return p_.option($, ($) => sh.ph.literal("declare "))
+                                        case 'default': return p_.option($, ($) => sh.ph.literal("default "))
+                                        case 'export': return p_.option($, ($) => sh.ph.literal("export "))
+                                        default: return p_.au($[0])
+                                    }
+                                }
+                            )
+                        )),
+                        () => sh.ph.nothing()
+                    ),
+                    sh.ph.literal("enum "),
+                    sh.ph.literal($['identifier'].text),
+                    sh.ph.literal(" {"),
+                    sh.ph.indent(
+                        sh.pg.composed(p_.literal.list([
+                            sh.pg.sentences(
+                                p_.from.list($['members']).map(
+                                    ($) => sh.sentence(p_.literal.list([
+                                        p_.from.state($).decide(
+                                            ($) => {
+                                                switch ($[0]) {
+                                                    case 'comma token': return p_.option($, ($) => sh.ph.literal(", "))
+                                                    case 'enum member': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
+                                                        JSDoc($['jsdoc']),
+                                                        sh.ph.literal($.identifier.text),
+                                                        // p_.from.optional($['initializer']).decide(
+                                                        //     ($) => Initializer($),
+                                                        //     () => sh.ph.nothing()
+                                                        // ),
+
+                                                    ])))
+                                                    default: return p_.au($[0])
+                                                }
+                                            }
+                                        ),
+                                    ]))
+                                )
+                            ),
+                        ]))
+                    )
                 ])))
                 case 'export assignment': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                     sh.ph.literal("export "),
@@ -781,7 +896,7 @@ export const Statement: p_i.Transformer<d_in.Statement, d_out.Phrase> = ($) => s
                             sh.pg.sentences(p_.literal.list([
                                 sh.sentence(p_.literal.list([])),
                             ])),
-                            Statements($['module block']['statements'])
+                            Statements($['block']['statements'])
                         ])),
                     ),
                     sh.ph.literal("}")

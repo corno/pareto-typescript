@@ -36,7 +36,61 @@ export type Binding_Pattern__Array__Element =
     }]
     | ['omitted expression', null]
 
-export type Binding_Pattern__Object = TODO
+export type Binding_Pattern__Object = {
+    'open brace token': null
+    'elements': p_.List<
+        | ['comma token', null]
+        | ['binding element', Binding_Pattern__Object__Element]
+    >
+    'close brace token': null
+}
+
+export type Binding_Pattern__Object__Element = {
+    // 'dot dot dot token': p_.Optional_Value<null>
+    'property name': Property_Name
+    'colon token': null
+    'name': Binding_Pattern
+    // 'initializer': p_.Optional_Value<Initializer>
+}
+
+export type Class_Body = {
+    'open brace token': null
+    'members': p_.List<Class_Body__Member>
+    'close brace token': null
+}
+
+export type Class_Body__Member =
+    | ['constructor', Class_Body__Member__Constructor]
+    // | ['method', Class_Body__Member__Method]
+    // | ['property', Class_Body__Member__Property]
+
+export type Class_Body__Member__Constructor = {
+    'jsdoc': JSDoc
+    // 'modifiers': Modifiers
+    'constructor keyword': null
+    'parameters': Parameters
+    'body': Block
+}
+
+export type Class_Body__Member__Method = {
+    'jsdoc': JSDoc
+    // 'modifiers': Modifiers
+    // 'asterisk token': p_.Optional_Value<null>
+    'identifier': Identifier
+    // 'type parameters': Type_Parameters
+    'parameters': Parameters
+    // 'type': Optional_Type
+    'body': Block
+}
+
+export type Class_Body__Member__Property = {
+    'jsdoc': JSDoc
+    // 'modifiers': Modifiers
+    'identifier': Identifier
+    // 'question token': p_.Optional_Value<null>
+    'colon token': null
+    'type': Type
+}
 
 export type Entity_Name =
     | ['identifier', Identifier]
@@ -54,9 +108,19 @@ export type Expression =
         'await keyword': null
         'expression': Expression
     }]
+    | ['big int literal', d_ast.Node]
     | ['binary', Expression__Binary]
     | ['call', Expression__Call]
+    | ['class expression', {
+        'class keyword': null
+        'identifier': Identifier
+        'body': Class_Body
+    }]
     | ['conditional', Expression__Conditional]
+    | ['delete', {
+        'delete keyword': null
+        'expression': Expression
+    }]
     | ['element access', {
         'expression': Expression
         'open bracket token': null
@@ -152,25 +216,30 @@ export type Expression__Arrow_Function__Without_Parentheses = {
 export type Expression__Binary = {
     'left': Expression
     'operator token':
+    | ['^', null]
     | ['^=', null]
     | ['-', null]
     | ['-=', null]
     | ['!=', null]
     | ['!==', null]
     | ['??', null]
+    | ['??=', null]
     | ['*', null]
     | ['**', null]
     | ['**=', null]
     | ['*=', null]
     | ['/', null]
+    | ['/=', null]
     | ['&', null]
     | ['&=', null]
     | ['&&', null]
+    | ['&&=', null]
     | ['%', null]
     | ['+', null]
     | ['+=', null]
     | ['<', null]
     | ['<<', null]
+    | ['<<=', null]
     | ['<=', null]
     | ['=', null]
     | ['==', null]
@@ -178,11 +247,14 @@ export type Expression__Binary = {
     | ['>', null]
     | ['>=', null]
     | ['>>', null]
+    | ['>>=', null]
+    | ['>>>=', null]
     | ['>>>', null]
     | ['|', null]
     | ['|=', null]
     | ['||', null]
     | ['||=', null]
+    | ['in', null]
     | ['instanceof', null]
     'right': Expression
 }
@@ -284,6 +356,54 @@ export type Object_Type = {
     'close brace token': null
 }
 
+export type Object_Type__Element =
+    | ['call signature', Object_Type__Element__Call_Signature]
+    | ['construct signature', Object_Type__Element__Construct_Signature]
+    | ['index signature', Object_Type__Element__Index_Signature]
+    | ['property signature', Object_Type__Element__Property_Signature]
+    | ['method signature', TODO]
+
+export type Object_Type__Element__Call_Signature = {
+    'jsdoc': JSDoc
+    'parameters': Parameters
+    'type': Optional_Type
+    'semicolon': Semi_Colon
+}
+
+export type Object_Type__Element__Construct_Signature = {
+    'jsdoc': JSDoc
+    'new keyword': null
+    'parameters': Parameters
+    //'type': Optional_Type
+    'semicolon': Semi_Colon
+}
+
+export type Object_Type__Element__Index_Signature = {
+    'jsdoc': JSDoc
+    'modifiers': Modifiers
+    'open bracket token': null
+    'parameter': {
+        'identifier': Identifier
+        'colon token': null
+        'type': Type //this is too broad, only certain types are allowed; string, number, symbol, template literal, union of those (not fully sure if there's more)
+    }
+    'close bracket token': null
+    'colon token': null
+    'type': Type
+    'semicolon': Semi_Colon
+}
+
+export type Object_Type__Element__Property_Signature = {
+    'jsdoc': JSDoc
+    'modifiers': Modifiers
+    'id': Property_Name
+    'question token': p_.Optional_Value<null>
+    'colon token': null
+    'type': Type
+    'comma token': p_.Optional_Value<null>
+    'semicolon token': Semi_Colon
+}
+
 export type Optional_Initializer = p_.Optional_Value<Initializer>
 
 export type Optional_Type = p_.Optional_Value<{
@@ -343,6 +463,7 @@ export type Statement =
     | ['block', Block]
     | ['break', {
         'break keyword': null
+        'identifier': p_.Optional_Value<Identifier>
         'semicolon': Semi_Colon
     }]
     | ['class', TODO]
@@ -355,6 +476,7 @@ export type Statement =
         'close parenthesis token': null
         'semicolon': Semi_Colon
     }]
+    | ['enum', Statement__Enum_Declaration]
     | ['export assignment', {
         'export keyword': null
         'initializer': Initializer
@@ -423,15 +545,17 @@ export type Statement =
     }]
 
 export type Statement__Class_Declaration = {
+    'jsdoc': JSDoc
     'class keyword': null
     'identifier': Identifier
     'type parameters': Type_Parameters
     'heritage clauses': p_.Optional_Value<p_.List<Statement__Class__Heritage_Clause>>
-    'body': Statement__Class_Body
+    'body': Class_Body
     'semicolon': Semi_Colon
 }
 
 export type Statement__Try = {
+    'jsdoc': JSDoc
     'try keyword': null
     'try block': Block
     'catch clause': p_.Optional_Value<{
@@ -458,38 +582,31 @@ export type Statement__Class__Heritage_Clause_Type = {
     'type arguments': Type_Arguments
 }
 
-export type Statement__Class_Body = {
+export type Statement__Enum_Declaration = {
+    'jsdoc': JSDoc
+    'modifiers': p_.Optional_Value<p_.List<
+        | ['const', null]
+        | ['declare', null]
+        | ['default', null]
+        | ['export', null]
+    >>
+    'enum keyword': null
+    'identifier': Identifier
     'open brace token': null
-    'members': p_.List<Statement__Class_Body_Member>
+    'members': p_.List<
+        | ['comma token', null]
+        | ['enum member', Statement__Enum_Declaration__Member]
+    >
     'close brace token': null
+    'semicolon': Semi_Colon
 }
 
-export type Statement__Class_Body_Member =
-    | ['constructor', {
-        'jsdoc': JSDoc
-        'modifiers': Modifiers
-        'constructor keyword': null
-        'parameters': Parameters
-        'body': Block
-    }]
-    | ['method', {
-        'jsdoc': JSDoc
-        'modifiers': Modifiers
-        'asterisk token': p_.Optional_Value<null>
-        'identifier': Identifier
-        'type parameters': Type_Parameters
-        'parameters': Parameters
-        'type': Optional_Type
-        'body': Block
-    }]
-    | ['property', {
-        'jsdoc': JSDoc
-        'modifiers': Modifiers
-        'identifier': Identifier
-        'question token': p_.Optional_Value<null>
-        'colon token': null
-        'type': Type
-    }]
+export type Statement__Enum_Declaration__Member = {
+    'jsdoc': JSDoc
+    'identifier': Identifier
+    // 'initializer': p_.Optional_Value<Initializer>
+    // 'comma token': p_.Optional_Value<null>
+}
 
 export type Statement__Function_Declaration = {
     'jsdoc': JSDoc
@@ -504,6 +621,7 @@ export type Statement__Function_Declaration = {
 }
 
 export type Statement__For = {
+    'jsdoc': JSDoc
     'for keyword': null
     'open parenthesis token': null
     'variable declaration list': Variable_Declaration_List
@@ -517,6 +635,7 @@ export type Statement__For = {
 }
 
 export type Statement__Export_Declaration = {
+    'jsdoc': JSDoc
     'export keyword': null
     'type':
     | ['all', {
@@ -554,6 +673,7 @@ export type Statement__Export_Declaration_Entry =
     }]
 
 export type Statement__Import_Declaration = {
+    'jsdoc': JSDoc
     'import keyword': null
     'clause': Statement__Import_Clause
     'from keyword': null
@@ -605,7 +725,7 @@ export type Statement__Module_Declaration = {
         'keyword': null
         'name': Identifier
     }]
-    'module block': Statement__Module__Declaration__Block
+    'block': Statement__Module__Declaration__Block
     'semicolon': Semi_Colon
 }
 
@@ -617,6 +737,7 @@ export type Statement__Module__Declaration__Block = { //FIXME; is this different
 
 
 export type Statement__Switch = {
+    'jsdoc': JSDoc
     'switch keyword': null
     'open parenthesis token': null
     'expression': Expression
@@ -663,10 +784,6 @@ export type Statement__Variable = {
 export type Statements = p_.List<Statement>
 
 export type String_Literal = d_ast.Node
-
-
-
-
 
 export type Type =
     | ['any', null]
@@ -743,44 +860,6 @@ export type Type__Type_Reference = {
     // 'entity name': null
     'entity name': Entity_Name
     'type arguments': Type_Arguments
-}
-
-export type Object_Type__Element =
-    | ['call signature', Type__Literal__Call_Signature]
-    | ['index signature', Type__Literal__Member__Index_Signature]
-    | ['property signature', Type__Literal__Property_Signature]
-    | ['method signature', TODO]
-
-export type Type__Literal__Property_Signature = {
-    'jsdoc': JSDoc
-    'modifiers': Modifiers
-    'id': Property_Name
-    'question token': p_.Optional_Value<null>
-    'colon token': null
-    'type': Type
-    'comma token': p_.Optional_Value<null>
-    'semicolon token': p_.Optional_Value<null>
-}
-
-export type Type__Literal__Member__Index_Signature = {
-    'jsdoc': JSDoc
-    'modifiers': Modifiers
-    'open bracket token': null
-    'parameter': {
-        'identifier': Identifier
-        'colon token': null
-        'type': Type //this is too broad, only certain types are allowed; string, number, symbol, template literal, union of those (not fully sure if there's more)
-    }
-    'close bracket token': null
-    'colon token': null
-    'type': Type
-}
-
-export type Type__Literal__Call_Signature = {
-    'jsdoc': JSDoc
-    'parameters': Parameters
-    'type': Optional_Type
-    'semicolon': Semi_Colon
 }
 
 export type Type_Arguments = p_.Optional_Value<{
