@@ -77,7 +77,7 @@ export type Binding_Pattern__Object__Element = {
         'colon token': d_ast.Keyword
         'pattern': Binding_Pattern
     }>
-    // 'initializer': p_.Optional_Value<Initializer>
+    'initializer': Optional_Initializer
 }
 
 export type Class = {
@@ -141,7 +141,7 @@ export type Class_Body__Member__Property = {
     'jsdoc': JSDoc
     'modifiers': Signature_Modifiers
     'name': Property_Name
-    // 'question token': p_.Optional_Value<d_ast.Keyword>
+    'question token': p_.Optional_Value<d_ast.Keyword>
     'type': Optional_Type
     'optional initializer': Optional_Initializer
     'semicolon': Optional_Semi_Colon
@@ -354,6 +354,7 @@ export type Expression__Binary = {
     | ['||=', d_ast.Keyword]
     | ['in', d_ast.Keyword]
     | ['instanceof', d_ast.Keyword]
+    | [',', d_ast.Keyword]
     'right': Expression
 }
 
@@ -618,7 +619,10 @@ export type Signature_Modifiers__L =
     | ['protected', d_ast.Keyword]
     | ['static', d_ast.Keyword]
     | ['abstract', d_ast.Keyword]
-    | ['decorator', d_ast.Keyword]
+    | ['decorator', {
+        'at token': d_ast.Keyword
+        'expression': Expression
+    }]
     | ['private', d_ast.Keyword]
     | ['public', d_ast.Keyword]
     | ['readonly', d_ast.Keyword]
@@ -859,6 +863,16 @@ export type Statement__Import_Declaration = {
     'clause': Statement__Import_Clause
     'from keyword': d_ast.Keyword
     'string literal': String_Literal
+    'import attributes': p_.Optional_Value<{
+        'with keyword': d_ast.Keyword
+        'open brace token': d_ast.Keyword
+        'elements': h.Separated_List<{
+            'name': Identifier
+            'colon token': d_ast.Keyword
+            'value': String_Literal
+        }>
+        'close brace token': d_ast.Keyword
+    }>
     'semicolon': Optional_Semi_Colon
 }
 
@@ -1192,6 +1206,7 @@ export type Type__Tuple = {
 export type Type__Tuple__Element = 
 | ['named', {
     'name': Identifier
+    'question token': p_.Optional_Value<d_ast.Keyword>
     'colon token': d_ast.Keyword
     'type': Type
 }]

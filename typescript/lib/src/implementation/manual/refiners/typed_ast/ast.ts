@@ -117,19 +117,7 @@ export const Binding_Pattern: h.Production<d_out.Binding_Pattern> = ($, abort, $
                                                 'pattern': context.prop("pattern").defer_parsing_to_component(Binding_Pattern),
                                             }),
                                         ),
-                                        // 'initializer': context.prop("initializer").optional(
-                                        //     "EqualsToken",
-                                        //     (context) => ({
-                                        //         'equals token': context.prop("equals token").consume_keyword(
-                                        //             "'equals token'",
-                                        //             "EqualsToken",
-                                        //         ),
-                                        //         'expression': context.prop("expression").consume_component(
-                                        //             "'expression'",
-                                        //             Expression
-                                        //         )
-                                        //     })
-                                        // )
+                                        'initializer': context.prop("initializer").defer_parsing_to_component(Optional_Initializer),
                                     })
                                 )
                             ),
@@ -245,6 +233,10 @@ export const Class_Body: h.Production<d_out.Class_Body> = ($, abort, $p) => h.cr
                                 'jsdoc': context.prop("jsdoc").defer_parsing_to_component(JSDoc),
                                 'modifiers': context.prop("modifiers").defer_parsing_to_component(Signature_Modifiers),
                                 'name': context.prop("name").defer_parsing_to_component(Property_Name),
+                                'question token': context.prop("question token").optional(
+                                    "QuestionToken",
+                                    (context) => context.consume_keyword()
+                                ),
                                 'type': context.prop("type").defer_parsing_to_component(Optional_Type),
                                 'optional initializer': context.prop("optional initializer").defer_parsing_to_component(Optional_Initializer),
 
@@ -398,6 +390,7 @@ export const Expression: h.Production<d_out.Expression> = ($, abort, $p) => h.cr
                                     case "GreaterThanToken": return ['>', context.option(">").consume_keyword()]
                                     case "InKeyword": return ['in', context.option("in").consume_keyword()]
                                     case "InstanceOfKeyword": return ['instanceof', context.option("instanceof").consume_keyword()]
+                                    case "CommaToken": return [',', context.option(",").consume_keyword()]
                                     case "LessThanEqualsToken": return ['<=', context.option("<=").consume_keyword()]
                                     case "LessThanLessThanEqualsToken": return ['<<=', context.option("<<=").consume_keyword()]
                                     case "LessThanLessThanToken": return ['<<', context.option("<<").consume_keyword()]
@@ -1010,7 +1003,12 @@ export const Signature_Modifiers: h.Production<d_out.Signature_Modifiers> = (ite
                         case "ProtectedKeyword": return ['protected', context.option("protected").consume_keyword()]
                         case "StaticKeyword": return ['static', context.option("static").consume_keyword()]
                         case "AbstractKeyword": return ['abstract', context.option("abstract").consume_keyword()]
-                        case "Decorator": return ['decorator', context.option("decorator").consume_keyword()]
+                        case "Decorator": return ['decorator', context.option("decorator").consume_and_parse_children_as_type(
+                            (context) => ({
+                                'at token': context.prop("at token").assert_kind("AtToken").consume_keyword(),
+                                'expression': context.prop("expression").defer_parsing_to_component(Expression),
+                            })
+                        )]
                         case "PrivateKeyword": return ['private', context.option("private").consume_keyword()]
                         case "PublicKeyword": return ['public', context.option("public").consume_keyword()]
                         case "ReadonlyKeyword": return ['readonly', context.option("readonly").consume_keyword()]
@@ -1349,6 +1347,26 @@ export const Statement: h.Production<d_out.Statement> = ($, abort, $p) => h.crea
                         ),
                         'from keyword': context.prop("from keyword").assert_kind("FromKeyword").consume_keyword(),
                         'string literal': context.prop("string literal").assert_kind("StringLiteral").consume_literal(),
+                        'import attributes': context.prop("import attributes").optional(
+                            "ImportAttributes",
+                            (context) => context.consume_and_parse_children_as_type(
+                                (context) => ({
+                                    'with keyword': context.prop("with keyword").assert_kind("WithKeyword").consume_keyword(),
+                                    'open brace token': context.prop("open brace token").assert_kind("OpenBraceToken").consume_keyword(),
+                                    'elements': context.prop("elements").assert_kind("SyntaxList").consume_and_parse_children_as_separated_list(
+                                        "CommaToken",
+                                        (context) => context.assert_kind("ImportAttribute").consume_and_parse_children_as_type(
+                                            (context) => ({
+                                                'name': context.prop("name").assert_kind("Identifier").consume_literal(),
+                                                'colon token': context.prop("colon token").assert_kind("ColonToken").consume_keyword(),
+                                                'value': context.prop("value").assert_kind("StringLiteral").consume_literal(),
+                                            })
+                                        )
+                                    ),
+                                    'close brace token': context.prop("close brace token").assert_kind("CloseBraceToken").consume_keyword(),
+                                })
+                            )
+                        ),
                         'semicolon': context.prop("semicolon").defer_parsing_to_component(Optional_Semicolon),
                     })
                 )]
@@ -1800,10 +1818,10 @@ export const Type: h.Production<d_out.Type> = ($, abort, $p) => h.create_iterato
                                                 //     ($) => context.consume_keyword()
                                                 // ),
                                                 'name': context.prop("identifier").assert_kind("Identifier").consume_literal(),
-                                                // 'question token': context.prop("question token").optional(
-                                                //     "QuestionToken",
-                                                //     ($) => context.consume_keyword()
-                                                // ),
+                                                'question token': context.prop("question token").optional(
+                                                    "QuestionToken",
+                                                    (context) => context.consume_keyword()
+                                                ),
                                                 'colon token': context.prop("colon token").assert_kind("ColonToken").consume_keyword(),
                                                 'type': context.prop("type").defer_parsing_to_component(Type),
                                             })
