@@ -467,7 +467,15 @@ export const Expression: p_i.Transformer<d_in.Expression, d_out.Phrase> = ($) =>
             ])))
             case 'property access': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                 Expression($['expression']),
-                sh.ph.literal("."),
+                p_.from.state($['dot token']).decide(
+                    ($) => {
+                        switch ($[0]) {
+                            case '.': return p_.option($, ($) => sh.ph.literal("."))
+                            case '?.': return p_.option($, ($) => sh.ph.literal("?."))
+                            default: return p_.au($[0])
+                        }
+                    }
+                ),
                 p_.from.state($.identifier).decide(
                     ($) => {
                         switch ($[0]) {
@@ -1228,6 +1236,7 @@ export const Type: p_i.Transformer<d_in.Type, d_out.Phrase> = ($) => p_.from.sta
                 Type($['element type']),
                 sh.ph.literal("[]"),
             ])))
+            case 'big int': return p_.option($, ($) => sh.ph.literal("bigint"))
             case 'boolean': return p_.option($, ($) => sh.ph.literal("boolean"))
             case 'conditional': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                 Type($['check type']),
@@ -1374,7 +1383,7 @@ export const Type: p_i.Transformer<d_in.Type, d_out.Phrase> = ($) => p_.from.sta
             ])))
             case 'query': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                 sh.ph.literal("typeof "),
-                Qualified_Name($['name']),
+                Entity_Name($['name']),
             ])))
             case 'string': return p_.option($, ($) => sh.ph.literal("string"))
             case 'symbol': return p_.option($, ($) => sh.ph.literal("symbol"))
@@ -1386,7 +1395,23 @@ export const Type: p_i.Transformer<d_in.Type, d_out.Phrase> = ($) => p_.from.sta
                             ($) => {
                                 switch ($[0]) {
                                     case 'separator': return p_.option($, ($) => sh.ph.literal(", "))
-                                    case 'entry': return p_.option($, ($) => Type($))
+                                    case 'entry': return p_.option($, ($) => p_.from.state($).decide(
+                                        ($) => {
+                                            switch ($[0]) {
+                                                case 'named': return p_.ss($, ($) => sh.ph.composed(p_.literal.list([
+                                                    sh.ph.literal($.name.text),
+                                                    // p_.from.optional($['question token']).decide(
+                                                    //     () => sh.ph.literal("?"),
+                                                    //     () => sh.ph.nothing()
+                                                    // ),
+                                                    sh.ph.literal(": "),
+                                                    Type($['type']),
+                                                ])))
+                                                case 'regular':return p_.ss($, ($) => Type($))
+                                                default: return p_.au($[0])
+                                            }
+                                        }
+                                    ))
                                     default: return p_.au($[0])
                                 }
                             }

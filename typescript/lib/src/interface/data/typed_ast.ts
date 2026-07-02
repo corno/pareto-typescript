@@ -403,7 +403,9 @@ export type Expression__Object_Literal__Property__Method = {
 
 export type Expression__Property_Access = {
     'expression': Expression
-    'dot token': d_ast.Keyword
+    'dot token':
+    | ['.', d_ast.Keyword]
+    | ['?.', d_ast.Keyword]
     'identifier':
     | ['named', Identifier]
     | ['private', Identifier]
@@ -998,6 +1000,7 @@ export type String_Literal = d_ast.Node
 export type Type =
     | ['any', d_ast.Keyword]
     | ['array', Type__Array]
+    | ['big int', d_ast.Keyword]
     | ['boolean', d_ast.Keyword]
     | ['conditional', Type__Conditional]
     | ['constructor', Type__Constructor]
@@ -1141,7 +1144,7 @@ export type Type__Parenthesized = {
 
 export type Type__Query = {
     'typeof keyword': d_ast.Keyword
-    'name': Qualified_Name
+    'name': Entity_Name
 }
 
 export type Type__Union = {
@@ -1150,9 +1153,17 @@ export type Type__Union = {
 
 export type Type__Tuple = {
     readonly 'open bracket token': d_ast.Keyword
-    'elements': h.Separated_List<Type>
+    'elements': h.Separated_List<Type__Tuple__Element>
     'close bracket token': d_ast.Keyword
 }
+
+export type Type__Tuple__Element = 
+| ['named', {
+    'name': Identifier
+    'colon token': d_ast.Keyword
+    'type': Type
+}]
+| ['regular', Type]
 
 export type Type__Type_Operator = {
     'operator':

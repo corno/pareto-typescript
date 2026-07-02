@@ -49,42 +49,6 @@ processing error: Expression|arrow function|without parentheses.parameter: asser
     snippet:
     Node: SyntaxList
         Node: AsyncKeyword
-processing error: Statement_Modifiers: unknown option: 'AbstractKeyword' @ ./../../../typescript_codebases/lionweb-typescript/packages/validation/src/issues/SyntaxIssues.ts:4:1: 
-    snippet:
-    Node: SyntaxList
-        Node: ExportKeyword
-        Node: AbstractKeyword
-processing error: Expression|property access.dot token: assertion failed (expected: DotToken, found: QuestionDotToken) @ ./../../../typescript_codebases/lionweb-typescript/packages/validation/src/issues/ReferenceIssues.ts:57:42: 
-    snippet:
-    Node: PropertyAccessExpression
-        Node: PropertyAccessExpression
-            Node: ThisKeyword
-            Node: DotToken
-            Node: Identifier
-        Node: QuestionDotToken
-        Node: Identifier
-processing error: Statement_Modifiers: unknown option: 'AbstractKeyword' @ ./../../../typescript_codebases/lionweb-typescript/packages/validation/src/issues/LanguageIssues.ts:21:1: 
-    snippet:
-    Node: SyntaxList
-        Node: ExportKeyword
-        Node: AbstractKeyword
-processing error: Statement_Modifiers: unknown option: 'AbstractKeyword' @ ./../../../typescript_codebases/lionweb-typescript/packages/validation/src/issues/ValidationIssue.ts:3:1: 
-    snippet:
-    Node: SyntaxList
-        Node: ExportKeyword
-        Node: AbstractKeyword
-processing error: Expression|property access.dot token: assertion failed (expected: DotToken, found: QuestionDotToken) @ ./../../../typescript_codebases/lionweb-typescript/packages/validation/src/runners/FileUtils.ts:52:40: 
-    snippet:
-    Node: PropertyAccessExpression
-        Node: ParenthesizedExpression
-            Node: OpenParenToken
-            Node: AsExpression
-                ...
-                ...
-                ...
-            Node: CloseParenToken
-        Node: QuestionDotToken
-        Node: Identifier
 processing error: Expression|binary.operator token: unknown option: 'CommaToken' @ ./../../../typescript_codebases/lionweb-typescript/packages/validation/src/validators/LionWebSyntaxValidator.ts:8:1: 
     snippet:
     Node: BinaryExpression
@@ -111,14 +75,6 @@ processing error: Expression|binary.operator token: unknown option: 'CommaToken'
                 ...
                 ...
             Node: CloseParenToken
-processing error: Binding_Pattern.modifiers: unknown option: 'PrivateKeyword' @ ./../../../typescript_codebases/lionweb-typescript/packages/validation/src/validators/LionWebValidator.ts:23:32: 
-    snippet:
-    Node: SyntaxList
-        Node: PrivateKeyword
-processing error: Binding_Pattern.modifiers: unknown option: 'PrivateKeyword' @ ./../../../typescript_codebases/lionweb-typescript/packages/validation/src/validators/LionWebLanguageReferenceValidator.ts:40:53: 
-    snippet:
-    Node: SyntaxList
-        Node: PrivateKeyword
 processing error: Statement|import.clause.type: unknown option: 'TypeKeyword' @ ./../../../typescript_codebases/lionweb-typescript/packages/validation/src/validators/definitions/CommandDefinitions.ts:1:8: 
     snippet:
     Node: ImportClause
@@ -200,52 +156,6 @@ processing error: Statement|import.clause.type: unknown option: 'TypeKeyword' @ 
             Node: SyntaxList
                 ...
             Node: CloseBraceToken
-processing error: Binding_Pattern.modifiers: unknown option: 'PrivateKeyword' @ ./../../../typescript_codebases/lionweb-typescript/packages/validation/src/validators/LionWebLanguageValidator.ts:17:53: 
-    snippet:
-    Node: SyntaxList
-        Node: PrivateKeyword
-processing error: Expression|property access.dot token: assertion failed (expected: DotToken, found: QuestionDotToken) @ ./../../../typescript_codebases/lionweb-typescript/packages/validation/src/languages/LanguageRegistry.ts:22:16: 
-    snippet:
-    Node: PropertyAccessExpression
-        Node: CallExpression
-            Node: PropertyAccessExpression
-                ...
-                ...
-                ...
-            Node: OpenParenToken
-            Node: SyntaxList
-                ...
-            Node: CloseParenToken
-        Node: QuestionDotToken
-        Node: Identifier
-processing error: Expression|property access.dot token: assertion failed (expected: DotToken, found: QuestionDotToken) @ ./../../../typescript_codebases/lionweb-typescript/packages/validation/src/languages/MetaPointerMap.ts:39:16: 
-    snippet:
-    Node: PropertyAccessExpression
-        Node: CallExpression
-            Node: PropertyAccessExpression
-                ...
-                ...
-                ...
-            Node: OpenParenToken
-            Node: SyntaxList
-                ...
-            Node: CloseParenToken
-        Node: QuestionDotToken
-        Node: Identifier
-processing error: Expression|property access.dot token: assertion failed (expected: DotToken, found: QuestionDotToken) @ ./../../../typescript_codebases/lionweb-typescript/packages/validation/src/languages/CompositeLionWebLanguageWrapper.ts:33:16: 
-    snippet:
-    Node: PropertyAccessExpression
-        Node: CallExpression
-            Node: PropertyAccessExpression
-                ...
-                ...
-                ...
-            Node: OpenParenToken
-            Node: SyntaxList
-                ...
-            Node: CloseParenToken
-        Node: QuestionDotToken
-        Node: Identifier
 processing error: Statement|import: dangling child :ImportAttributes @ ./../../../typescript_codebases/lionweb-typescript/packages/validation/src/languages/LanguageUtils.ts:1:1: 
     snippet:
     Node: SyntaxList
@@ -356,12 +266,6 @@ processing error: Statement|import: dangling child :ImportAttributes @ ./../../.
             Node: VariableDeclarationList
                 ...
                 ...
-processing error: Expression|property access.dot token: assertion failed (expected: DotToken, found: QuestionDotToken) @ ./../../../typescript_codebases/lionweb-typescript/packages/validation/src/languages/LionWebLanguageWrapper.ts:31:24: 
-    snippet:
-    Node: PropertyAccessExpression
-        Node: Identifier
-        Node: QuestionDotToken
-        Node: Identifier
 processing error: Expression|arrow function|without parentheses.parameter: assertion failed (expected: Parameter, found: AsyncKeyword) @ ./../../../typescript_codebases/lionweb-typescript/packages/cli/src/serialization/measure-command.ts:7:38: 
     snippet:
     Node: SyntaxList
@@ -406,11 +310,12 @@ processing error: Expression|arrow function|without parentheses.parameter: asser
     snippet:
     Node: SyntaxList
         Node: AsyncKeyword
-processing error: Binding_Pattern.modifiers: unknown option: 'PrivateKeyword' @ ./../../../typescript_codebases/lionweb-typescript/packages/delta-protocol-repository-ws/src/repository-impl.ts:48:17: 
+processing error: Expression|object literal.properties: unknown option: 'SpreadAssignment' @ ./../../../typescript_codebases/lionweb-typescript/packages/delta-protocol-repository-ws/src/repository-impl.ts:55:49: 
     snippet:
     Node: SyntaxList
-        Node: PrivateKeyword
-        Node: ReadonlyKeyword
+        Node: SpreadAssignment
+            Node: DotDotDotToken
+            Node: Identifier
 processing error: Expression|object literal.properties: unknown option: 'SpreadAssignment' @ ./../../../typescript_codebases/lionweb-typescript/packages/delta-protocol-repository-ws/src/command-to-event.ts:93:9: 
     snippet:
     Node: SyntaxList
@@ -487,12 +392,32 @@ processing error: Statement: unknown option: 'ExportDeclaration' @ ./../../../ty
                 ...
             Node: FromKeyword
             Node: StringLiteral
-processing error: Expression|property access.dot token: assertion failed (expected: DotToken, found: QuestionDotToken) @ ./../../../typescript_codebases/lionweb-typescript/packages/core/src/deserializer.ts:75:28: 
+processing error: Type: unknown option: 'NamedTupleMember' @ ./../../../typescript_codebases/lionweb-typescript/packages/core/src/deserializer.ts:108:36: 
     snippet:
-    Node: PropertyAccessExpression
-        Node: Identifier
-        Node: QuestionDotToken
-        Node: Identifier
+    Node: SyntaxList
+        Node: NamedTupleMember
+            Node: Identifier
+            Node: ColonToken
+            Node: TypeReference
+                ...
+        Node: CommaToken
+        Node: NamedTupleMember
+            Node: Identifier
+            Node: ColonToken
+            Node: TypeReference
+                ...
+        Node: CommaToken
+        Node: NamedTupleMember
+            Node: Identifier
+            Node: ColonToken
+            Node: TypeReference
+                ...
+        Node: CommaToken
+        Node: NamedTupleMember
+            Node: Identifier
+            Node: QuestionToken
+            Node: ColonToken
+            Node: StringKeyword
 processing error: Expression: unknown option: 'SpreadElement' @ ./../../../typescript_codebases/lionweb-typescript/packages/core/src/extraction.ts:18:9: 
     snippet:
     Node: SyntaxList
@@ -555,10 +480,6 @@ processing error: Binding_Pattern|object binding pattern.elements: dangling chil
                 ...
                 ...
                 ...
-processing error: Statement_Modifiers: unknown option: 'AbstractKeyword' @ ./../../../typescript_codebases/lionweb-typescript/packages/core/src/m3/versions/v2023_1/builtins-legacy.ts:10:1: 
-    snippet:
-    Node: SyntaxList
-        Node: AbstractKeyword
 processing error: Type: unknown option: 'TypePredicate' @ ./../../../typescript_codebases/lionweb-typescript/packages/core/src/m3/functions.ts:47:20: 
     snippet:
     Node: ArrowFunction
@@ -750,22 +671,88 @@ processing error: Statement: unknown option: 'ExportDeclaration' @ ./../../../ty
             Node: AsteriskToken
             Node: FromKeyword
             Node: StringLiteral
-processing error: Expression|property access.dot token: assertion failed (expected: DotToken, found: QuestionDotToken) @ ./../../../typescript_codebases/lionweb-typescript/packages/core/src/m3/symbol-table.ts:81:32: 
+processing error: Statement: unknown option: 'ExportDeclaration' @ ./../../../typescript_codebases/lionweb-typescript/packages/core/src/m3/symbol-table.ts:1:1: 
     snippet:
-    Node: PropertyAccessExpression
-        Node: CallExpression
-            Node: PropertyAccessExpression
+    Node: SyntaxList
+        Node: ImportDeclaration
+            Node: ImportKeyword
+            Node: ImportClause
+                ...
+            Node: FromKeyword
+            Node: StringLiteral
+        Node: ImportDeclaration
+            Node: ImportKeyword
+            Node: ImportClause
+                ...
+            Node: FromKeyword
+            Node: StringLiteral
+        Node: ImportDeclaration
+            Node: ImportKeyword
+            Node: ImportClause
+                ...
+            Node: FromKeyword
+            Node: StringLiteral
+        Node: ImportDeclaration
+            Node: ImportKeyword
+            Node: ImportClause
+                ...
+            Node: FromKeyword
+            Node: StringLiteral
+        Node: InterfaceDeclaration
+            Node: JSDoc
                 ...
                 ...
                 ...
-            Node: OpenParenToken
+            Node: InterfaceKeyword
+            Node: Identifier
+            Node: OpenBraceToken
             Node: SyntaxList
                 ...
                 ...
                 ...
-            Node: CloseParenToken
-        Node: QuestionDotToken
-        Node: Identifier
+            Node: CloseBraceToken
+        Node: TypeAliasDeclaration
+            Node: TypeKeyword
+            Node: Identifier
+            Node: EqualsToken
+            Node: TypeLiteral
+                ...
+                ...
+                ...
+        Node: ClassDeclaration
+            Node: JSDoc
+                ...
+                ...
+                ...
+            Node: ClassKeyword
+            Node: Identifier
+            Node: SyntaxList
+                ...
+            Node: OpenBraceToken
+            Node: SyntaxList
+                ...
+                ...
+                ...
+                ...
+                ...
+                ...
+                ...
+                ...
+                ...
+            Node: CloseBraceToken
+        Node: ExportDeclaration
+            Node: ExportKeyword
+            Node: TypeKeyword
+            Node: NamedExports
+                ...
+                ...
+                ...
+        Node: ExportDeclaration
+            Node: ExportKeyword
+            Node: NamedExports
+                ...
+                ...
+                ...
 processing error: Expression|object literal.properties: unknown option: 'SpreadAssignment' @ ./../../../typescript_codebases/lionweb-typescript/packages/core/src/reporter.ts:70:18: 
     snippet:
     Node: SyntaxList
@@ -789,11 +776,6 @@ processing error: Expression: unknown option: 'SpreadElement' @ ./../../../types
                 ...
                 ...
                 ...
-processing error: Binding_Pattern.modifiers: unknown option: 'PrivateKeyword' @ ./../../../typescript_codebases/lionweb-typescript/packages/delta-protocol-client/src/chunking.ts:57:9: 
-    snippet:
-    Node: SyntaxList
-        Node: PrivateKeyword
-        Node: ReadonlyKeyword
 processing error: Class_Body.members|property: dangling child :QuestionToken @ ./../../../typescript_codebases/lionweb-typescript/packages/delta-protocol-client/src/client.ts:100:5: 
     snippet:
     Node: SyntaxList
@@ -1621,22 +1603,6 @@ processing error: Type: unknown option: 'NamedTupleMember' @ ./../../../typescri
             Node: Identifier
             Node: ColonToken
             Node: StringKeyword
-processing error: Expression|property access.dot token: assertion failed (expected: DotToken, found: QuestionDotToken) @ ./../../../typescript_codebases/lionweb-typescript/packages/utilities/src/serialization/textualizer.ts:38:9: 
-    snippet:
-    Node: PropertyAccessExpression
-        Node: CallExpression
-            Node: PropertyAccessExpression
-                ...
-                ...
-                ...
-            Node: OpenParenToken
-            Node: SyntaxList
-                ...
-                ...
-                ...
-            Node: CloseParenToken
-        Node: QuestionDotToken
-        Node: Identifier
 processing error: Expression: unknown option: 'SpreadElement' @ ./../../../typescript_codebases/lionweb-typescript/packages/utilities/src/serialization/metrics/functions.ts:30:9: 
     snippet:
     Node: SyntaxList
@@ -1743,22 +1709,20 @@ processing error: Statement: unknown option: 'ExportDeclaration' @ ./../../../ty
                 ...
             Node: FromKeyword
             Node: StringLiteral
-processing error: Expression|property access.dot token: assertion failed (expected: DotToken, found: QuestionDotToken) @ ./../../../typescript_codebases/lionweb-typescript/packages/utilities/src/serialization/metrics/measurer.ts:39:19: 
+processing error: Expression|object literal.properties: unknown option: 'SpreadAssignment' @ ./../../../typescript_codebases/lionweb-typescript/packages/utilities/src/serialization/metrics/measurer.ts:79:13: 
     snippet:
-    Node: PropertyAccessExpression
-        Node: CallExpression
+    Node: SyntaxList
+        Node: SpreadAssignment
+            Node: DotDotDotToken
+            Node: Identifier
+        Node: CommaToken
+        Node: PropertyAssignment
+            Node: Identifier
+            Node: ColonToken
             Node: PropertyAccessExpression
                 ...
                 ...
                 ...
-            Node: OpenParenToken
-            Node: SyntaxList
-                ...
-                ...
-                ...
-            Node: CloseParenToken
-        Node: QuestionDotToken
-        Node: Identifier
 processing error: Expression|arrow function|without parentheses.parameter: assertion failed (expected: Parameter, found: AsyncKeyword) @ ./../../../typescript_codebases/lionweb-typescript/packages/utilities/src/serialization/chunk.ts:18:42: 
     snippet:
     Node: SyntaxList
@@ -2114,12 +2078,6 @@ processing error: Statement: unknown option: 'ExportDeclaration' @ ./../../../ty
                 ...
                 ...
                 ...
-processing error: Expression|property access.dot token: assertion failed (expected: DotToken, found: QuestionDotToken) @ ./../../../typescript_codebases/lionweb-typescript/packages/class-core/src/deserializer.ts:178:30: 
-    snippet:
-    Node: PropertyAccessExpression
-        Node: Identifier
-        Node: QuestionDotToken
-        Node: Identifier
 processing error: Type: unknown option: 'NamedTupleMember' @ ./../../../typescript_codebases/lionweb-typescript/packages/class-core/src/duplicator.ts:41:60: 
     snippet:
     Node: SyntaxList
@@ -2159,12 +2117,6 @@ processing error: Type: unknown option: 'TypePredicate' @ ./../../../typescript_
                 ...
                 ...
                 ...
-processing error: Expression|property access.dot token: assertion failed (expected: DotToken, found: QuestionDotToken) @ ./../../../typescript_codebases/lionweb-typescript/packages/class-core/src/serializer.ts:120:38: 
-    snippet:
-    Node: PropertyAccessExpression
-        Node: Identifier
-        Node: QuestionDotToken
-        Node: Identifier
 processing error: Expression|object literal.properties: unknown option: 'SpreadAssignment' @ ./../../../typescript_codebases/lionweb-typescript/packages/class-core/src/id-mapping.ts:40:27: 
     snippet:
     Node: SyntaxList
@@ -2216,11 +2168,6 @@ processing error: Type: unknown option: 'NamedTupleMember' @ ./../../../typescri
             Node: ColonToken
             Node: UnionType
                 ...
-processing error: Statement_Modifiers: unknown option: 'AbstractKeyword' @ ./../../../typescript_codebases/lionweb-typescript/packages/class-core/src/LionCore_builtins.g.ts:119:1: 
-    snippet:
-    Node: SyntaxList
-        Node: ExportKeyword
-        Node: AbstractKeyword
 processing error: Class_Body.members|property: dangling child :QuestionToken @ ./../../../typescript_codebases/lionweb-typescript/packages/class-core/src/forest.ts:66:5: 
     snippet:
     Node: SyntaxList
@@ -2403,17 +2350,6 @@ processing error: Statement: unknown option: 'ExportDeclaration' @ ./../../../ty
             Node: FromKeyword
             Node: StringLiteral
             Node: SemicolonToken
-processing error: Binding_Pattern.modifiers: unknown option: 'PrivateKeyword' @ ./../../../typescript_codebases/lionweb-typescript/packages/class-core/src/deltas/compositor.ts:56:17: 
-    snippet:
-    Node: SyntaxList
-        Node: PrivateKeyword
-        Node: ReadonlyKeyword
-processing error: Expression|property access.dot token: assertion failed (expected: DotToken, found: QuestionDotToken) @ ./../../../typescript_codebases/lionweb-typescript/packages/class-core/src/deltas/appliers.ts:100:21: 
-    snippet:
-    Node: PropertyAccessExpression
-        Node: Identifier
-        Node: QuestionDotToken
-        Node: Identifier
 processing error: Statement: unknown option: 'ExportDeclaration' @ ./../../../typescript_codebases/lionweb-typescript/packages/class-core/src/index.ts:18:1: 
     snippet:
     Node: SyntaxList
@@ -2523,68 +2459,84 @@ processing error: Statement: unknown option: 'ExportDeclaration' @ ./../../../ty
             Node: FromKeyword
             Node: StringLiteral
             Node: SemicolonToken
-processing error: Expression|property access.dot token: assertion failed (expected: DotToken, found: QuestionDotToken) @ ./../../../typescript_codebases/lionweb-typescript/packages/class-core/src/convenience.ts:84:9: 
-    snippet:
-    Node: PropertyAccessExpression
-        Node: Identifier
-        Node: QuestionDotToken
-        Node: Identifier
 processing error: Signature_Modifiers|decorator: not a leaf: 'Decorator' @ ./../../../typescript_codebases/lionweb-typescript/packages/class-core/src/value-managers/annotations.ts:50:5: 
     snippet:
     Node: SyntaxList
         Node: Decorator
             Node: AtToken
             Node: Identifier
-processing error: Statement_Modifiers: unknown option: 'AbstractKeyword' @ ./../../../typescript_codebases/lionweb-typescript/packages/class-core/src/value-managers/containments.ts:40:1: 
+processing error: Class_Body.members|constructor.constructor keyword: assertion failed (expected: ConstructorKeyword, found: SyntaxList) @ ./../../../typescript_codebases/lionweb-typescript/packages/class-core/src/value-managers/containments.ts:60:5: 
+    snippet:
+    Node: Constructor
+        Node: SyntaxList
+            Node: ProtectedKeyword
+        Node: ConstructorKeyword
+        Node: OpenParenToken
+        Node: SyntaxList
+            Node: Parameter
+                ...
+                ...
+                ...
+            Node: CommaToken
+            Node: Parameter
+                ...
+                ...
+                ...
+        Node: CloseParenToken
+        Node: Block
+            Node: OpenBraceToken
+            Node: SyntaxList
+                ...
+                ...
+            Node: CloseBraceToken
+processing error: Class_Body.members|constructor.constructor keyword: assertion failed (expected: ConstructorKeyword, found: SyntaxList) @ ./../../../typescript_codebases/lionweb-typescript/packages/class-core/src/value-managers/base.ts:29:5: 
+    snippet:
+    Node: Constructor
+        Node: SyntaxList
+            Node: ProtectedKeyword
+        Node: ConstructorKeyword
+        Node: OpenParenToken
+        Node: SyntaxList
+            Node: Parameter
+                ...
+                ...
+                ...
+                ...
+        Node: CloseParenToken
+        Node: Block
+            Node: OpenBraceToken
+            Node: SyntaxList
+            Node: CloseBraceToken
+processing error: Signature_Modifiers|decorator: not a leaf: 'Decorator' @ ./../../../typescript_codebases/lionweb-typescript/packages/class-core/src/value-managers/properties.ts:42:5: 
     snippet:
     Node: SyntaxList
-        Node: ExportKeyword
-        Node: AbstractKeyword
-processing error: Statement_Modifiers: unknown option: 'AbstractKeyword' @ ./../../../typescript_codebases/lionweb-typescript/packages/class-core/src/value-managers/base.ts:27:1: 
+        Node: Decorator
+            Node: AtToken
+            Node: Identifier
+processing error: Class_Body.members|constructor.constructor keyword: assertion failed (expected: ConstructorKeyword, found: SyntaxList) @ ./../../../typescript_codebases/lionweb-typescript/packages/class-core/src/value-managers/references.ts:49:5: 
     snippet:
-    Node: SyntaxList
-        Node: ExportKeyword
-        Node: AbstractKeyword
-processing error: Statement_Modifiers: unknown option: 'AbstractKeyword' @ ./../../../typescript_codebases/lionweb-typescript/packages/class-core/src/value-managers/properties.ts:29:1: 
-    snippet:
-    Node: SyntaxList
-        Node: ExportKeyword
-        Node: AbstractKeyword
-processing error: Statement_Modifiers: unknown option: 'AbstractKeyword' @ ./../../../typescript_codebases/lionweb-typescript/packages/class-core/src/value-managers/references.ts:29:1: 
-    snippet:
-    Node: SyntaxList
-        Node: ExportKeyword
-        Node: AbstractKeyword
-processing error: Statement_Modifiers: unknown option: 'AbstractKeyword' @ ./../../../typescript_codebases/lionweb-typescript/packages/json-diff/src/changes/NodeChange.ts:35:1: 
-    snippet:
-    Node: SyntaxList
-        Node: ExportKeyword
-        Node: AbstractKeyword
-processing error: Statement_Modifiers: unknown option: 'AbstractKeyword' @ ./../../../typescript_codebases/lionweb-typescript/packages/json-diff/src/changes/ChunkChange.ts:5:1: 
-    snippet:
-    Node: SyntaxList
-        Node: ExportKeyword
-        Node: AbstractKeyword
-processing error: Statement_Modifiers: unknown option: 'AbstractKeyword' @ ./../../../typescript_codebases/lionweb-typescript/packages/json-diff/src/changes/PropertyChange.ts:6:1: 
-    snippet:
-    Node: SyntaxList
-        Node: ExportKeyword
-        Node: AbstractKeyword
-processing error: Statement_Modifiers: unknown option: 'AbstractKeyword' @ ./../../../typescript_codebases/lionweb-typescript/packages/json-diff/src/changes/ContainmentChange.ts:5:1: 
-    snippet:
-    Node: SyntaxList
-        Node: ExportKeyword
-        Node: AbstractKeyword
-processing error: Statement_Modifiers: unknown option: 'AbstractKeyword' @ ./../../../typescript_codebases/lionweb-typescript/packages/json-diff/src/changes/ReferenceChange.ts:5:1: 
-    snippet:
-    Node: SyntaxList
-        Node: ExportKeyword
-        Node: AbstractKeyword
-processing error: Statement_Modifiers: unknown option: 'AbstractKeyword' @ ./../../../typescript_codebases/lionweb-typescript/packages/json-diff/src/changes/Change.ts:48:1: 
-    snippet:
-    Node: SyntaxList
-        Node: ExportKeyword
-        Node: AbstractKeyword
+    Node: Constructor
+        Node: SyntaxList
+            Node: ProtectedKeyword
+        Node: ConstructorKeyword
+        Node: OpenParenToken
+        Node: SyntaxList
+            Node: Parameter
+                ...
+                ...
+                ...
+            Node: CommaToken
+            Node: Parameter
+                ...
+                ...
+                ...
+        Node: CloseParenToken
+        Node: Block
+            Node: OpenBraceToken
+            Node: SyntaxList
+                ...
+                ...
+            Node: CloseBraceToken
 processing error: Expression|arrow function|without parentheses.parameter: assertion failed (expected: Parameter, found: AsyncKeyword) @ ./../../../typescript_codebases/lionweb-typescript/packages/test/src/validation/validation.test.ts:86:15: 
     snippet:
     Node: SyntaxList
@@ -2597,12 +2549,6 @@ processing error: Expression|arrow function|without parentheses.parameter: asser
     snippet:
     Node: SyntaxList
         Node: AsyncKeyword
-processing error: Expression|property access.dot token: assertion failed (expected: DotToken, found: QuestionDotToken) @ ./../../../typescript_codebases/lionweb-typescript/packages/test/src/core/serializer.test.ts:195:30: 
-    snippet:
-    Node: PropertyAccessExpression
-        Node: Identifier
-        Node: QuestionDotToken
-        Node: Identifier
 processing error: Expression: unknown option: 'SpreadElement' @ ./../../../typescript_codebases/lionweb-typescript/packages/test/src/core/reference-utils.test.ts:111:33: 
     snippet:
     Node: SyntaxList
@@ -2624,12 +2570,6 @@ processing error: Expression|object literal.properties: unknown option: 'SpreadA
             Node: Identifier
             Node: ColonToken
             Node: StringLiteral
-processing error: Expression|property access.dot token: assertion failed (expected: DotToken, found: QuestionDotToken) @ ./../../../typescript_codebases/lionweb-typescript/packages/test/src/core/constraints.test.ts:154:26: 
-    snippet:
-    Node: PropertyAccessExpression
-        Node: Identifier
-        Node: QuestionDotToken
-        Node: Identifier
 processing error: Expression|object literal.properties: unknown option: 'SpreadAssignment' @ ./../../../typescript_codebases/lionweb-typescript/packages/test/src/utilities/annotations.test.ts:24:13: 
     snippet:
     Node: SyntaxList
@@ -2715,18 +2655,6 @@ processing error: Type: unknown option: 'NamedTupleMember' @ ./../../../typescri
                 ...
                 ...
                 ...
-processing error: Expression|property access.dot token: assertion failed (expected: DotToken, found: QuestionDotToken) @ ./../../../typescript_codebases/lionweb-typescript/packages/class-core-test/src/convenience.tests.ts:41:15: 
-    snippet:
-    Node: PropertyAccessExpression
-        Node: PropertyAccessExpression
-            Node: ParenthesizedExpression
-                ...
-                ...
-                ...
-            Node: DotToken
-            Node: Identifier
-        Node: QuestionDotToken
-        Node: Identifier
 processing error: Type: unknown option: 'NamedTupleMember' @ ./../../../typescript_codebases/lionweb-typescript/packages/class-core-test/src/deltas/compositor.tests.ts:24:71: 
     snippet:
     Node: SyntaxList
@@ -2743,11 +2671,148 @@ processing error: Type: unknown option: 'NamedTupleMember' @ ./../../../typescri
                 ...
                 ...
                 ...
-processing error: Statement_Modifiers: unknown option: 'AbstractKeyword' @ ./../../../typescript_codebases/lionweb-typescript/packages/class-core-test/src/gen/LionCore_M3.g.ts:296:1: 
+processing error: Class_Body.members: unknown option: 'SetAccessor' @ ./../../../typescript_codebases/lionweb-typescript/packages/class-core-test/src/gen/LionCore_M3.g.ts:298:5: 
     snippet:
     Node: SyntaxList
-        Node: ExportKeyword
-        Node: AbstractKeyword
+        Node: PropertyDeclaration
+            Node: SyntaxList
+                ...
+                ...
+            Node: Identifier
+            Node: ColonToken
+            Node: TypeReference
+                ...
+                ...
+                ...
+                ...
+            Node: SemicolonToken
+        Node: GetAccessor
+            Node: GetKeyword
+            Node: Identifier
+            Node: OpenParenToken
+            Node: SyntaxList
+            Node: CloseParenToken
+            Node: ColonToken
+            Node: BooleanKeyword
+            Node: Block
+                ...
+                ...
+                ...
+        Node: SetAccessor
+            Node: SetKeyword
+            Node: Identifier
+            Node: OpenParenToken
+            Node: SyntaxList
+                ...
+            Node: CloseParenToken
+            Node: Block
+                ...
+                ...
+                ...
+        Node: PropertyDeclaration
+            Node: SyntaxList
+                ...
+                ...
+            Node: Identifier
+            Node: ColonToken
+            Node: TypeReference
+                ...
+                ...
+                ...
+                ...
+            Node: SemicolonToken
+        Node: GetAccessor
+            Node: GetKeyword
+            Node: Identifier
+            Node: OpenParenToken
+            Node: SyntaxList
+            Node: CloseParenToken
+            Node: ColonToken
+            Node: StringKeyword
+            Node: Block
+                ...
+                ...
+                ...
+        Node: SetAccessor
+            Node: SetKeyword
+            Node: Identifier
+            Node: OpenParenToken
+            Node: SyntaxList
+                ...
+            Node: CloseParenToken
+            Node: Block
+                ...
+                ...
+                ...
+        Node: PropertyDeclaration
+            Node: SyntaxList
+                ...
+                ...
+            Node: Identifier
+            Node: ColonToken
+            Node: TypeReference
+                ...
+                ...
+                ...
+                ...
+            Node: SemicolonToken
+        Node: GetAccessor
+            Node: GetKeyword
+            Node: Identifier
+            Node: OpenParenToken
+            Node: SyntaxList
+            Node: CloseParenToken
+            Node: ColonToken
+            Node: StringKeyword
+            Node: Block
+                ...
+                ...
+                ...
+        Node: SetAccessor
+            Node: SetKeyword
+            Node: Identifier
+            Node: OpenParenToken
+            Node: SyntaxList
+                ...
+            Node: CloseParenToken
+            Node: Block
+                ...
+                ...
+                ...
+        Node: Constructor
+            Node: SyntaxList
+                ...
+            Node: ConstructorKeyword
+            Node: OpenParenToken
+            Node: SyntaxList
+                ...
+                ...
+                ...
+                ...
+                ...
+                ...
+                ...
+            Node: CloseParenToken
+            Node: Block
+                ...
+                ...
+                ...
+        Node: MethodDeclaration
+            Node: Identifier
+            Node: OpenParenToken
+            Node: SyntaxList
+                ...
+            Node: CloseParenToken
+            Node: ColonToken
+            Node: TypeReference
+                ...
+                ...
+                ...
+                ...
+            Node: Block
+                ...
+                ...
+                ...
 processing error: Class_Body.members: unknown option: 'SetAccessor' @ ./../../../typescript_codebases/lionweb-typescript/packages/class-core-test/src/gen/Meta-test.g.ts:76:5: 
     snippet:
     Node: SyntaxList
@@ -2901,11 +2966,6 @@ processing error: Class_Body.members: unknown option: 'SetAccessor' @ ./../../..
                 ...
                 ...
                 ...
-processing error: Statement_Modifiers: unknown option: 'AbstractKeyword' @ ./../../../typescript_codebases/lionweb-typescript/packages/class-core-test/src/gen/LionCore_builtins.g.ts:99:1: 
-    snippet:
-    Node: SyntaxList
-        Node: ExportKeyword
-        Node: AbstractKeyword
 processing error: Class_Body.members: unknown option: 'SetAccessor' @ ./../../../typescript_codebases/lionweb-typescript/packages/class-core-test/src/gen/io.lionweb.mps.specific.g.ts:141:5: 
     snippet:
     Node: SyntaxList
@@ -3381,11 +3441,30 @@ processing error: Statement|import: dangling child :ImportAttributes @ ./../../.
             Node: VariableDeclarationList
                 ...
                 ...
-processing error: Statement_Modifiers: unknown option: 'AbstractKeyword' @ ./../../../typescript_codebases/lionweb-typescript/packages/io-lionweb-mps-specific/src/implementation.ts:30:1: 
+processing error: Class_Body.members|constructor.constructor keyword: assertion failed (expected: ConstructorKeyword, found: SyntaxList) @ ./../../../typescript_codebases/lionweb-typescript/packages/io-lionweb-mps-specific/src/implementation.ts:31:5: 
     snippet:
-    Node: SyntaxList
-        Node: ExportKeyword
-        Node: AbstractKeyword
+    Node: Constructor
+        Node: SyntaxList
+            Node: ProtectedKeyword
+        Node: ConstructorKeyword
+        Node: OpenParenToken
+        Node: SyntaxList
+            Node: Parameter
+                ...
+                ...
+                ...
+                ...
+            Node: CommaToken
+            Node: Parameter
+                ...
+                ...
+                ...
+                ...
+        Node: CloseParenToken
+        Node: Block
+            Node: OpenBraceToken
+            Node: SyntaxList
+            Node: CloseBraceToken
 processing error: Statement: unknown option: 'ExportDeclaration' @ ./../../../typescript_codebases/lionweb-typescript/packages/io-lionweb-mps-specific/src/index.ts:18:1: 
     snippet:
     Node: SyntaxList
@@ -3446,16 +3525,10 @@ processing error: Expression|arrow function|without parentheses.parameter: asser
     snippet:
     Node: SyntaxList
         Node: AsyncKeyword
-processing error: Expression|property access.dot token: assertion failed (expected: DotToken, found: QuestionDotToken) @ ./../../../typescript_codebases/lionweb-typescript/packages/delta-protocol-test-cli/src/cli-client.ts:65:15: 
+processing error: Expression|arrow function|without parentheses.parameter: assertion failed (expected: Parameter, found: AsyncKeyword) @ ./../../../typescript_codebases/lionweb-typescript/packages/delta-protocol-test-cli/src/cli-client.ts:78:16: 
     snippet:
-    Node: PropertyAccessExpression
-        Node: ElementAccessExpression
-            Node: Identifier
-            Node: OpenBracketToken
-            Node: NumericLiteral
-            Node: CloseBracketToken
-        Node: QuestionDotToken
-        Node: Identifier
+    Node: SyntaxList
+        Node: AsyncKeyword
 processing error: Expression|arrow function|without parentheses.parameter: assertion failed (expected: Parameter, found: AsyncKeyword) @ ./../../../typescript_codebases/lionweb-typescript/packages/delta-protocol-test-cli/src/common.ts:25:25: 
     snippet:
     Node: SyntaxList
@@ -3570,12 +3643,6 @@ processing error: Expression: unknown option: 'SpreadElement' @ ./../../../types
                 ...
                 ...
                 ...
-processing error: Expression|property access.dot token: assertion failed (expected: DotToken, found: QuestionDotToken) @ ./../../../typescript_codebases/lionweb-typescript/packages/class-core-generator/src/entity-types.templates.ts:268:19: 
-    snippet:
-    Node: PropertyAccessExpression
-        Node: Identifier
-        Node: QuestionDotToken
-        Node: Identifier
 processing error: Type: unknown option: 'TypePredicate' @ ./../../../typescript_codebases/lionweb-typescript/packages/class-core-generator/src/reflective-layer.templates.ts:143:34: 
     snippet:
     Node: ArrowFunction
@@ -3614,15 +3681,3 @@ processing error: Expression: unknown option: 'SpreadElement' @ ./../../../types
                 ...
                 ...
                 ...
-processing error: Expression|property access.dot token: assertion failed (expected: DotToken, found: QuestionDotToken) @ ./../../../typescript_codebases/lionweb-typescript/packages/class-core-generator/src/language-file.templates.ts:54:9: 
-    snippet:
-    Node: PropertyAccessExpression
-        Node: Identifier
-        Node: QuestionDotToken
-        Node: Identifier
-processing error: Expression|property access.dot token: assertion failed (expected: DotToken, found: QuestionDotToken) @ ./../../../typescript_codebases/lionweb-typescript/packages/class-core-generator/src/generator.ts:52:28: 
-    snippet:
-    Node: PropertyAccessExpression
-        Node: Identifier
-        Node: QuestionDotToken
-        Node: Identifier

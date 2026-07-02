@@ -587,7 +587,15 @@ export const Expression: h.Production<d_out.Expression> = ($, abort, $p) => h.cr
                 case "PropertyAccessExpression": return ['property access', context.option("property access").consume_and_parse_children_as_type(
                     (context): d_out.Expression__Property_Access => ({
                         'expression': context.prop("expression").defer_parsing_to_component(Expression),
-                        'dot token': context.prop("dot token").assert_kind("DotToken").consume_keyword(),
+                        'dot token': context.prop("dot token").peek_for_state(
+                            (kind, abort) => {
+                                switch (kind) {
+                                    case "DotToken": return ['.', context.option(".").consume_keyword()]
+                                    case "QuestionDotToken": return ['?.', context.option("?.").consume_keyword()]
+                                    default: return abort(null)
+                                }
+                            }
+                        ),
                         'identifier': context.prop("identifier").peek_for_state(
                             (kind, abort) => {
                                 switch (kind) {
@@ -1573,6 +1581,7 @@ export const Type: h.Production<d_out.Type> = ($, abort, $p) => h.create_iterato
                         'close bracket token': context.prop("close bracket token").assert_kind("CloseBracketToken").consume_keyword(),
                     })
                 )]
+                case "BigIntKeyword": return ['big int', context.option("bigint").consume_keyword()]
                 case "BooleanKeyword": return ['boolean', context.option("boolean").consume_keyword()]
                 case "ConditionalType": return ['conditional', context.option("conditional").consume_and_parse_children_as_type(
                     (context): d_out.Type__Conditional => ({
@@ -1751,7 +1760,28 @@ export const Type: h.Production<d_out.Type> = ($, abort, $p) => h.create_iterato
                         'open bracket token': context.prop("open bracket token").assert_kind("OpenBracketToken").consume_keyword(),
                         'elements': context.prop("elements").assert_kind("SyntaxList").consume_and_parse_children_as_separated_list(
                             "CommaToken",
-                            (context) => context.defer_parsing_to_component(Type),
+                            (context) => context.peek_for_state(
+                                (kind, abort): d_out.Type__Tuple__Element => {
+                                    switch (kind) {
+                                        case "NamedTupleMember": return ['named', context.option("named tuple member").consume_and_parse_children_as_type(
+                                            (context) => ({
+                                                // 'dot dot dot token': context.prop("dot dot dot token").optional(
+                                                //     "DotDotDotToken",
+                                                //     ($) => context.consume_keyword()
+                                                // ),
+                                                'name': context.prop("identifier").assert_kind("Identifier").consume_literal(),
+                                                // 'question token': context.prop("question token").optional(
+                                                //     "QuestionToken",
+                                                //     ($) => context.consume_keyword()
+                                                // ),
+                                                'colon token': context.prop("colon token").assert_kind("ColonToken").consume_keyword(),
+                                                'type': context.prop("type").defer_parsing_to_component(Type),
+                                            })
+                                        )]
+                                        default: return ['regular', context.defer_parsing_to_component(Type)]
+                                    }
+                                }
+                            ),
                         ),
                         'close bracket token': context.prop("close bracket token").assert_kind("CloseBracketToken").consume_keyword(),
                     })
@@ -1777,7 +1807,7 @@ export const Type: h.Production<d_out.Type> = ($, abort, $p) => h.create_iterato
                 case "TypeQuery": return ['query', context.option("query").consume_and_parse_children_as_type(
                     (context): d_out.Type__Query => ({
                         'typeof keyword': context.prop("typeof keyword").assert_kind("TypeOfKeyword").consume_keyword(),
-                        'name': context.prop("name").consume_component(Qualified_Name)
+                        'name': context.prop("name").defer_parsing_to_component(Entity_Name)
                     })
                 )]
                 case "TypeReference": return ['type reference', context.option("type reference").consume_and_parse_children_as_type(
