@@ -10,6 +10,7 @@ import p_debug_message from 'pareto-core-dev/dist/log_debug_message'
 //data types
 import * as d_in from "./modules/typescript_parser_api/interface/data/dynamic_ast"
 import * as d_function from "./interface/data/typed_ast_from_ast"
+import * as d_primitives from "./interface/data/primitives"
 import { Abort } from 'pareto-core/dist/interface/__internal/Abort'
 
 export type Production_Parameters = {
@@ -68,21 +69,40 @@ export type Node_Context = {
 }
 
 export type Iterator_Context = {
+    /**
+     * increments the path with the given property name, and returns a new iterator context for the next child. The path is used for error reporting
+     */
     prop: (
         propery_name: string
     ) => Iterator_Context
+    /**
+     * increments the path with the name of the selected option, and returns a new iterator context for the next child. The path is used for error reporting
+     */
     option: (
         option_name: string
     ) => Iterator_Context
+
+    /**
+     * makes sure that the next child is of the given kind, and returns the same iterator. No need to use it if this was the match of the switch/case statement
+     */
     assert_kind: (
         kind: string
     ) => Iterator_Context
+
+    /**
+     * if you need to set a state, use this to get access to the kind of the next child, and set a state based on that. If there is no next child, the callback will be skipped.
+     * The callback can call the abort function to abort the parsing, or return a state. The state will be returned by this function.
+     */
     peek_for_state: <T extends p_di.State>(
         callback: (
             kind: string,
             abort: Abort<null>,
         ) => T
     ) => T
+
+    /**
+     * tests the kind of the next child, and if it matches the given kind, consumes it and returns the result of the callback. If it doesn't match, returns a not_set option.
+     */
     optional: <T extends p_di.Value>(
         kind: string,
         callback: (context: Iterator_Context) => T
@@ -97,30 +117,46 @@ export type Iterator_Context = {
             context: Iterator_Context
         ) => T
     ) => T
+
     /**
-    use this one if multiple consequtive nodes need to be parsed to build the target value. If only one node is needed, use call_refiner
+    use this one if the function is a production. It parses multiple consecutive nodes to build the target value. If the function is a refiner, use consume_component instead. The difference is that a production can consume multiple nodes, while a refiner consumes only one node.
     */
     defer_parsing_to_component: <T extends p_di.Value>(
         func: Production<T>
     ) => T
+    /**
+     * use this if the to be called function is a refiner. It consumes one node, and returns the result of the refiner. If the function is a production, use defer_parsing_to_component instead. The difference is that a production can consume multiple nodes, while a refiner consumes only one node.
+     */
     consume_component: <T extends p_di.Value>(
         func: Refiner<T>
     ) => T
+    /**
+     * 
+     */
     consume_and_parse_children_as_type: <T extends p_di.Value>(
         callback: (
             context: Iterator_Context
         ) => T
     ) => T
+
+    /**
+     * to consume a node that has no value and no children
+     */
     consume_keyword: (
-    ) => null
+    ) => d_primitives.Keyword
+
     /**
      * 
      * for nodes that can have children, but when you don't want to process them
      */
     consume_blob: (
-    ) => d_in.Node
+    ) => d_primitives.Blob
+
+    /**
+     * to consume a node that has a value and no children
+     */
     consume_literal: (
-    ) => d_in.Node
+    ) => d_primitives.Literal
     consume_and_parse_children_as_separated_list: <T extends p_di.Value>(
         separator_kind: string,
         callback: (
@@ -414,7 +450,7 @@ const internal_create_iterator_context = (
         consume_blob: (
         ) => {
             const child = consume_internal()
-            return child
+            return null
 
         },
         consume_literal: (

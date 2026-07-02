@@ -414,7 +414,7 @@ export const Expression: p_i.Transformer<d_in.Expression, d_out.Phrase> = ($) =>
             ])))
             case 'identifier': return p_.option($, ($) => sh.ph.literal($.text))
             case 'import keyword': return p_.option($, ($) => sh.ph.literal("import"))
-            case 'jsdoc': return p_.option($, ($) => sh.ph.literal($.text))
+            case 'jsdoc': return p_.option($, ($) => sh.ph.literal("FIX JSDoc"))
             case 'meta property': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                 sh.ph.literal("new ."),
                 Identifier($['identifier']),
@@ -589,7 +589,7 @@ export const Initializer: p_i.Transformer<d_in.Initializer, d_out.Phrase> = ($) 
 export const JSDoc: p_i.Transformer<d_in.JSDoc, d_out.Phrase> = ($) => p_.from.optional($).decide(
     ($) => sh.ph.composed(p_.literal.list([
         sh.ph.literal("/**"),
-        sh.ph.literal($.text),
+        sh.ph.literal("FIX JSDoc"),
         sh.ph.literal("*/")
     ])),
     () => sh.ph.nothing()
