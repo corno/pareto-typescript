@@ -331,7 +331,7 @@ export const Expression: h.Production<d_out.Expression> = ($, abort, $p) => h.cr
                                 }
                             }
                         ),
-                        'type': context.prop("type").defer_parsing_to_component(Optional_Type),
+                        'type': context.prop("type").defer_parsing_to_component(Return_Type_Annotation),
                         'equals greater than token': context.prop("equals greater than token").assert_kind("EqualsGreaterThanToken").consume_keyword(),
                         'body': context.prop("body").peek_for_state(
                             (kind, abort) => {
@@ -553,6 +553,12 @@ export const Expression: h.Production<d_out.Expression> = ($, abort, $p) => h.cr
                                                 'name': context.prop("name").assert_kind("Identifier").consume_literal(),
                                             })
                                         )]
+                                        case "SpreadAssignment": return ['spread', context.option("spread").consume_and_parse_children_as_type(
+                                            (context) => ({
+                                                'dot dot dot token': context.prop("dot dot dot token").assert_kind("DotDotDotToken").consume_keyword(),
+                                                'expression': context.prop("expression").defer_parsing_to_component(Expression),
+                                            })
+                                        )]
                                         default: return abort(null)
                                     }
                                 }
@@ -655,6 +661,12 @@ export const Expression: h.Production<d_out.Expression> = ($, abort, $p) => h.cr
                 case "VoidExpression": return ['void', context.option("void").consume_and_parse_children_as_type(
                     (context) => ({
                         'void keyword': context.prop("void keyword").assert_kind("VoidKeyword").consume_keyword(),
+                        'expression': context.prop("expression").defer_parsing_to_component(Expression),
+                    })
+                )]
+                case "SpreadElement": return ['spread element', context.option("spread element").consume_and_parse_children_as_type(
+                    (context) => ({
+                        'dot dot dot token': context.prop("dot dot dot token").assert_kind("DotDotDotToken").consume_keyword(),
                         'expression': context.prop("expression").defer_parsing_to_component(Expression),
                     })
                 )]
@@ -1849,6 +1861,27 @@ export const Type: h.Production<d_out.Type> = ($, abort, $p) => h.create_iterato
                 case "UndefinedKeyword": return ['undefined', context.option("undefined").consume_keyword()]
                 case "UnknownKeyword": return ['unknown', context.option("unknown").consume_keyword()]
                 case "VoidKeyword": return ['void', context.option("void").consume_keyword()]
+                case "TemplateLiteralType": return ['template literal type', context.option("template literal type").consume_and_parse_children_as_type(
+                    (context): d_out.Type__Template_Literal => ({
+                        'head': context.prop("head").assert_kind("TemplateHead").consume_literal(),
+                        'template spans': context.prop("template spans").assert_kind("SyntaxList").consume_and_parse_children_as_non_separated_list(
+                            (context) => context.consume_and_parse_children_as_type(
+                                (context) => ({
+                                    'type': context.prop("type").defer_parsing_to_component(Type),
+                                    'suffix': context.prop("suffix").peek_for_state(
+                                        (kind, abort) => {
+                                            switch (kind) {
+                                                case "TemplateTail": return ['tail', context.option("tail").consume_literal()]
+                                                case "TemplateMiddle": return ['middle', context.option("middle").consume_literal()]
+                                                default: return abort(null)
+                                            }
+                                        }
+                                    )
+                                })
+                            )
+                        )
+                    })
+                )]
                 default: return abort(null)
             }
         }

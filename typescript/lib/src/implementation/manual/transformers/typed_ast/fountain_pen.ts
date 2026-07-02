@@ -267,7 +267,7 @@ export const Expression: p_i.Transformer<d_in.Expression, d_out.Phrase> = ($) =>
                         }
                     }
                 ),
-                Optional_Type($['type']),
+                Return_Type_Annotation($['type']),
                 sh.ph.literal(" => "),
                 p_.from.state($['body']).decide(
                     ($) => {
@@ -419,7 +419,10 @@ export const Expression: p_i.Transformer<d_in.Expression, d_out.Phrase> = ($) =>
                                                 case 'shorthand property': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                                                     Identifier($['name']),
                                                 ])))
-
+                                                case 'spread': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
+                                                    sh.ph.literal("..."),
+                                                    Expression($['expression']),
+                                                ])))
                                                 default: return p_.au($[0])
                                             }
                                         }
@@ -525,6 +528,10 @@ export const Expression: p_i.Transformer<d_in.Expression, d_out.Phrase> = ($) =>
                 Expression($['expression']),
             ])))
             case 'void': return p_.option($, ($) => sh.ph.literal("void"))
+            case 'spread element': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
+                sh.ph.literal("..."),
+                Expression($['expression']),
+            ])))
             case 'with type arguments': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                 Expression($['expression']),
                 Type_Arguments($['type arguments'])
@@ -1476,6 +1483,25 @@ export const Type: p_i.Transformer<d_in.Type, d_out.Phrase> = ($) => p_.from.sta
             case 'undefined': return p_.option($, ($) => sh.ph.literal("undefined"))
             case 'unknown': return p_.option($, ($) => sh.ph.literal("unknown"))
             case 'void': return p_.option($, ($) => sh.ph.literal("void"))
+            case 'template literal type': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
+                sh.ph.literal($.head.text),
+                sh.ph.composed(
+                    p_.from.list($['template spans']).map(
+                        ($) => sh.ph.composed(p_.literal.list([
+                            Type($['type']),
+                            p_.from.state($['suffix']).decide(
+                                ($) => {
+                                    switch ($[0]) {
+                                        case 'middle': return p_.option($, ($) => sh.ph.literal($.text))
+                                        case 'tail': return p_.option($, ($) => sh.ph.literal($.text))
+                                        default: return p_.au($[0])
+                                    }
+                                }
+                            )
+                        ]))
+                    )
+                )
+            ])))
             default: return p_.au($[0])
         }
     }

@@ -24,12 +24,10 @@ processing error: Expression|object literal.properties: unknown option: 'GetAcce
                 ...
                 ...
                 ...
-processing error: Expression|object literal.properties: unknown option: 'SpreadAssignment' @ ./../../../typescript_codebases/lionweb-typescript/packages/delta-protocol-test/src/tests/statechange-driven-client.tests.ts:89:33: 
+processing error: Expression|arrow function|without parentheses.parameter: assertion failed (expected: Parameter, found: AsyncKeyword) @ ./../../../typescript_codebases/lionweb-typescript/packages/delta-protocol-test/src/tests/statechange-driven-client.tests.ts:194:30: 
     snippet:
     Node: SyntaxList
-        Node: SpreadAssignment
-            Node: DotDotDotToken
-            Node: Identifier
+        Node: AsyncKeyword
 processing error: Expression|arrow function|without parentheses.parameter: assertion failed (expected: Parameter, found: AsyncKeyword) @ ./../../../typescript_codebases/lionweb-typescript/packages/delta-protocol-low-level-client-browser/src/low-level-client.ts:37:44: 
     snippet:
     Node: SyntaxList
@@ -295,48 +293,6 @@ processing error: Expression|arrow function|without parentheses.parameter: asser
     snippet:
     Node: SyntaxList
         Node: AsyncKeyword
-processing error: Expression|object literal.properties: unknown option: 'SpreadAssignment' @ ./../../../typescript_codebases/lionweb-typescript/packages/delta-protocol-repository-ws/src/repository-impl.ts:55:49: 
-    snippet:
-    Node: SyntaxList
-        Node: SpreadAssignment
-            Node: DotDotDotToken
-            Node: Identifier
-processing error: Expression|object literal.properties: unknown option: 'SpreadAssignment' @ ./../../../typescript_codebases/lionweb-typescript/packages/delta-protocol-repository-ws/src/command-to-event.ts:93:9: 
-    snippet:
-    Node: SyntaxList
-        Node: PropertyAssignment
-            Node: Identifier
-            Node: ColonToken
-            Node: Identifier
-        Node: CommaToken
-        Node: SpreadAssignment
-            Node: DotDotDotToken
-            Node: Identifier
-        Node: CommaToken
-        Node: PropertyAssignment
-            Node: Identifier
-            Node: ColonToken
-            Node: ArrayLiteralExpression
-                ...
-                ...
-                ...
-        Node: CommaToken
-        Node: PropertyAssignment
-            Node: Identifier
-            Node: ColonToken
-            Node: CallExpression
-                ...
-                ...
-                ...
-                ...
-        Node: CommaToken
-        Node: PropertyAssignment
-            Node: Identifier
-            Node: ColonToken
-            Node: PropertyAccessExpression
-                ...
-                ...
-                ...
 processing error: Expression|arrow function|without parentheses.parameter: assertion failed (expected: Parameter, found: AsyncKeyword) @ ./../../../typescript_codebases/lionweb-typescript/packages/delta-protocol-repository-ws/src/server.ts:72:27: 
     snippet:
     Node: SyntaxList
@@ -348,49 +304,6 @@ processing error: Type|tuple type.elements|named tuple member.colon token: asser
         Node: QuestionToken
         Node: ColonToken
         Node: StringKeyword
-processing error: Expression: unknown option: 'SpreadElement' @ ./../../../typescript_codebases/lionweb-typescript/packages/core/src/extraction.ts:18:9: 
-    snippet:
-    Node: SyntaxList
-        Node: SpreadElement
-            Node: DotDotDotToken
-            Node: ParenthesizedExpression
-                ...
-                ...
-                ...
-        Node: CommaToken
-        Node: SpreadElement
-            Node: DotDotDotToken
-            Node: PropertyAccessExpression
-                ...
-                ...
-                ...
-processing error: Type: unknown option: 'TypePredicate' @ ./../../../typescript_codebases/lionweb-typescript/packages/core/src/serializer.ts:44:35: 
-    snippet:
-    Node: ArrowFunction
-        Node: OpenParenToken
-        Node: SyntaxList
-            Node: Parameter
-                ...
-                ...
-                ...
-        Node: CloseParenToken
-        Node: ColonToken
-        Node: TypePredicate
-            Node: Identifier
-            Node: IsKeyword
-            Node: TypeReference
-                ...
-        Node: EqualsGreaterThanToken
-        Node: BinaryExpression
-            Node: BinaryExpression
-                ...
-                ...
-                ...
-            Node: AmpersandAmpersandToken
-            Node: BinaryExpression
-                ...
-                ...
-                ...
 processing error: Binding_Pattern|object binding pattern.elements: dangling child :EqualsToken @ ./../../../typescript_codebases/lionweb-typescript/packages/core/src/m3/deserializer.ts:31:43: 
     snippet:
     Node: SyntaxList
@@ -410,61 +323,6 @@ processing error: Binding_Pattern|object binding pattern.elements: dangling chil
                 ...
                 ...
                 ...
-processing error: Type: unknown option: 'TypePredicate' @ ./../../../typescript_codebases/lionweb-typescript/packages/core/src/m3/functions.ts:47:20: 
-    snippet:
-    Node: ArrowFunction
-        Node: OpenParenToken
-        Node: SyntaxList
-            Node: Parameter
-                ...
-                ...
-                ...
-        Node: CloseParenToken
-        Node: ColonToken
-        Node: TypePredicate
-            Node: Identifier
-            Node: IsKeyword
-            Node: TypeReference
-                ...
-        Node: EqualsGreaterThanToken
-        Node: BinaryExpression
-            Node: Identifier
-            Node: InstanceOfKeyword
-            Node: Identifier
-processing error: Expression: unknown option: 'SpreadElement' @ ./../../../typescript_codebases/lionweb-typescript/packages/core/src/m3/constraints.ts:35:9: 
-    snippet:
-    Node: SyntaxList
-        Node: SpreadElement
-            Node: DotDotDotToken
-            Node: CallExpression
-                ...
-                ...
-                ...
-                ...
-        Node: CommaToken
-        Node: SpreadElement
-            Node: DotDotDotToken
-            Node: CallExpression
-                ...
-                ...
-                ...
-                ...
-        Node: CommaToken
-        Node: SpreadElement
-            Node: DotDotDotToken
-            Node: CallExpression
-                ...
-                ...
-                ...
-                ...
-        Node: CommaToken
-        Node: SpreadElement
-            Node: DotDotDotToken
-            Node: CallExpression
-                ...
-                ...
-                ...
-                ...
 processing error: Arguments.open parenthesis token: missing: OpenParenToken @ ./../../../typescript_codebases/lionweb-typescript/packages/core/src/m3/builtins-common.ts:36:59: 
     snippet:
     Node: NewExpression
@@ -478,80 +336,81 @@ processing error: Arguments.open parenthesis token: missing: OpenParenToken @ ./
             Node: TypeReference
                 ...
         Node: GreaterThanToken
-processing error: Type: unknown option: 'TypePredicate' @ ./../../../typescript_codebases/lionweb-typescript/packages/core/src/m3/types.ts:21:18: 
+processing error: Class_Body.members|property: dangling child :QuestionToken @ ./../../../typescript_codebases/lionweb-typescript/packages/core/src/m3/types.ts:47:5: 
     snippet:
-    Node: ArrowFunction
-        Node: OpenParenToken
-        Node: SyntaxList
-            Node: Parameter
-                ...
-                ...
-                ...
-        Node: CloseParenToken
-        Node: ColonToken
-        Node: TypePredicate
+    Node: SyntaxList
+        Node: MethodDeclaration
             Node: Identifier
-            Node: IsKeyword
+            Node: OpenParenToken
+            Node: SyntaxList
+            Node: CloseParenToken
+            Node: ColonToken
+            Node: StringKeyword
+            Node: Block
+                ...
+                ...
+                ...
+        Node: PropertyDeclaration
+            Node: Identifier
+            Node: QuestionToken
+            Node: ColonToken
             Node: TypeReference
                 ...
-        Node: EqualsGreaterThanToken
-        Node: BinaryExpression
-            Node: BinaryExpression
+        Node: PropertyDeclaration
+            Node: SyntaxList
                 ...
-                ...
-                ...
-            Node: AmpersandAmpersandToken
-            Node: BinaryExpression
-                ...
-                ...
-                ...
-processing error: Expression|object literal.properties: unknown option: 'SpreadAssignment' @ ./../../../typescript_codebases/lionweb-typescript/packages/core/src/reporter.ts:70:18: 
-    snippet:
-    Node: SyntaxList
-        Node: SpreadAssignment
-            Node: DotDotDotToken
-            Node: PropertyAccessExpression
-                ...
-                ...
-                ...
-processing error: Type: unknown option: 'TypePredicate' @ ./../../../typescript_codebases/lionweb-typescript/packages/core/src/references.ts:48:33: 
-    snippet:
-    Node: ArrowFunction
-        Node: LessThanToken
-        Node: SyntaxList
-            Node: TypeParameter
-                ...
-                ...
-                ...
-        Node: GreaterThanToken
-        Node: OpenParenToken
-        Node: SyntaxList
-            Node: Parameter
-                ...
-                ...
-                ...
-                ...
-        Node: CloseParenToken
-        Node: ColonToken
-        Node: TypePredicate
             Node: Identifier
-            Node: IsKeyword
-            Node: TypeQuery
+            Node: ColonToken
+            Node: TypeReference
                 ...
-                ...
-        Node: EqualsGreaterThanToken
-        Node: BinaryExpression
+        Node: PropertyDeclaration
             Node: Identifier
-            Node: EqualsEqualsEqualsToken
+            Node: ColonToken
+            Node: StringKeyword
+        Node: PropertyDeclaration
             Node: Identifier
-processing error: Expression: unknown option: 'SpreadElement' @ ./../../../typescript_codebases/lionweb-typescript/packages/core/src/m1/reference-utils.ts:53:13: 
-    snippet:
-    Node: SyntaxList
-        Node: SpreadElement
-            Node: DotDotDotToken
-            Node: NewExpression
+            Node: ColonToken
+            Node: TypeReference
+                ...
+        Node: Constructor
+            Node: SyntaxList
+                ...
+            Node: ConstructorKeyword
+            Node: OpenParenToken
+            Node: SyntaxList
                 ...
                 ...
+                ...
+                ...
+                ...
+                ...
+                ...
+            Node: CloseParenToken
+            Node: Block
+                ...
+                ...
+                ...
+        Node: MethodDeclaration
+            Node: Identifier
+            Node: OpenParenToken
+            Node: SyntaxList
+                ...
+            Node: CloseParenToken
+            Node: Block
+                ...
+                ...
+                ...
+        Node: PropertyDeclaration
+            Node: SyntaxList
+                ...
+            Node: Identifier
+            Node: ColonToken
+            Node: ArrayType
+                ...
+                ...
+                ...
+            Node: EqualsToken
+            Node: ArrayLiteralExpression
                 ...
                 ...
                 ...
@@ -965,16 +824,6 @@ processing error: Statement|type alias.type keyword: assertion failed (expected:
         Node: Identifier
         Node: EqualsToken
         Node: StringKeyword
-processing error: Expression: unknown option: 'SpreadElement' @ ./../../../typescript_codebases/lionweb-typescript/packages/class-core-test-language/src/test-helpers.ts:52:6: 
-    snippet:
-    Node: SyntaxList
-        Node: SpreadElement
-            Node: DotDotDotToken
-            Node: CallExpression
-                ...
-                ...
-                ...
-                ...
 processing error: Class_Body.members|constructor.constructor keyword: assertion failed (expected: ConstructorKeyword, found: SyntaxList) @ ./../../../typescript_codebases/lionweb-typescript/packages/class-core-test-language/src/gen/TestLanguage.g.ts:358:5: 
     snippet:
     Node: Constructor
@@ -1018,76 +867,10 @@ processing error: Class_Body.members|constructor.constructor keyword: assertion 
                 ...
                 ...
             Node: CloseBraceToken
-processing error: Expression: unknown option: 'SpreadElement' @ ./../../../typescript_codebases/lionweb-typescript/packages/utilities/src/serialization/metrics/functions.ts:30:9: 
-    snippet:
-    Node: SyntaxList
-        Node: SpreadElement
-            Node: DotDotDotToken
-            Node: ParenthesizedExpression
-                ...
-                ...
-                ...
-        Node: CommaToken
-        Node: SpreadElement
-            Node: DotDotDotToken
-            Node: ParenthesizedExpression
-                ...
-                ...
-                ...
-processing error: Expression|object literal.properties: unknown option: 'SpreadAssignment' @ ./../../../typescript_codebases/lionweb-typescript/packages/utilities/src/serialization/metrics/measurer.ts:79:13: 
-    snippet:
-    Node: SyntaxList
-        Node: SpreadAssignment
-            Node: DotDotDotToken
-            Node: Identifier
-        Node: CommaToken
-        Node: PropertyAssignment
-            Node: Identifier
-            Node: ColonToken
-            Node: PropertyAccessExpression
-                ...
-                ...
-                ...
 processing error: Expression|arrow function|without parentheses.parameter: assertion failed (expected: Parameter, found: AsyncKeyword) @ ./../../../typescript_codebases/lionweb-typescript/packages/utilities/src/serialization/chunk.ts:18:42: 
     snippet:
     Node: SyntaxList
         Node: AsyncKeyword
-processing error: Expression: unknown option: 'SpreadElement' @ ./../../../typescript_codebases/lionweb-typescript/packages/utilities/src/serialization/annotation-remover.ts:23:10: 
-    snippet:
-    Node: SyntaxList
-        Node: Identifier
-        Node: CommaToken
-        Node: SpreadElement
-            Node: DotDotDotToken
-            Node: CallExpression
-                ...
-                ...
-                ...
-                ...
-processing error: Expression: unknown option: 'SpreadElement' @ ./../../../typescript_codebases/lionweb-typescript/packages/utilities/src/m3/ts-generation/ts-types-generator.ts:171:13: 
-    snippet:
-    Node: SyntaxList
-        Node: SpreadElement
-            Node: DotDotDotToken
-            Node: CallExpression
-                ...
-                ...
-                ...
-                ...
-        Node: CommaToken
-        Node: SpreadElement
-            Node: DotDotDotToken
-            Node: CallExpression
-                ...
-                ...
-                ...
-                ...
-processing error: Expression: unknown option: 'SpreadElement' @ ./../../../typescript_codebases/lionweb-typescript/packages/ts-utils/src/sorting.ts:16:10: 
-    snippet:
-    Node: SyntaxList
-        Node: SpreadElement
-            Node: DotDotDotToken
-            Node: Identifier
 processing error: Statement|type alias.type keyword: assertion failed (expected: TypeKeyword, found: JSDoc) @ ./../../../typescript_codebases/lionweb-typescript/packages/ts-utils/src/comparer.ts:9:1: 
     snippet:
     Node: TypeAliasDeclaration
@@ -1116,62 +899,6 @@ processing error: Statement|type alias.type keyword: assertion failed (expected:
             Node: CloseParenToken
             Node: EqualsGreaterThanToken
             Node: NumberKeyword
-processing error: Expression: unknown option: 'SpreadElement' @ ./../../../typescript_codebases/lionweb-typescript/packages/ts-utils/src/cycles.ts:20:18: 
-    snippet:
-    Node: SyntaxList
-        Node: SpreadElement
-            Node: DotDotDotToken
-            Node: Identifier
-        Node: CommaToken
-        Node: Identifier
-processing error: Expression: unknown option: 'SpreadElement' @ ./../../../typescript_codebases/lionweb-typescript/packages/ts-utils/src/toposort.ts:32:33: 
-    snippet:
-    Node: SyntaxList
-        Node: SpreadElement
-            Node: DotDotDotToken
-            Node: Identifier
-        Node: CommaToken
-        Node: Identifier
-processing error: Expression: unknown option: 'SpreadElement' @ ./../../../typescript_codebases/lionweb-typescript/packages/ts-utils/src/arrays.ts:28:6: 
-    snippet:
-    Node: SyntaxList
-        Node: SpreadElement
-            Node: DotDotDotToken
-            Node: NewExpression
-                ...
-                ...
-                ...
-                ...
-                ...
-processing error: Type: unknown option: 'TypePredicate' @ ./../../../typescript_codebases/lionweb-typescript/packages/class-core/src/textualizer.ts:43:25: 
-    snippet:
-    Node: ArrowFunction
-        Node: OpenParenToken
-        Node: SyntaxList
-            Node: Parameter
-                ...
-                ...
-                ...
-        Node: CloseParenToken
-        Node: ColonToken
-        Node: TypePredicate
-            Node: Identifier
-            Node: IsKeyword
-            Node: TypeReference
-                ...
-        Node: EqualsGreaterThanToken
-        Node: PrefixUnaryExpression
-            Node: ExclamationToken
-            Node: ParenthesizedExpression
-                ...
-                ...
-                ...
-processing error: Expression|object literal.properties: unknown option: 'SpreadAssignment' @ ./../../../typescript_codebases/lionweb-typescript/packages/class-core/src/id-mapping.ts:40:27: 
-    snippet:
-    Node: SyntaxList
-        Node: SpreadAssignment
-            Node: DotDotDotToken
-            Node: Identifier
 processing error: Type|tuple type.elements|named tuple member.colon token: assertion failed (expected: ColonToken, found: QuestionToken) @ ./../../../typescript_codebases/lionweb-typescript/packages/class-core/src/linking.ts:39:99: 
     snippet:
     Node: NamedTupleMember
@@ -1687,52 +1414,6 @@ processing error: Expression|arrow function|without parentheses.parameter: asser
     snippet:
     Node: SyntaxList
         Node: AsyncKeyword
-processing error: Expression: unknown option: 'SpreadElement' @ ./../../../typescript_codebases/lionweb-typescript/packages/test/src/core/reference-utils.test.ts:111:33: 
-    snippet:
-    Node: SyntaxList
-        Node: SpreadElement
-            Node: DotDotDotToken
-            Node: Identifier
-        Node: CommaToken
-        Node: SpreadElement
-            Node: DotDotDotToken
-            Node: Identifier
-processing error: Expression|object literal.properties: unknown option: 'SpreadAssignment' @ ./../../../typescript_codebases/lionweb-typescript/packages/test/src/core/functions.test.ts:54:22: 
-    snippet:
-    Node: SyntaxList
-        Node: SpreadAssignment
-            Node: DotDotDotToken
-            Node: Identifier
-        Node: CommaToken
-        Node: PropertyAssignment
-            Node: Identifier
-            Node: ColonToken
-            Node: StringLiteral
-processing error: Expression|object literal.properties: unknown option: 'SpreadAssignment' @ ./../../../typescript_codebases/lionweb-typescript/packages/test/src/utilities/annotations.test.ts:24:13: 
-    snippet:
-    Node: SyntaxList
-        Node: SpreadAssignment
-            Node: DotDotDotToken
-            Node: Identifier
-        Node: CommaToken
-        Node: PropertyAssignment
-            Node: Identifier
-            Node: ColonToken
-            Node: StringLiteral
-processing error: Expression|object literal.properties: unknown option: 'SpreadAssignment' @ ./../../../typescript_codebases/lionweb-typescript/packages/test/src/instances/multi.ts:14:5: 
-    snippet:
-    Node: SyntaxList
-        Node: SpreadAssignment
-            Node: DotDotDotToken
-            Node: Identifier
-        Node: CommaToken
-        Node: PropertyAssignment
-            Node: Identifier
-            Node: ColonToken
-            Node: ArrowFunction
-                ...
-                ...
-                ...
 processing error: Class_Body.members|constructor.constructor keyword: assertion failed (expected: ConstructorKeyword, found: SyntaxList) @ ./../../../typescript_codebases/lionweb-typescript/packages/class-core-test/src/gen/LionCore_M3.g.ts:322:5: 
     snippet:
     Node: Constructor
@@ -1846,141 +1527,6 @@ processing error: Class_Body.members|constructor.constructor keyword: assertion 
                 ...
                 ...
             Node: CloseBraceToken
-processing error: Expression: unknown option: 'SpreadElement' @ ./../../../typescript_codebases/lionweb-typescript/packages/class-core-test/src/value-managers/annotations.tests.ts:203:30: 
-    snippet:
-    Node: SyntaxList
-        Node: SpreadElement
-            Node: DotDotDotToken
-            Node: CallExpression
-                ...
-                ...
-                ...
-                ...
-processing error: Expression|object literal.properties: unknown option: 'SpreadAssignment' @ ./../../../typescript_codebases/lionweb-typescript/packages/delta-protocol-common/src/translators/delta-to-command.ts:106:13: 
-    snippet:
-    Node: SyntaxList
-        Node: PropertyAssignment
-            Node: Identifier
-            Node: ColonToken
-            Node: Identifier
-        Node: CommaToken
-        Node: ShorthandPropertyAssignment
-            Node: Identifier
-        Node: CommaToken
-        Node: SpreadAssignment
-            Node: DotDotDotToken
-            Node: Identifier
-        Node: CommaToken
-        Node: PropertyAssignment
-            Node: Identifier
-            Node: ColonToken
-            Node: ArrayLiteralExpression
-                ...
-                ...
-                ...
-processing error: Expression|object literal.properties: unknown option: 'SpreadAssignment' @ ./../../../typescript_codebases/lionweb-typescript/packages/delta-protocol-common/src/translators/delta-to-event.ts:153:13: 
-    snippet:
-    Node: SyntaxList
-        Node: PropertyAssignment
-            Node: Identifier
-            Node: ColonToken
-            Node: Identifier
-        Node: CommaToken
-        Node: SpreadAssignment
-            Node: DotDotDotToken
-            Node: Identifier
-        Node: CommaToken
-        Node: PropertyAssignment
-            Node: Identifier
-            Node: ColonToken
-            Node: PrefixUnaryExpression
-                ...
-                ...
-        Node: CommaToken
-        Node: PropertyAssignment
-            Node: Identifier
-            Node: ColonToken
-            Node: ConditionalExpression
-                ...
-                ...
-                ...
-                ...
-                ...
-        Node: CommaToken
-        Node: PropertyAssignment
-            Node: Identifier
-            Node: ColonToken
-            Node: ConditionalExpression
-                ...
-                ...
-                ...
-                ...
-                ...
-processing error: Type: unknown option: 'TypePredicate' @ ./../../../typescript_codebases/lionweb-typescript/packages/delta-protocol-common/src/payload/query-types.ts:231:32: 
-    snippet:
-    Node: ArrowFunction
-        Node: OpenParenToken
-        Node: SyntaxList
-            Node: Parameter
-                ...
-                ...
-                ...
-        Node: CloseParenToken
-        Node: ColonToken
-        Node: TypePredicate
-            Node: Identifier
-            Node: IsKeyword
-            Node: TypeReference
-                ...
-        Node: EqualsGreaterThanToken
-        Node: BinaryExpression
-            Node: PropertyAccessExpression
-                ...
-                ...
-                ...
-            Node: InKeyword
-            Node: Identifier
-processing error: Type: unknown option: 'TemplateLiteralType' @ ./../../../typescript_codebases/lionweb-typescript/packages/delta-protocol-common/src/payload/common.ts:70:1: 
-    snippet:
-    Node: TypeAliasDeclaration
-        Node: JSDoc
-            Node: JSDocText
-            Node: JSDocLink
-                ...
-            Node: JSDocText
-        Node: SyntaxList
-            Node: ExportKeyword
-        Node: TypeKeyword
-        Node: Identifier
-        Node: EqualsToken
-        Node: TemplateLiteralType
-            Node: TemplateHead
-            Node: SyntaxList
-                ...
-processing error: Type: unknown option: 'TypePredicate' @ ./../../../typescript_codebases/lionweb-typescript/packages/delta-protocol-common/src/payload/event-types.ts:364:24: 
-    snippet:
-    Node: ArrowFunction
-        Node: OpenParenToken
-        Node: SyntaxList
-            Node: Parameter
-                ...
-                ...
-                ...
-        Node: CloseParenToken
-        Node: ColonToken
-        Node: TypePredicate
-            Node: Identifier
-            Node: IsKeyword
-            Node: TypeReference
-                ...
-        Node: EqualsGreaterThanToken
-        Node: BinaryExpression
-            Node: PropertyAccessExpression
-                ...
-                ...
-                ...
-            Node: InKeyword
-            Node: Identifier
 processing error: Expression|arrow function|without parentheses.parameter: assertion failed (expected: Parameter, found: AsyncKeyword) @ ./../../../typescript_codebases/lionweb-typescript/packages/delta-protocol-low-level-client-ws/src/low-level-client.ts:38:39: 
     snippet:
     Node: SyntaxList
@@ -2094,65 +1640,6 @@ processing error: Expression|arrow function|without parentheses.parameter: asser
     snippet:
     Node: SyntaxList
         Node: AsyncKeyword
-processing error: Expression: unknown option: 'SpreadElement' @ ./../../../typescript_codebases/lionweb-typescript/packages/build/src/deltas/generator/serializer-generator.ts:58:5: 
-    snippet:
-    Node: SyntaxList
-        Node: TemplateExpression
-            Node: TemplateHead
-            Node: SyntaxList
-                ...
-                ...
-        Node: CommaToken
-        Node: SpreadElement
-            Node: DotDotDotToken
-            Node: ParenthesizedExpression
-                ...
-                ...
-                ...
-processing error: Type: unknown option: 'TypePredicate' @ ./../../../typescript_codebases/lionweb-typescript/packages/build/src/deltas/generator/helpers.ts:20:37: 
-    snippet:
-    Node: ArrowFunction
-        Node: OpenParenToken
-        Node: SyntaxList
-            Node: Parameter
-                ...
-                ...
-                ...
-        Node: CloseParenToken
-        Node: ColonToken
-        Node: TypePredicate
-            Node: Identifier
-            Node: IsKeyword
-            Node: TypeReference
-                ...
-        Node: EqualsGreaterThanToken
-        Node: BinaryExpression
-            Node: BinaryExpression
-                ...
-                ...
-                ...
-            Node: AmpersandAmpersandToken
-            Node: BinaryExpression
-                ...
-                ...
-                ...
-processing error: Expression: unknown option: 'SpreadElement' @ ./../../../typescript_codebases/lionweb-typescript/packages/build/src/deltas/definition/definitions.ts:61:13: 
-    snippet:
-    Node: SyntaxList
-        Node: SpreadElement
-            Node: DotDotDotToken
-            Node: CallExpression
-                ...
-                ...
-                ...
-                ...
-        Node: CommaToken
-        Node: CallExpression
-            Node: Identifier
-            Node: OpenParenToken
-            Node: SyntaxList
-                ...
-            Node: CloseParenToken
 processing error: Class_Body.members|constructor.constructor keyword: assertion failed (expected: ConstructorKeyword, found: SyntaxList) @ ./../../../typescript_codebases/lionweb-typescript/packages/build/src/deltas/definition/Deltas.g.ts:306:5: 
     snippet:
     Node: Constructor
@@ -2189,52 +1676,3 @@ processing error: Class_Body.members|constructor.constructor keyword: assertion 
                 ...
                 ...
             Node: CloseBraceToken
-processing error: Expression: unknown option: 'SpreadElement' @ ./../../../typescript_codebases/lionweb-typescript/packages/build/src/code-reading/check-imports.ts:21:39: 
-    snippet:
-    Node: SyntaxList
-        Node: SpreadElement
-            Node: DotDotDotToken
-            Node: NewExpression
-                ...
-                ...
-                ...
-                ...
-                ...
-processing error: Type: unknown option: 'TypePredicate' @ ./../../../typescript_codebases/lionweb-typescript/packages/class-core-generator/src/reflective-layer.templates.ts:143:34: 
-    snippet:
-    Node: ArrowFunction
-        Node: OpenParenToken
-        Node: SyntaxList
-            Node: Parameter
-                ...
-                ...
-                ...
-        Node: CloseParenToken
-        Node: ColonToken
-        Node: TypePredicate
-            Node: Identifier
-            Node: IsKeyword
-            Node: ParenthesizedType
-                ...
-                ...
-                ...
-        Node: EqualsGreaterThanToken
-        Node: BinaryExpression
-            Node: BinaryExpression
-                ...
-                ...
-                ...
-            Node: BarBarToken
-            Node: BinaryExpression
-                ...
-                ...
-                ...
-processing error: Expression: unknown option: 'SpreadElement' @ ./../../../typescript_codebases/lionweb-typescript/packages/class-core-generator/src/helpers/imports-tracking.ts:82:17: 
-    snippet:
-    Node: SyntaxList
-        Node: SpreadElement
-            Node: DotDotDotToken
-            Node: PropertyAccessExpression
-                ...
-                ...
-                ...

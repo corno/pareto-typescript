@@ -254,6 +254,10 @@ export type Expression =
     | ['void', {
         'void keyword': d_ast.Keyword
     }]
+    | ['spread element', {
+        'dot dot dot token': d_ast.Keyword
+        'expression': Expression
+    }]
     | ['with type arguments', Expression_With_Type_Arguments]
 
 export type Expression__Array_Literal = {
@@ -269,7 +273,7 @@ export type Expression__Arrow_Function = {
     // >>
     'type parameters': Type_Parameters
     'parameters': Expression__Arrow_Function_Parameters
-    'type': Optional_Type
+    'type': Return_Type_Annotation
     'equals greater than token': d_ast.Keyword
     'body':
     | ['block', Block]
@@ -397,6 +401,10 @@ export type Expression__Object_Literal__Property =
         'name': Identifier
     }]
     | ['method', Expression__Object_Literal__Property__Method]
+    | ['spread', {
+        'dot dot dot token': d_ast.Keyword
+        'expression': Expression
+    }]
 
 export type Expression__Object_Literal__Property__Assignment = {
     'jsdoc': JSDoc
@@ -1036,6 +1044,7 @@ export type Type =
     | ['string', d_ast.Keyword]
     | ['symbol', d_ast.Keyword]
     | ['tuple type', Type__Tuple]
+    | ['template literal type', Type__Template_Literal]
     | ['type literal', Object_Type]
     | ['type operator', Type__Type_Operator]
     | ['type reference', Type__Type_Reference]
@@ -1048,6 +1057,16 @@ export type Type__Array = {
     'element type': Type
     'open bracket token': d_ast.Keyword
     'close bracket token': d_ast.Keyword
+}
+
+export type Type__Template_Literal = {
+    'head': d_ast.Node
+    'template spans': p_.List<{
+        'type': Type
+        'suffix':
+        | ['middle', d_ast.Node]
+        | ['tail', d_ast.Node]
+    }>
 }
 
 export type Type__Conditional = {
