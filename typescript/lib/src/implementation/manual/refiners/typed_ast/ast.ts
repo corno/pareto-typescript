@@ -191,7 +191,10 @@ export const Class_Body: h.Production<d_out.Class_Body> = ($, abort, $p) => h.cr
                         case "MethodDeclaration": return ['method', context.option("method").consume_and_parse_children_as_type(
                             (context): d_out.Class_Body__Member__Method => ({
                                 'jsdoc': context.prop("jsdoc").defer_parsing_to_component(JSDoc),
+                                'modifiers': context.prop("modifiers").defer_parsing_to_component(Signature_Modifiers),
+
                                 'name': context.prop("name").defer_parsing_to_component(Property_Name),
+                                'type parameters': context.prop("type parameters").defer_parsing_to_component(Type_Parameters),
                                 'parameters': context.prop("parameters").defer_parsing_to_component(Parameters),
                                 'return type': context.prop("return type").defer_parsing_to_component(Return_Type_Annotation),
                                 'body': context.prop("body").optional(
@@ -207,6 +210,8 @@ export const Class_Body: h.Production<d_out.Class_Body> = ($, abort, $p) => h.cr
                                 'modifiers': context.prop("modifiers").defer_parsing_to_component(Signature_Modifiers),
                                 'name': context.prop("name").defer_parsing_to_component(Property_Name),
                                 'type': context.prop("type").defer_parsing_to_component(Optional_Type),
+                                'optional initializer': context.prop("optional initializer").defer_parsing_to_component(Optional_Initializer),
+                                
                                 'semicolon': context.prop("semicolon").defer_parsing_to_component(Semi_Colon)
                             })
                         )]
@@ -1050,13 +1055,11 @@ export const Statement: h.Production<d_out.Statement> = ($, abort, $p) => h.crea
                                         })
                                     )]
                                     case "NamespaceExport": return ['namespace', context.option("namespace").consume_and_parse_children_as_type(
-                                        (context) => context.consume_and_parse_children_as_type(
-                                            (context) => ({
-                                                'asterisk token': context.prop("asterisk token").assert_kind("AsteriskToken").consume_keyword(),
-                                                'as keyword': context.prop("as keyword").assert_kind("AsKeyword").consume_keyword(),
-                                                'identifier': context.prop("identifier").assert_kind("Identifier").consume_literal()
-                                            })
-                                        )
+                                        (context) => ({
+                                            'asterisk token': context.prop("asterisk token").assert_kind("AsteriskToken").consume_keyword(),
+                                            'as keyword': context.prop("as keyword").assert_kind("AsKeyword").consume_keyword(),
+                                            'identifier': context.prop("identifier").assert_kind("Identifier").consume_literal()
+                                        })
                                     )]
                                     default: return abort(null)
                                 }
@@ -1442,21 +1445,19 @@ export const Statement_Modifiers: h.Production<d_out.Statement_Modifiers> = (ite
     "Statement_Modifiers",
     (context) => context.optional(
         "SyntaxList",
-        (context) => context.consume_and_parse_children_as_type(
-            (context) => context.consume_and_parse_children_as_non_separated_list(
-                (context): d_out.Statement_Modifiers__L => context.peek_for_state(
-                    (kind, abort): d_out.Statement_Modifiers__L => {
-                        switch (kind) {
-                            case "AsyncKeyword": return ['async', context.option("async").consume_keyword()]
-                            case "DeclareKeyword": return ['declare', context.option("declare").consume_keyword()]
-                            case "DefaultKeyword": return ['default', context.option("default").consume_keyword()]
-                            case "ExportKeyword": return ['export', context.option("export").consume_keyword()]
-                            // case "ReadonlyKeyword": return ['readonly', context.option("readonly").consume_keyword()]
-                            default: return abort(null)
-                        }
+        (context) => context.consume_and_parse_children_as_non_separated_list(
+            (context): d_out.Statement_Modifiers__L => context.peek_for_state(
+                (kind, abort): d_out.Statement_Modifiers__L => {
+                    switch (kind) {
+                        case "AsyncKeyword": return ['async', context.option("async").consume_keyword()]
+                        case "DeclareKeyword": return ['declare', context.option("declare").consume_keyword()]
+                        case "DefaultKeyword": return ['default', context.option("default").consume_keyword()]
+                        case "ExportKeyword": return ['export', context.option("export").consume_keyword()]
+                        // case "ReadonlyKeyword": return ['readonly', context.option("readonly").consume_keyword()]
+                        default: return abort(null)
                     }
-                ),
-            )
+                }
+            ),
         )
     )
 )

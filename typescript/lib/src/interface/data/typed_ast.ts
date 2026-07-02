@@ -109,10 +109,10 @@ export type Class_Body__Member__Get_Accessor = {
 
 export type Class_Body__Member__Method = {
     'jsdoc': JSDoc
-    // 'modifiers': Modifiers
+    'modifiers': Signature_Modifiers
     // 'asterisk token': p_.Optional_Value<d_ast.Keyword>
     'name': Property_Name
-    // 'type parameters': Type_Parameters
+    'type parameters': Type_Parameters
     'parameters': Parameters
     'return type': Return_Type_Annotation
     'body': p_.Optional_Value<Block>
@@ -125,6 +125,7 @@ export type Class_Body__Member__Property = {
     'name': Property_Name
     // 'question token': p_.Optional_Value<d_ast.Keyword>
     'type': Optional_Type
+    'optional initializer': Optional_Initializer
     'semicolon': Semi_Colon
 }
 
