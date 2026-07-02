@@ -136,7 +136,7 @@ export const Binding_Pattern: p_i.Transformer<d_in.Binding_Pattern, d_out.Phrase
                                         default: return p_.au($[0])
                                     }
                                 }
-            )
+                            )
                         )
                     ),
                     sh.ph.literal("}"),
@@ -633,13 +633,14 @@ export const Initializer: p_i.Transformer<d_in.Initializer, d_out.Phrase> = ($) 
     Expression($['expression']),
 ]))
 
-export const JSDoc: p_i.Transformer<d_in.JSDoc, d_out.Phrase> = ($) => p_.from.optional($).decide(
-    ($) => sh.ph.composed(p_.literal.list([
-        sh.ph.literal("/**"),
-        sh.ph.literal("FIX JSDoc"),
-        sh.ph.literal("*/")
-    ])),
-    () => sh.ph.nothing()
+export const JSDoc: p_i.Transformer<d_in.JSDoc, d_out.Phrase> = ($) => sh.ph.composed(
+    p_.from.list($).map(
+        ($) => sh.ph.composed(p_.literal.list([
+            sh.ph.literal("/**"),
+            sh.ph.literal("FIX JSDoc"),
+            sh.ph.literal("*/")
+        ])),
+    )
 )
 
 export const Heritage: p_i.Transformer<d_in.Heritage, d_out.Phrase> = ($) => p_.from.optional($).decide(
@@ -1608,7 +1609,7 @@ export const Type: p_i.Transformer<d_in.Type, d_out.Phrase> = ($) => p_.from.sta
                                                     sh.ph.literal(": "),
                                                     Type($['type']),
                                                 ])))
-                                                case 'regular':return p_.ss($, ($) => Type($))
+                                                case 'regular': return p_.ss($, ($) => Type($))
                                                 default: return p_.au($[0])
                                             }
                                         }

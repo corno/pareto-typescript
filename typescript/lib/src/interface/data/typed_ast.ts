@@ -483,7 +483,7 @@ export type Initializer = {
     'expression': Expression
 }
 
-export type JSDoc = p_.Optional_Value<d_primitives.Blob>
+export type JSDoc = p_.List<d_primitives.Blob>
 
 export type Numeric_Literal = d_primitives.Literal
 
