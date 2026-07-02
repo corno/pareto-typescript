@@ -1,98 +1,144 @@
 import * as p_ from 'pareto-core/dist/interface/data'
+import * as p_di from 'pareto-core/dist/interface/data'
 import * as d_ast from "../../modules/typescript_parser_api/interface/data/dynamic_ast"
 
-export type TODO = d_ast.Node
+import * as h from "../../temp_helpers"
+
+
+export type Separated_List<T extends p_di.Value> = p_.List<
+    | ['entry', T]
+    | ['separator', d_ast.Keyword]
+>
 
 export type Arguments = {
-    'open parenthesis token': null
-    'arguments': p_.List<Expression__Call__Arguments_Entry>
-    'close parenthesis token': null
-
+    'open parenthesis token': d_ast.Keyword
+    'arguments': Separated_List<Arguments__L>
+    'close parenthesis token': d_ast.Keyword
 }
 
+export type Arguments__L =
+    ['expression', Expression]
+    | ['spread', {
+        'dot dot dot token': d_ast.Keyword
+        'expression': Expression
+    }]
+
+
 export type Block = {
-    'open brace token': null
+    'open brace token': d_ast.Keyword
     'statements': Statements
-    'close brace token': null
+    'close brace token': d_ast.Keyword
 }
 
 export type Binding_Pattern =
     | ['array binding pattern', Binding_Pattern__Array]
     | ['identifier', Identifier]
-    | ['number keyword', null]
+    | ['number keyword', d_ast.Keyword]
     | ['object binding pattern', Binding_Pattern__Object]
-    | ['string keyword', null]
+    | ['string keyword', d_ast.Keyword]
 
 export type Binding_Pattern__Array = {
-    'open bracket token': null
-    'elements': p_.List<Binding_Pattern__Array__Element>
-    'close bracket token': null
+    'open bracket token': d_ast.Keyword
+    'elements': h.Separated_List<Binding_Pattern__Array__Element>
+    'close bracket token': d_ast.Keyword
 }
 
 export type Binding_Pattern__Array__Element =
-    | ['comma token', null]
     | ['binding element', {
-        'dot dot dot token': p_.Optional_Value<null>
+        'dot dot dot token': p_.Optional_Value<d_ast.Keyword>
         'name': Binding_Pattern
         'initializer': p_.Optional_Value<Initializer>
     }]
-    | ['omitted expression', null]
+    | ['omitted expression', null] //synthetic node, used for array destructuring, e.g. [,,a] = [1,2,3]
 
 export type Binding_Pattern__Object = {
-    'open brace token': null
-    'elements': p_.List<
-        | ['comma token', null]
-        | ['binding element', Binding_Pattern__Object__Element]
-    >
-    'close brace token': null
+    'open brace token': d_ast.Keyword
+    'elements': h.Separated_List<Binding_Pattern__Object__Element>
+    'close brace token': d_ast.Keyword
 }
 
 export type Binding_Pattern__Object__Element = {
-    // 'dot dot dot token': p_.Optional_Value<null>
+    // 'dot dot dot token': p_.Optional_Value<d_ast.Keyword>
     'property name': Property_Name
-    'colon token': null
-    'name': Binding_Pattern
+    'binding': p_.Optional_Value<{
+        'colon token': d_ast.Keyword
+        'pattern': Binding_Pattern
+    }>
     // 'initializer': p_.Optional_Value<Initializer>
 }
 
+export type Class = {
+    'class keyword': d_ast.Keyword
+    'identifier': Identifier
+    'type parameters': Type_Parameters
+    'heritage': Heritage
+    'body': Class_Body
+}
+
 export type Class_Body = {
-    'open brace token': null
+    'open brace token': d_ast.Keyword
     'members': p_.List<Class_Body__Member>
-    'close brace token': null
+    'close brace token': d_ast.Keyword
 }
 
 export type Class_Body__Member =
     | ['constructor', Class_Body__Member__Constructor]
-// | ['method', Class_Body__Member__Method]
-// | ['property', Class_Body__Member__Property]
+    | ['get accessor', Class_Body__Member__Get_Accessor]
+    | ['method', Class_Body__Member__Method]
+    | ['property', Class_Body__Member__Property]
 
 export type Class_Body__Member__Constructor = {
     'jsdoc': JSDoc
     // 'modifiers': Modifiers
-    'constructor keyword': null
+    'constructor keyword': d_ast.Keyword
     'parameters': Parameters
-    'body': Block
+    'body': p_.Optional_Value<Block>
+    'semicolon': Semi_Colon
+}
+
+export type Class_Body__Member__Get_Accessor = {
+    'jsdoc': JSDoc
+    // 'modifiers': Modifiers
+    'get keyword': d_ast.Keyword
+    'name': Property_Name
+    'parameters': Parameters
+    'return type': Return_Type_Annotation
+    'body': p_.Optional_Value<Block>
+    'semicolon': Semi_Colon
 }
 
 export type Class_Body__Member__Method = {
     'jsdoc': JSDoc
     // 'modifiers': Modifiers
-    // 'asterisk token': p_.Optional_Value<null>
-    'identifier': Identifier
+    // 'asterisk token': p_.Optional_Value<d_ast.Keyword>
+    'name': Property_Name
     // 'type parameters': Type_Parameters
     'parameters': Parameters
-    // 'type': Optional_Type
-    'body': Block
+    'return type': Return_Type_Annotation
+    'body': p_.Optional_Value<Block>
+    'semicolon': Semi_Colon
 }
 
 export type Class_Body__Member__Property = {
     'jsdoc': JSDoc
-    // 'modifiers': Modifiers
-    'identifier': Identifier
-    // 'question token': p_.Optional_Value<null>
-    'colon token': null
-    'type': Type
+    'modifiers': Signature_Modifiers
+    'name': Property_Name
+    // 'question token': p_.Optional_Value<d_ast.Keyword>
+    'type': Optional_Type
+    'semicolon': Semi_Colon
 }
+
+export type Class_Member_Modifiers = p_.Optional_Value<p_.List<Class_Member_Modifiers__L>>
+
+export type Class_Member_Modifiers__L =
+    | ['abstract', d_ast.Keyword]
+    | ['declare', d_ast.Keyword]
+    | ['override', d_ast.Keyword]
+    | ['private', d_ast.Keyword]
+    | ['protected', d_ast.Keyword]
+    | ['public', d_ast.Keyword]
+    | ['readonly', d_ast.Keyword]
+    | ['static', d_ast.Keyword]
 
 export type Entity_Name =
     | ['identifier', Identifier]
@@ -101,119 +147,116 @@ export type Entity_Name =
 export type Expression =
     | ['array literal', Expression__Array_Literal]
     | ['arrow function', Expression__Arrow_Function]
-    | ['as expression', {
-        'expression': Expression
-        'as keyword': null
-        'type': Type
-    }]
-    | ['await', {
-        'await keyword': null
-        'expression': Expression
-    }]
+    | ['assertion', Expression__Assertion]
+    | ['as expression', Expression__As]
+    | ['await', Expression__Await]
     | ['big int literal', d_ast.Node]
     | ['binary', Expression__Binary]
     | ['call', Expression__Call]
-    | ['class expression', {
-        'class keyword': null
-        'identifier': Identifier
-        'body': Class_Body
-    }]
+    | ['class', Class]
     | ['conditional', Expression__Conditional]
-    | ['delete', {
-        'delete keyword': null
-        'expression': Expression
-    }]
+    | ['delete', Expression__Delete]
     | ['element access', {
         'expression': Expression
-        'open bracket token': null
+        'open bracket token': d_ast.Keyword
         'argument expression': Expression
-        'close bracket token': null
+        'close bracket token': d_ast.Keyword
     }]
     | ['external module reference', {
-        'require keyword': null
-        'open parenthesis token': null
+        'require keyword': d_ast.Keyword
+        'open parenthesis token': d_ast.Keyword
         'module name': String_Literal
-        'close parenthesis token': null
+        'close parenthesis token': d_ast.Keyword
     }]
-    | ['false', null]
+    | ['false', d_ast.Keyword]
     | ['function', {
-        'function keyword': null
+        'function keyword': d_ast.Keyword
         'parameters': Parameters
         'body': Block
     }]
     | ['identifier', Identifier]
+    | ['import keyword', d_ast.Keyword]
+    | ['jsdoc', d_ast.Node]
+    | ['meta property', {
+        'new keyword': d_ast.Keyword
+        'dot token': d_ast.Keyword
+        'identifier': Identifier
+    }]
     | ['new', {
-        'new keyword': null
+        'new keyword': d_ast.Keyword
         'expression': Expression
         'arguments': Arguments
     }]
     | ['no substitution template literal', d_ast.Node]
     | ['non null', {
         'expression': Expression
-        'exclamation token': null
+        'exclamation token': d_ast.Keyword
     }]
-    | ['null keyword', null]
+    | ['null keyword', d_ast.Keyword]
     | ['numeric literal', d_ast.Node]
     | ['object literal', Expression__Object_Literal]
     | ['parenthesized', {
-        'open parenthesis token': null
+        'open parenthesis token': d_ast.Keyword
         'expression': Expression
-        'close parenthesis token': null
+        'close parenthesis token': d_ast.Keyword
     }]
     | ['postfix unary', {
         'operand': Expression
         'operator token':
-        | ['--', null]
-        | ['++', null]
+        | ['--', d_ast.Keyword]
+        | ['++', d_ast.Keyword]
     }]
 
     | ['prefix unary', {
         'operator token':
-        | ['!', null]
-        | ['-', null]
-        | ['+', null]
+        | ['!', d_ast.Keyword]
+        | ['-', d_ast.Keyword]
+        | ['+', d_ast.Keyword]
+        | ['++', d_ast.Keyword]
         'operand': Expression
     }]
     | ['property access', Expression__Property_Access]
     | ['regular expression literal', d_ast.Node]
     | ['string literal', String_Literal]
     | ['template', Expression__Template]
-    | ['this', null]
-    | ['true keyword', null]
+    | ['this', d_ast.Keyword]
+    | ['true keyword', d_ast.Keyword]
     | ['type of', {
-        'type of keyword': null
+        'type of keyword': d_ast.Keyword
         'expression': Expression
     }]
     | ['void', {
-        'void keyword': null
+        'void keyword': d_ast.Keyword
     }]
-    | ['with type arguments', {
-        'expression': Expression
-        'type arguments': Type_Arguments
-    }]
+    | ['with type arguments', Expression_With_Type_Arguments]
 
 export type Expression__Array_Literal = {
-    'open bracket token': null
-    'elements': p_.List<Expression__Array_Literal__Element>
-    'close bracket token': null
+    'open bracket token': d_ast.Keyword
+    'elements': h.Separated_List<Expression>
+    'close bracket token': d_ast.Keyword
 }
 
-export type Expression__Array_Literal__Element =
-    | ['comma token', null]
-    | ['expression', Expression]
-
 export type Expression__Arrow_Function = {
-    'modifiers': p_.Optional_Value<p_.List<
-        ['async', null]
-    >>
+    //clashes with 'parameters'
+    // 'modifiers': p_.Optional_Value<p_.List<
+    //     ['async', d_ast.Keyword]
+    // >>
     'type parameters': Type_Parameters
     'parameters': Expression__Arrow_Function_Parameters
     'type': Optional_Type
-    'equals greater than token': null
+    'equals greater than token': d_ast.Keyword
     'body':
     | ['block', Block]
     | ['expression', Expression]
 }
+
+export type Expression__Assertion = {
+    'less than token': d_ast.Keyword
+    'type': Type
+    'greater than token': d_ast.Keyword
+    'expression': Expression
+}
+
 
 export type Expression__Arrow_Function_Parameters =
     | ['with parentheses', Parameters]
@@ -227,101 +270,110 @@ export type Expression__Arrow_Function__Without_Parentheses = {
     }
 }
 
+export type Expression__As = {
+    'expression': Expression
+    'as keyword': d_ast.Keyword
+    'type': Type
+}
+
+export type Expression__Await = {
+    'await keyword': d_ast.Keyword
+    'expression': Expression
+}
+
 export type Expression__Binary = {
     'left': Expression
     'operator token':
-    | ['^', null]
-    | ['^=', null]
-    | ['-', null]
-    | ['-=', null]
-    | ['!=', null]
-    | ['!==', null]
-    | ['??', null]
-    | ['??=', null]
-    | ['*', null]
-    | ['**', null]
-    | ['**=', null]
-    | ['*=', null]
-    | ['/', null]
-    | ['/=', null]
-    | ['&', null]
-    | ['&=', null]
-    | ['&&', null]
-    | ['&&=', null]
-    | ['%', null]
-    | ['+', null]
-    | ['+=', null]
-    | ['<', null]
-    | ['<<', null]
-    | ['<<=', null]
-    | ['<=', null]
-    | ['=', null]
-    | ['==', null]
-    | ['===', null]
-    | ['>', null]
-    | ['>=', null]
-    | ['>>', null]
-    | ['>>=', null]
-    | ['>>>=', null]
-    | ['>>>', null]
-    | ['|', null]
-    | ['|=', null]
-    | ['||', null]
-    | ['||=', null]
-    | ['in', null]
-    | ['instanceof', null]
+    | ['^', d_ast.Keyword]
+    | ['^=', d_ast.Keyword]
+    | ['-', d_ast.Keyword]
+    | ['-=', d_ast.Keyword]
+    | ['!=', d_ast.Keyword]
+    | ['!==', d_ast.Keyword]
+    | ['??', d_ast.Keyword]
+    | ['??=', d_ast.Keyword]
+    | ['*', d_ast.Keyword]
+    | ['**', d_ast.Keyword]
+    | ['**=', d_ast.Keyword]
+    | ['*=', d_ast.Keyword]
+    | ['/', d_ast.Keyword]
+    | ['/=', d_ast.Keyword]
+    | ['&', d_ast.Keyword]
+    | ['&=', d_ast.Keyword]
+    | ['&&', d_ast.Keyword]
+    | ['&&=', d_ast.Keyword]
+    | ['%', d_ast.Keyword]
+    | ['+', d_ast.Keyword]
+    | ['+=', d_ast.Keyword]
+    | ['<', d_ast.Keyword]
+    | ['<<', d_ast.Keyword]
+    | ['<<=', d_ast.Keyword]
+    | ['<=', d_ast.Keyword]
+    | ['=', d_ast.Keyword]
+    | ['==', d_ast.Keyword]
+    | ['===', d_ast.Keyword]
+    | ['>', d_ast.Keyword]
+    | ['>=', d_ast.Keyword]
+    | ['>>', d_ast.Keyword]
+    | ['>>=', d_ast.Keyword]
+    | ['>>>=', d_ast.Keyword]
+    | ['>>>', d_ast.Keyword]
+    | ['|', d_ast.Keyword]
+    | ['|=', d_ast.Keyword]
+    | ['||', d_ast.Keyword]
+    | ['||=', d_ast.Keyword]
+    | ['in', d_ast.Keyword]
+    | ['instanceof', d_ast.Keyword]
     'right': Expression
 }
 
 export type Expression__Call = {
     'callee':
-    | ['import', null]
+    | ['import', d_ast.Keyword]
     | ['expression', Expression]
     'type arguments': Type_Arguments
     'arguments': Arguments
 }
 
-export type Expression__Call__Arguments_Entry =
-    | ['comma token', null]
-    | ['expression', Expression]
-    | ['spread', {
-        'dot dot dot token': null
-        'expression': Expression
-    }]
-
 export type Expression__Conditional = {
     'condition': Expression
-    'question token': null
+    'question token': d_ast.Keyword
     'when true': Expression
-    'colon token': null
+    'colon token': d_ast.Keyword
     'when false': Expression
 }
 
+export type Expression__Delete = {
+    'delete keyword': d_ast.Keyword
+    'expression': Expression
+}
+
 export type Expression__Object_Literal = {
-    'open brace token': null
-    'properties': p_.List<Expression__Object_Literal__Property>
-    'close brace token': null
+    'open brace token': d_ast.Keyword
+    'properties': h.Separated_List<Expression__Object_Literal__Property>
+    'close brace token': d_ast.Keyword
 }
 
 export type Expression__Object_Literal__Property =
-    | ['comma token', null]
     | ['property assignment', Expression__Object_Literal__Property__Assignment]
     | ['shorthand property assignment', {
         'name': Property_Name
     }]
-    | ['method', null]
+    | ['method', d_ast.Keyword]
 
 export type Expression__Object_Literal__Property__Assignment = {
     'jsdoc': JSDoc
     'name': Property_Name
-    'colon token': null
+    'colon token': d_ast.Keyword
     'initializer': Expression
 }
 
 export type Expression__Property_Access = {
     'expression': Expression
-    'dot token': null
-    'name': Identifier
+    'dot token': d_ast.Keyword
+    'identifier':
+    | ['named', Identifier]
+    | ['private', Identifier]
 }
 
 export type Expression__Template = {
@@ -336,139 +388,171 @@ export type Expression__Template_Span = {
     | ['tail', d_ast.Node]
 }
 
+export type Expression_With_Type_Arguments = {
+    'expression': Expression
+    'type arguments': Type_Arguments
+}
+
+export type Heritage = p_.Optional_Value<p_.List<Heritage__Clause>>
+
+export type Heritage__Clause = {
+    'extends or implements keyword':
+    | ['extends', d_ast.Keyword]
+    | ['implements', d_ast.Keyword]
+    'types': h.Separated_List<Expression_With_Type_Arguments>
+}
+
 export type Identifier = d_ast.Node
 
-export type Import_Specifier =
-    | ['comma token', null]
-    | ['import specifier', {
+export type Import_Specifier = {
+    'type keyword': p_.Optional_Value<d_ast.Keyword>
+    'identifier': Identifier
+    'as': p_.Optional_Value<{
+        'as keyword': d_ast.Keyword
         'identifier': Identifier
-        'as': p_.Optional_Value<{
-            'as keyword': null
-            'identifier': Identifier
-        }>
-    }]
+    }>
+}
 
 export type Initializer = {
-    'equals token': null
+    'equals token': d_ast.Keyword
     'expression': Expression
 }
 
 export type JSDoc = p_.Optional_Value<d_ast.Node>
 
-export type Modifier =
-    | ['async', null]
-    | ['declare', null]
-    | ['default', null]
-    | ['export', null]
-    | ['readonly', null]
-
-export type Modifiers = p_.Optional_Value<p_.List<Modifier>>
-
 export type Numeric_Literal = d_ast.Node
 
 export type Object_Type = {
-    'open brace token': null
-    'members': p_.List<Object_Type__Element>
-    'close brace token': null
+    'open brace token': d_ast.Keyword
+    'signatures': p_.List<Object_Type__Signature>
+    'close brace token': d_ast.Keyword
 }
 
-export type Object_Type__Element =
-    | ['call signature', Object_Type__Element__Call_Signature]
-    | ['construct signature', Object_Type__Element__Construct_Signature]
-    | ['index signature', Object_Type__Element__Index_Signature]
-    | ['property signature', Object_Type__Element__Property_Signature]
-    | ['method signature', TODO]
+export type Object_Type__Signature =
+    | ['call', Object_Type__Signature__Call]
+    | ['construct', Object_Type__Signature__Construct]
+    | ['index', Object_Type__Signature__Index]
+    | ['method', Object_Type__Signature__Method]
+    | ['property', Object_Type__Signature__Property]
 
-export type Object_Type__Element__Call_Signature = {
+export type Object_Type__Signature__Call = {
     'jsdoc': JSDoc
     'parameters': Parameters
     'type': Optional_Type
     'semicolon': Semi_Colon
 }
 
-export type Object_Type__Element__Construct_Signature = {
+export type Object_Type__Signature__Construct = {
     'jsdoc': JSDoc
-    'new keyword': null
+    'new keyword': d_ast.Keyword
     'parameters': Parameters
-    //'type': Optional_Type
+    'type': Optional_Type
     'semicolon': Semi_Colon
 }
 
-export type Object_Type__Element__Index_Signature = {
+export type Object_Type__Signature__Index = {
     'jsdoc': JSDoc
-    'modifiers': Modifiers
-    'open bracket token': null
+    'modifiers': Signature_Modifiers
+    'open bracket token': d_ast.Keyword
     'parameter': {
         'identifier': Identifier
-        'colon token': null
+        'colon token': d_ast.Keyword
         'type': Type //this is too broad, only certain types are allowed; string, number, symbol, template literal, union of those (not fully sure if there's more)
     }
-    'close bracket token': null
-    'colon token': null
+    'close bracket token': d_ast.Keyword
+    'colon token': d_ast.Keyword
     'type': Type
     'semicolon': Semi_Colon
 }
 
-export type Object_Type__Element__Property_Signature = {
+export type Object_Type__Signature__Method = {
     'jsdoc': JSDoc
-    'modifiers': Modifiers
+    'identifier': Identifier
+    'question token': p_.Optional_Value<d_ast.Keyword>
+    'type parameters': Type_Parameters
+    'parameters': Parameters
+    'return type': Return_Type_Annotation
+    'semicolon': Semi_Colon
+}
+
+export type Object_Type__Signature__Property = {
+    'jsdoc': JSDoc
+    'modifiers': Signature_Modifiers
     'id': Property_Name
-    'question token': p_.Optional_Value<null>
-    'colon token': null
+    'question token': p_.Optional_Value<d_ast.Keyword>
+    'colon token': d_ast.Keyword
     'type': Type
-    'comma token': p_.Optional_Value<null>
+    'comma token': p_.Optional_Value<d_ast.Keyword>
     'semicolon token': Semi_Colon
 }
 
 export type Optional_Initializer = p_.Optional_Value<Initializer>
 
 export type Optional_Type = p_.Optional_Value<{
-    'colon token': null
+    'colon token': d_ast.Keyword
     'type': Type
 }>
 
 export type Parameters = {
-    'open parenthesis token': null
-    'entries': p_.List<Parameters__Entry>
-    'close parenthesis token': null
+    'open parenthesis token': d_ast.Keyword
+    'entries': h.Separated_List<Parameters__Parameter>
+    'close parenthesis token': d_ast.Keyword
 }
-
-export type Parameters__Entry =
-    | ['comma token', null]
-    | ['parameter', Parameters__Parameter]
 
 export type Parameters__Parameter = {
     'jsdoc': JSDoc
-    'dot dot dot token': p_.Optional_Value<null>
+
+    // 'modifiers': p_.Optional_Value<p_.List<Parameters__Parameter__Modifier>>
+    'dot dot dot token': p_.Optional_Value<d_ast.Keyword>
     'name': Binding_Pattern
-    'question token': p_.Optional_Value<null>
+    'question token': p_.Optional_Value<d_ast.Keyword>
     'type': Optional_Type
     'initializer': p_.Optional_Value<Initializer>
 }
 
+export type Parameters__Parameter__Modifier =
+    | ['private', d_ast.Keyword]
+    | ['public', d_ast.Keyword]
+    | ['protected', d_ast.Keyword]
+    | ['readonly', d_ast.Keyword]
+
 export type Property_Name =
-    | ['string literal', String_Literal]
+    | ['computed', Property_Name__Computed]
     | ['identifier', Identifier]
     | ['numeric literal', Numeric_Literal]
+    | ['string literal', String_Literal]
+
+export type Property_Name__Computed = {
+    'open bracket token': d_ast.Keyword
+    'expression': Expression
+    'close bracket token': d_ast.Keyword
+}
 
 export type Qualified_Name = {
     'first': Entity_Name
-    'dot token': null
+    'dot token': d_ast.Keyword
     'second': Identifier
 }
 
 export type Return_Type_Annotation = p_.Optional_Value<{
-    'colon token': null
+    'colon token': d_ast.Keyword
     'kind':
     | ['type', Type]
     | ['type predicate', {
         'identifier': Identifier
-        'is keyword': null
+        'is keyword': d_ast.Keyword
         'type': Type
     }]
 }>
 
-export type Semi_Colon = p_.Optional_Value<null>
+export type Signature_Modifiers = p_.Optional_Value<p_.List<Signature_Modifiers__L>>
+
+export type Signature_Modifiers__L =
+    | ['private', d_ast.Keyword]
+    | ['public', d_ast.Keyword]
+    | ['readonly', d_ast.Keyword]
+
+export type Semi_Colon = p_.Optional_Value<d_ast.Keyword>
 
 export type Source_File = {
     'statements': Statements
@@ -478,66 +562,53 @@ export type Source_File = {
 export type Statement =
     | ['block', Block]
     | ['break', {
-        'break keyword': null
+        'break keyword': d_ast.Keyword
         'identifier': p_.Optional_Value<Identifier>
         'semicolon': Semi_Colon
     }]
-    | ['class', TODO]
-    | ['do', {
-        'do keyword': null
-        'statement': Statement
-        'while keyword': null
-        'open parenthesis token': null
-        'expression': Expression
-        'close parenthesis token': null
+    | ['class', Statement__Class_Declaration]
+    | ['continue', {
+        'jsdoc': JSDoc
+        'continue keyword': d_ast.Keyword
+        'label': p_.Optional_Value<Identifier>
         'semicolon': Semi_Colon
     }]
+    | ['do', Statement__Do]
+    | ['empty', Statement__Empty]
     | ['enum', Statement__Enum_Declaration]
     | ['export assignment', {
-        'export keyword': null
+        'export keyword': d_ast.Keyword
         'initializer': Initializer
         'semicolon': Semi_Colon
     }]
     | ['export declaration', Statement__Export_Declaration]
-    | ['expression', {
-        'expression': Expression
-        'semicolon': Semi_Colon
-    }]
+    | ['expression', Statement__Expression]
     | ['for', Statement__For]
     | ['for in', Statement__For_In]
     | ['for of', Statement__For_Of]
     | ['function', Statement__Function_Declaration]
-    | ['if', {
-        'if keyword': null
-        'open parenthesis token': null
-        'expression': Expression
-        'close parenthesis token': null
-        'then statement': Statement
-        'else': p_.Optional_Value<{
-            'else keyword': null
-            'statement': Statement
-        }>
-        'semicolon': Semi_Colon
-    }]
+    | ['if', Statement__If]
     | ['import', Statement__Import_Declaration]
     | ['import equals', {
-        'modifiers': Modifiers
-        'import keyword': null
+        'modifiers': Statement_Modifiers
+        'import keyword': d_ast.Keyword
         'identifier': Identifier
         'initializer': Initializer
         'semicolon': Semi_Colon
     }]
-    | ['interface', Statement__Interface_Declaration]
+    | ['interface', Statement__Interface]
+    | ['labeled', Statement__Labeled]
     | ['module', Statement__Module_Declaration]
+    | ['namespace export', Statement__Namespace_Export]
     | ['return', {
         'jsdoc': JSDoc
-        'return keyword': null
+        'return keyword': d_ast.Keyword
         'expression': p_.Optional_Value<Expression>
         'semicolon': Semi_Colon
     }]
     | ['switch', Statement__Switch]
     | ['throw', {
-        'throw keyword': null
+        'throw keyword': d_ast.Keyword
         'expression': Expression
         'semicolon': Semi_Colon
     }]
@@ -545,140 +616,142 @@ export type Statement =
     | ['type alias', Statement__Type_Alias_Declaration]
     | ['variable', Statement__Variable]
     | ['while', {
-        'while keyword': null
-        'open parenthesis token': null
+        'while keyword': d_ast.Keyword
+        'open parenthesis token': d_ast.Keyword
         'expression': Expression
-        'close parenthesis token': null
+        'close parenthesis token': d_ast.Keyword
         'statement': Statement
     }]
 
 export type Statement__Class_Declaration = {
     'jsdoc': JSDoc
-    'class keyword': null
-    'identifier': Identifier
-    'type parameters': Type_Parameters
-    'heritage clauses': p_.Optional_Value<p_.List<Statement__Class__Heritage_Clause>>
-    'body': Class_Body
+    'modifiers': Statement_Modifiers
+    'class': Class
     'semicolon': Semi_Colon
 }
 
-export type Statement__Class__Heritage_Clause = {
-    'extends or implements keyword': null
-    'types': p_.List<Statement__Class__Heritage_Clause_Type>
+export type Statement__Do = {
+    'do keyword': d_ast.Keyword
+    'statement': Statement
+    'while keyword': d_ast.Keyword
+    'open parenthesis token': d_ast.Keyword
+    'expression': Expression
+    'close parenthesis token': d_ast.Keyword
+    'semicolon': Semi_Colon
 }
 
-export type Statement__Class__Heritage_Clause_Type = {
-    'expression': Entity_Name
-    'type arguments': Type_Arguments
+export type Statement__Empty = {
+    'semicolon token': d_ast.Keyword
 }
 
 export type Statement__Enum_Declaration = {
     'jsdoc': JSDoc
     'modifiers': p_.Optional_Value<p_.List<
-        | ['const', null]
-        | ['declare', null]
-        | ['default', null]
-        | ['export', null]
+        | ['const', d_ast.Keyword]
+        | ['declare', d_ast.Keyword]
+        | ['default', d_ast.Keyword]
+        | ['export', d_ast.Keyword]
     >>
-    'enum keyword': null
+    'enum keyword': d_ast.Keyword
     'identifier': Identifier
-    'open brace token': null
-    'members': p_.List<
-        | ['comma token', null]
-        | ['enum member', Statement__Enum_Declaration__Member]
-    >
-    'close brace token': null
+    'open brace token': d_ast.Keyword
+    'members': h.Separated_List<Statement__Enum_Declaration__Member>
+    'close brace token': d_ast.Keyword
     'semicolon': Semi_Colon
 }
 
 export type Statement__Enum_Declaration__Member = {
     'jsdoc': JSDoc
-    'identifier': Identifier
-    // 'initializer': p_.Optional_Value<Initializer>
-    // 'comma token': p_.Optional_Value<null>
+    'name': Property_Name
+    'initializer': Optional_Initializer
+    // 'comma token': p_.Optional_Value<d_ast.Keyword>
 }
 
 export type Statement__Export_Declaration = {
     'jsdoc': JSDoc
-    'export keyword': null
+    'export keyword': d_ast.Keyword
     'type':
     | ['all', {
-        'asterisk token': null
+        'asterisk token': d_ast.Keyword
         'as': p_.Optional_Value<{
-            'as keyword': null
+            'as keyword': d_ast.Keyword
             'identifier': Identifier
         }>
     }]
     | ['named', {
-        'open brace token': null
-        'exports': p_.List<Statement__Export_Declaration_Entry>
-        'close brace token': null
+        'open brace token': d_ast.Keyword
+        'exports': h.Separated_List<Statement__Export_Declaration_Entry>
+        'close brace token': d_ast.Keyword
     }]
     | ['namespace', {
-        'asterisk token': null
-        'as keyword': null
+        'asterisk token': d_ast.Keyword
+        'as keyword': d_ast.Keyword
         'identifier': Identifier
     }]
     'from clause': p_.Optional_Value<{
-        'from keyword': null
+        'from keyword': d_ast.Keyword
         'string literal': String_Literal
     }>
     'semicolon': Semi_Colon
 }
 
-export type Statement__Export_Declaration_Entry =
-    | ['comma token', null]
-    | ['export specifier', {
+export type Statement__Expression = {
+    'jsdoc': JSDoc
+    'expression': Expression
+    'semicolon': Semi_Colon
+}
+
+export type Statement__Export_Declaration_Entry = {
+    'identifier': Identifier
+    'as': p_.Optional_Value<{
+        'as keyword': d_ast.Keyword
         'identifier': Identifier
-        'as': p_.Optional_Value<{
-            'as keyword': null
-            'identifier': Identifier
-        }>
-    }]
+    }>
+}
 
 export type Statement__For = {
     'jsdoc': JSDoc
-    'for keyword': null
-    'open parenthesis token': null
+    'for keyword': d_ast.Keyword
+    'open parenthesis token': d_ast.Keyword
     'initializer':
     | ['variable declaration list', Variable_Declaration_List]
     | ['expression', Expression]
-    // | ['empty', null]
-    'semicolon token': null
+    // | ['empty', d_ast.Keyword]
+    'semicolon token': d_ast.Keyword
     'condition': p_.Optional_Value<Expression>
-    'semicolon token 2': null
+    'semicolon token 2': d_ast.Keyword
     'incrementor': p_.Optional_Value<Expression>
-    'close parenthesis token': null
+    'close parenthesis token': d_ast.Keyword
     'statement': Statement
     'semicolon': Semi_Colon
 }
 
 export type Statement__For_In = {
-    'for keyword': null
-    'open parenthesis token': null
+    'for keyword': d_ast.Keyword
+    'open parenthesis token': d_ast.Keyword
     'variable declaration list': Variable_Declaration_List
-    'in keyword': null
+    'in keyword': d_ast.Keyword
     'expression': Expression
-    'close parenthesis token': null
+    'close parenthesis token': d_ast.Keyword
     'statement': Statement
     'semicolon': Semi_Colon
 }
 
 export type Statement__For_Of = {
-    'for keyword': null
-    'open parenthesis token': null
+    'for keyword': d_ast.Keyword
+    'open parenthesis token': d_ast.Keyword
     'variable declaration list': Variable_Declaration_List
-    'of keyword': null
+    'of keyword': d_ast.Keyword
     'expression': Expression
-    'close parenthesis token': null
+    'close parenthesis token': d_ast.Keyword
     'statement': Statement
     'semicolon': Semi_Colon
 }
 
 export type Statement__Function_Declaration = {
     'jsdoc': JSDoc
-    'modifiers': Modifiers
-    'function keyword': null
+    'modifiers': Statement_Modifiers
+    'function keyword': d_ast.Keyword
     'identifier': Identifier
     'type parameters': Type_Parameters
     'parameters': Parameters
@@ -687,11 +760,24 @@ export type Statement__Function_Declaration = {
     'semicolon': Semi_Colon
 }
 
+export type Statement__If = {
+    'if keyword': d_ast.Keyword
+    'open parenthesis token': d_ast.Keyword
+    'expression': Expression
+    'close parenthesis token': d_ast.Keyword
+    'then statement': Statement
+    'else': p_.Optional_Value<{
+        'else keyword': d_ast.Keyword
+        'statement': Statement
+    }>
+    'semicolon': Semi_Colon
+}
+
 export type Statement__Import_Declaration = {
     'jsdoc': JSDoc
-    'import keyword': null
+    'import keyword': d_ast.Keyword
     'clause': Statement__Import_Clause
-    'from keyword': null
+    'from keyword': d_ast.Keyword
     'string literal': String_Literal
     'semicolon': Semi_Colon
 }
@@ -704,267 +790,351 @@ export type Statement__Import_Clause = {
 }
 
 export type Statement__Import__Namespace = {
-    'asterisk token': null
-    'as keyword': null
+    'asterisk token': d_ast.Keyword
+    'as keyword': d_ast.Keyword
     'identifier': Identifier
 }
 
 export type Statement__Import__Named_Imports = {
-    'open brace token': null
-    'entries': p_.List<Import_Specifier>
-    'close brace token': null
+    'open brace token': d_ast.Keyword
+    'entries': h.Separated_List<Import_Specifier>
+    'close brace token': d_ast.Keyword
 }
 
 
-export type Statement__Interface_Declaration = {
+export type Statement__Interface = {
     'jsdoc': JSDoc
-    'modifiers': Modifiers
-    'interface keyword': null
+    'modifiers': Statement_Modifiers
+    'interface keyword': d_ast.Keyword
     'identifier': Identifier
     'type parameters': Type_Parameters
+    'heritage': Heritage
     'body': Object_Type
     // 'heritage clauses': p_.Optional_Value<p_.List<Heritage_Clause>>
     // 'body': Type_Literal
     'semicolon': Semi_Colon
 }
 
+export type Statement__Labeled = {
+    'jsdoc': JSDoc
+    'identifier': Identifier
+    'colon token': d_ast.Keyword
+    'statement': Statement
+}
+
 export type Statement__Module_Declaration = {
     'jsdoc': JSDoc
-    'modifiers': Modifiers
+    'modifiers': Statement_Modifiers
     'type':
-    | ['module', {
-        'keyword': null
-        'name': Property_Name
-    }]
+    | ['module', Statement__Module_Declaration__Module]
     | ['namespace', {
-        'keyword': null
+        'keyword': d_ast.Keyword
         'name': Identifier
     }]
     'block': Statement__Module_Declaration__Block
     'semicolon': Semi_Colon
 }
 
+export type Statement__Module_Declaration__Module = {
+    'keyword': d_ast.Keyword
+    'name': Property_Name
+}
+
 export type Statement__Module_Declaration__Block = { //FIXME; is this different from 'Block'?
-    'open brace token': null
+    'open brace token': d_ast.Keyword
     'statements': Statements
-    'close brace token': null
+    'close brace token': d_ast.Keyword
+}
+
+export type Statement__Namespace_Export = {
+    'jsdoc': JSDoc
+    'export keyword': d_ast.Keyword
+    'as keyword': d_ast.Keyword
+    'namespace keyword': d_ast.Keyword
+    'identifier': Identifier
+    'semicolon': Semi_Colon
 }
 
 
 export type Statement__Switch = {
     'jsdoc': JSDoc
-    'switch keyword': null
-    'open parenthesis token': null
+    'switch keyword': d_ast.Keyword
+    'open parenthesis token': d_ast.Keyword
     'expression': Expression
-    'close parenthesis token': null
+    'close parenthesis token': d_ast.Keyword
     'case block': {
-        'open brace token': null
+        'open brace token': d_ast.Keyword
         'clauses': p_.List<Statement__Switch_Case_Clause>
-        'close brace token': null
+        'close brace token': d_ast.Keyword
     }
     'semicolon': Semi_Colon
 }
 
 export type Statement__Switch_Case_Clause =
     | ['case', {
-        'case keyword': null
+        'case keyword': d_ast.Keyword
         'expression': Expression
-        'colon token': null
+        'colon token': d_ast.Keyword
         'statements': Statements
     }]
     | ['default', {
-        'default keyword': null
-        'colon token': null
+        'default keyword': d_ast.Keyword
+        'colon token': d_ast.Keyword
         'statements': Statements
     }]
 
 export type Statement__Try = {
     'jsdoc': JSDoc
-    'try keyword': null
+    'try keyword': d_ast.Keyword
     'try block': Block
-    'catch clause': p_.Optional_Value<{
-        'catch keyword': null
-        'open parenthesis token': null
-        'variable declaration': Variable_Declaration
-        'close parenthesis token': null
-        'block': Block
-    }>
+    'catch clause': p_.Optional_Value<Statement__Try__Catch_Clause>
     'finally block': p_.Optional_Value<{
-        'finally keyword': null
+        'finally keyword': d_ast.Keyword
         'block': Block
     }>
     'semicolon': Semi_Colon
 }
 
+export type Statement__Try__Catch_Clause = {
+    'catch keyword': d_ast.Keyword
+    'open parenthesis token': d_ast.Keyword
+    'variable declaration': Variable_Declaration
+    'close parenthesis token': d_ast.Keyword
+    'block': Block
+}
+
 export type Statement__Type_Alias_Declaration = {
     'jsdoc': JSDoc
-    'modifiers': Modifiers
-    'type keyword': null
+    'modifiers': Statement_Modifiers
+    'type keyword': d_ast.Keyword
     'identifier': Identifier
     'type parameters': Type_Parameters
-    'equals token': null
+    'equals token': d_ast.Keyword
     'type': Type
     'semicolon': Semi_Colon
 }
 
 export type Statement__Variable = {
     'jsdoc': JSDoc
-    'modifiers': Modifiers
+    'modifiers': Statement_Modifiers
     'variable declaration list': Variable_Declaration_List
     'semicolon': Semi_Colon
 }
 
 export type Statements = p_.List<Statement>
 
+export type Statement_Modifiers = p_.Optional_Value<p_.List<Statement_Modifiers__L>>
+
+export type Statement_Modifiers__L =
+    | ['async', d_ast.Keyword]
+    | ['declare', d_ast.Keyword]
+    | ['default', d_ast.Keyword]
+    | ['export', d_ast.Keyword]
+// | ['readonly', d_ast.Keyword]
+
+
 export type String_Literal = d_ast.Node
 
 export type Type =
-    | ['any', null]
+    | ['any', d_ast.Keyword]
     | ['array', Type__Array]
-    | ['boolean', null]
+    | ['boolean', d_ast.Keyword]
+    | ['conditional', Type__Conditional]
+    | ['constructor', Type__Constructor]
     | ['function', Type__Function_Type]
     | ['indexed access', Type__Indexed_Access]
+    | ['infer', Type__Infer]
+    | ['intersection', Type__Intersection]
     | ['jsdoc all', Type__JSDoc_All]
     | ['jsdoc function', Type__JSDoc_Function]
     | ['jsdoc non nullable', Type__JSDoc_Non_Nullable]
     | ['jsdoc nullable', Type__JSDoc_Nullable]
     | ['jsdoc unknown', Type__JSDoc_Unknown]
     | ['literal type', Type__Literal]
-    | ['never', null]
-    | ['number', null]
+    | ['mapped', Type__Mapped]
+    | ['never', d_ast.Keyword]
+    | ['number', d_ast.Keyword]
+    | ['object', d_ast.Keyword]
     | ['parenthesized', Type__Parenthesized]
-    | ['string', null]
-    | ['symbol', null]
+    | ['query', Type__Query]
+    | ['string', d_ast.Keyword]
+    | ['symbol', d_ast.Keyword]
     | ['tuple type', Type__Tuple]
     | ['type literal', Object_Type]
     | ['type operator', Type__Type_Operator]
     | ['type reference', Type__Type_Reference]
     | ['union type', Type__Union]
-    | ['undefined', null]
-    | ['unknown', null]
-    | ['void', null]
+    | ['undefined', d_ast.Keyword]
+    | ['unknown', d_ast.Keyword]
+    | ['void', d_ast.Keyword]
 
 export type Type__Array = {
     'element type': Type
-    'open bracket token': null
-    'close bracket token': null
+    'open bracket token': d_ast.Keyword
+    'close bracket token': d_ast.Keyword
+}
+
+export type Type__Conditional = {
+    'check type': Type
+    'extends keyword': d_ast.Keyword
+    'extends type': Type
+    'question token': d_ast.Keyword
+    'true type': Type
+    'colon token': d_ast.Keyword
+    'false type': Type
+}
+
+export type Type__Constructor = {
+    'new keyword': d_ast.Keyword
+    // 'type parameters': Type_Parameters
+    'parameters': Parameters
+    'equals greater than token': d_ast.Keyword
+    'type': Type
 }
 
 export type Type__Function_Type = {
     'type parameters': Type_Parameters
     'parameters': Parameters
     'type': Optional_Type
-    'equals greater than token': null
+    'equals greater than token': d_ast.Keyword
     'return type': Type
 }
 
 export type Type__Indexed_Access = {
     'object type': Type
-    'open bracket token': null
+    'open bracket token': d_ast.Keyword
     'index type': Type
-    'close bracket token': null
+    'close bracket token': d_ast.Keyword
 }
 
+export type Type__Infer = {
+    'infer keyword': d_ast.Keyword
+    'identifier': Identifier
+    'extends': p_.Optional_Value<{
+        'extends keyword': d_ast.Keyword
+        'type': Type
+    }>
+}
+
+export type Type__Intersection = h.Separated_List<Type>
 export type Type__JSDoc_All = {
-    'asterisk token': null
+    'asterisk token': d_ast.Keyword
 }
 
 export type Type__JSDoc_Function = {
-    'function keyword': null
+    'function keyword': d_ast.Keyword
     'parameters': Parameters
     'type': Optional_Type
 }
 
 export type Type__JSDoc_Non_Nullable = {
-    'exclamation token before': p_.Optional_Value<null>
+    'exclamation token before': p_.Optional_Value<d_ast.Keyword>
     'type': Type
-    'exclamation token after': p_.Optional_Value<null>
+    'exclamation token after': p_.Optional_Value<d_ast.Keyword>
 }
 
 export type Type__JSDoc_Nullable = {
-    'question token before': p_.Optional_Value<null>
+    'question token before': p_.Optional_Value<d_ast.Keyword>
     'type': Type
-    'question token after': p_.Optional_Value<null>
+    'question token after': p_.Optional_Value<d_ast.Keyword>
 }
 
 export type Type__JSDoc_Unknown = {
-    'question token': null
+    'question token': d_ast.Keyword
 }
 
 export type Type__Literal = {
     'type':
-    | ['false keyword', null]
-    | ['null', null]
+    | ['false keyword', d_ast.Keyword]
+    | ['null', d_ast.Keyword]
     | ['numeric literal', Numeric_Literal]
     | ['string literal', String_Literal]
-    | ['true keyword', null]
+    | ['true keyword', d_ast.Keyword]
+}
+
+export type Type__Mapped = {
+    'open brace token': d_ast.Keyword
+    // 'readonly keyword': p_.Optional_Value<d_ast.Keyword>
+    'open bracket token': d_ast.Keyword
+    'type parameter': {
+        'identifier': Identifier
+        'in keyword': d_ast.Keyword
+        'constraint': Type  // the 'in X' part, always required in mapped types
+        'as': p_.Optional_Value<{   // the 'as X' remapping clause
+            'as keyword': d_ast.Keyword
+            'type': Type
+        }>
+    }
+    'close bracket token': d_ast.Keyword
+    'colon token': d_ast.Keyword
+    'type': Type
+    'semicolon': Semi_Colon
+    'dummy syntax list': d_ast.Keyword // I have no idea why there is a SyntaxList. The instance I saw was empty
+    'close brace token': d_ast.Keyword
 }
 
 export type Type__Parenthesized = {
-    'open parenthesis token': null
+    'open parenthesis token': d_ast.Keyword
     'type': Type
-    'close parenthesis token': null
+    'close parenthesis token': d_ast.Keyword
+}
+
+export type Type__Query = {
+    'typeof keyword': d_ast.Keyword
+    'name': Qualified_Name
 }
 
 export type Type__Union = {
-    'members': p_.List<Type__Union__Member>
+    'members': h.Separated_List<Type>
 }
 
 export type Type__Tuple = {
-    readonly 'open bracket token': null
-    'elements': p_.List<Type__Tuple__Member>
-    'close bracket token': null
+    readonly 'open bracket token': d_ast.Keyword
+    'elements': h.Separated_List<Type>
+    'close bracket token': d_ast.Keyword
 }
 
-export type Type__Tuple__Member =
-    | ['comma token', null]
-    | ['type', Type]
-
-export type Type__Union__Member =
-    | ['type', Type]
-    | ['bar token', null]
-
 export type Type__Type_Operator = {
-    'readonly keyword': null
+    'operator':
+    | ['key of', d_ast.Keyword]
+    | ['unique', d_ast.Keyword]
+    | ['readonly', d_ast.Keyword]
     'type': Type
 }
 
 export type Type__Type_Reference = {
-    // 'entity name': null
     'entity name': Entity_Name
-    'dot token': p_.Optional_Value<null>
+    'dot token': p_.Optional_Value<d_ast.Keyword>
     'type arguments': Type_Arguments
 }
 
 export type Type_Arguments = p_.Optional_Value<{
-    'less than token': null
-    'entries': p_.List<Type_Arguments_Entry>
-    'greater than token': null
+    'less than token': d_ast.Keyword
+    'entries': h.Separated_List<Type>
+    'greater than token': d_ast.Keyword
 }>
-
-export type Type_Arguments_Entry =
-    | ['comma token', null]
-    | ['type', Type]
 
 export type Type_Parameters = p_.Optional_Value<{
-    'less than token': null
-    'entries': p_.List<Type_Parameters_Entry>
-    'greater than token': null
+    'less than token': d_ast.Keyword
+    'entries': h.Separated_List<Type__Parameters__L>
+    'greater than token': d_ast.Keyword
 }>
 
-export type Type_Parameters_Entry =
-    | ['comma token', null]
-    | ['type parameter', {
-        'identifier': Identifier
-        'extends': p_.Optional_Value<{
-            'extends keyword': null
-            'type': Type
-        }>
-    }]
+export type Type__Parameters__L = {
+    'identifier': Identifier
+    'extends': p_.Optional_Value<{
+        'extends keyword': d_ast.Keyword
+        'type': Type
+    }>
+    'default': p_.Optional_Value<{
+        'equals token': d_ast.Keyword
+        'type': Type
+    }>
+}
 
 export type Variable_Declaration = {
     'name': Binding_Pattern
-    'exclamation token': p_.Optional_Value<null>
+    'exclamation token': p_.Optional_Value<d_ast.Keyword>
     'type': Optional_Type
     'assignment': p_.Optional_Value<{
         'initializer': Initializer
@@ -973,13 +1143,15 @@ export type Variable_Declaration = {
 
 export type Variable_Declaration_List = {
     'mutability':
-    | ['await using', {
-        'await keyword': null
-        'using keyword': null
-    }]
-    | ['const', null]
-    | ['let', null]
-    | ['using', null]
-    | ['var', null]
+    | ['await using', Variable_Declaration_List__Mutability__Await_Using]
+    | ['const', d_ast.Keyword]
+    | ['let', d_ast.Keyword]
+    | ['using', d_ast.Keyword]
+    | ['var', d_ast.Keyword]
     'declarations': p_.List<Variable_Declaration>
+}
+
+export type Variable_Declaration_List__Mutability__Await_Using = {
+    'await keyword': d_ast.Keyword
+    'using keyword': d_ast.Keyword
 }

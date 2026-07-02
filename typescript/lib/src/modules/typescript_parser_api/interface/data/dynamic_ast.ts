@@ -17,4 +17,6 @@ export type Node = {
 
 }
 
+export type Keyword = null
+
 export type Comments = p_i.List<string>

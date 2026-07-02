@@ -4,27 +4,39 @@ import * as p_ri from 'pareto-core/dist/interface/refiner'
 import * as p_di from 'pareto-core/dist/interface/data'
 import p_iterate from 'pareto-core/dist/implementation/refiner/specials/iterate'
 import P_unreachable_code_path from 'pareto-core/dist/implementation/transformer/specials/unreachable_code_path'
+import p_debug_message from 'pareto-core-dev/dist/log_debug_message'
 
 //data types
 import * as d_in from "./modules/typescript_parser_api/interface/data/dynamic_ast"
 import * as d_function from "./interface/data/typed_ast_from_ast"
 import { Abort } from 'pareto-core/dist/interface/__internal/Abort'
 
-export type Signature_Parameters = {
+export type Production_Parameters = {
     'location description': string
     'parent': d_in.Node
 }
+
+export type Refiner_Parameters = {
+    'parent': d_in.Node
+    'path': string
+}
+
 export type Helper_Parameters = {
-    'location description': string
+    'path': string
     'parent': d_in.Node
-    'module name': string
 }
+
+export type Root<T extends p_di.Value> = p_ri.Refiner<
+    T,
+    d_function.Error_Inner,
+    d_in.Node
+>
 
 export type Refiner<T extends p_di.Value> = p_ri.Refiner_With_Parameter<
     T,
     d_function.Error_Inner,
     d_in.Node,
-    Signature_Parameters
+    Refiner_Parameters
 >
 
 export type Production<T extends p_di.Value> = p_pi.Production_With_Parameter<
@@ -32,503 +44,480 @@ export type Production<T extends p_di.Value> = p_pi.Production_With_Parameter<
     d_function.Error_Inner,
     d_in.Node,
     null,
-    Signature_Parameters
+    Production_Parameters
 >
 
+export type Separated_List<T extends p_di.Value> = p_di.List<
+    | ['separator', null]
+    | ['entry', T]
+>
+
+export type Node_Context = {
+
+    parse_children_as_type: <T extends p_di.Value>(
+        callback: (
+            context: Iterator_Context
+        ) => T
+    ) => T
+    parse_children_as_list: <T extends p_di.Value>(
+        callback: (
+            context: Iterator_Context
+        ) => T
+    ) => p_di.List<T>
+}
+
 export type Iterator_Context = {
+    prop: (
+        propery_name: string
+    ) => Iterator_Context
+    option: (
+        option_name: string
+    ) => Iterator_Context
+    assert_kind: (
+        kind: string
+    ) => Iterator_Context
+    peek_for_state: <T extends p_di.State>(
+        callback: (
+            kind: string,
+            abort: Abort<null>,
+        ) => T
+    ) => T
+    optional: <T extends p_di.Value>(
+        kind: string,
+        callback: (context: Iterator_Context) => T
+    ) => p_di.Optional_Value<T>
+    optional_set_if_not: <T extends p_di.Value>(
+        kind: string,
+        callback: (context: Iterator_Context) => T
+    ) => p_di.Optional_Value<T>
+
+    based_on_first_node: <T extends p_di.Value>(
+        callback: (
+            context: Iterator_Context
+        ) => T
+    ) => T
     /**
     use this one if multiple consequtive nodes need to be parsed to build the target value. If only one node is needed, use call_refiner
     */
-    construct_component: <T extends p_di.Value>(
-        internal_path_description: string,
-        func: p_pi.Production_With_Parameter<
-            T,
-            d_function.Error_Inner,
-            d_in.Node,
-            null,
-            Signature_Parameters
-        >
+    defer_parsing_to_component: <T extends p_di.Value>(
+        func: Production<T>
     ) => T
     consume_component: <T extends p_di.Value>(
-        internal_path_description: string,
-        func: p_ri.Refiner_With_Parameter<
-            T,
-            d_function.Error_Inner,
-            d_in.Node,
-            Signature_Parameters
-        >
+        func: Refiner<T>
     ) => T
-    consume_group: <T extends p_di.Group>(
-        internal_path_description: string,
-        kind: string,
+    consume_and_parse_children_as_type: <T extends p_di.Value>(
         callback: (
-            node: d_in.Node,
-            context: Node_Context,
+            context: Iterator_Context
         ) => T
     ) => T
     consume_keyword: (
-        internal_path_description: string,
-        kind: string,
     ) => null
-    consume_state: <State extends p_di.State>(
-        internal_path_description: string,
-        callback: (
-            node: d_in.Node,
-            context: Node_Context,
-        ) => State
-    ) => State
     consume_literal: (
-        internal_path_description: string,
-        kind: string,
     ) => d_in.Node
-
-    /**
-     * use this one only if consume_state is not possible. This is the case if one or more of the options are not contained in a singular node.
-     * if you use this function, you will have to manually consume the node(s) that you peeked at, otherwise the iterator will be in an inconsistent state.
-     */
-    peek_for_state: <T extends p_di.State>(
-        internal_path_description: string,
+    consume_and_parse_children_as_separated_list: <T extends p_di.Value>(
+        separator_kind: string,
         callback: (
-            node: d_in.Node,
+            context: Iterator_Context
         ) => T
-    ) => T
-    consume_syntax_list: <T extends p_di.Value>(
-        internal_path_description: string,
+    ) => Separated_List<T>
+    consume_and_parse_children_as_non_separated_list: <T extends p_di.Value>(
         callback: (
-            node: d_in.Node,
-            context: Node_Context
+            context: Iterator_Context
         ) => T
     ) => p_di.List<T>
-    optional: <T extends p_di.Value>(
-        condition: ($: d_in.Node) => boolean,
-        callback: (context: Iterator_Context) => T
-    ) => p_di.Optional_Value<T>
 }
 
-export const create_iterator_context = <T extends p_di.Value>(
-    iterator: p_pi.Iterator<d_in.Node, null>,
+const internal_create_node_context = (
+    context_node: d_in.Node,
     abort: Abort<d_function.Error_Inner>,
-    $p: Helper_Parameters,
-    callback: (context: Iterator_Context) => T
-): T => {
+    path: string,
+): Node_Context => {
+    return {
 
-    const consume_internal = <T extends p_di.Value>(
-        internal_path_description: string,
-        callback: (node: d_in.Node, parent: d_in.Node) => T
-    ): T => iterator.consume(
-        ($) => abort({
-            'parent': $p.parent,
-            'problem': ['end of node list', null],
-            'module name': $p['module name'],
-            'external location description': $p['location description'],
-            'internal path description': internal_path_description,
-        }),
-        ($) => callback(
-            $,
-            $p.parent,
+
+        parse_children_as_type: (
+            callback
+        ) => {
+            return p_iterate({
+                list: context_node.children,
+                end_info: null,
+                assign: (iterator) => callback(
+                    internal_create_iterator_context(
+                        iterator,
+                        abort,
+                        context_node,
+                        path
+                    )
+                ),
+                on_dangling_item: ($) => P_unreachable_code_path("build_list processes all items"),
+            })
+        },
+        parse_children_as_list: (
+            callback
+        ) => {
+
+            return p_iterate({
+                list: context_node.children,
+                end_info: null,
+                assign: (iterator) => iterator.build_list({
+                    'has_more_items': ($) => true,
+                    'handle': () => iterator.peek(
+                        ($) => P_unreachable_code_path("this callback is only called if there are more items"),
+                        ($) => {
+                            return callback(internal_create_iterator_context(
+                                iterator,
+                                abort,
+                                context_node,
+                                path
+                            ))
+                        },
+                    )
+                }),
+                on_dangling_item: ($) => P_unreachable_code_path("build_list processes all items"),
+            })
+        }
+    }
+}
+
+export const create_node_context = <T>(
+    context_node: d_in.Node,
+    abort: Abort<d_function.Error_Inner>,
+    $p: Refiner_Parameters,
+    expected_kind: string,
+    callback: (context: Node_Context) => T
+): T => {
+    // p_debug_message(`Creating node context for kind: ${expected_kind}`, () => {});
+    if (context_node.kind !== expected_kind) {
+        return abort({
+            'context node': context_node,
+            'path': expected_kind,
+            'type': ['refiner called for wrong kind', {
+                'parent': $p.parent,
+                'expected': expected_kind,
+                'found': context_node.kind,
+            }]
+        })
+    }
+    return callback(
+        internal_create_node_context(
+            context_node,
+            abort,
+            $p.path,
         )
     )
+}
 
-    return callback({
+export const create_root_node_context = <T>(
+    context_node: d_in.Node,
+    abort: Abort<d_function.Error_Inner>,
+    expected_kind: string,
+    callback: (context: Node_Context) => T
+): T => {
+    if (context_node.kind !== expected_kind) {
+        return abort({
+            'context node': context_node,
+            'path': "root",
+            'type': ['wrong root', {
+                'found': context_node.kind,
+            }]
+        })
+    }
+    return callback(
+        internal_create_node_context(
+            context_node,
+            abort,
+            "root",
+        )
+    )
+}
 
+const internal_create_iterator_context = (
+    iterator: p_pi.Iterator<d_in.Node, null>,
+    abort: Abort<d_function.Error_Inner>,
+    parent: d_in.Node,
+    path: string,
+): Iterator_Context => {
+
+    const consume_internal = (): d_in.Node => iterator.consume(
+        ($) => abort({
+            'context node': parent,
+            'path': path,
+            'type': ['missing child', {
+                'kind': p_.literal.not_set(),
+            }]
+        }),
+        ($) => $
+    )
+
+    return {
+        prop: (
+            propery_name
+        ) => internal_create_iterator_context(
+            iterator,
+            abort,
+            parent,
+            path + "." + propery_name
+        ),
+        option: (
+            option_name
+        ) => internal_create_iterator_context(
+            iterator,
+            abort,
+            parent,
+            path + "|" + option_name
+        ),
+        assert_kind: (
+            kind
+        ) => {
+            iterator.peek(
+                () => abort({
+                    'context node': parent,
+                    'path': path,
+                    'type': ['missing child', {
+                        'kind': p_.literal.set(kind),
+                    }]
+                }),
+                ($) => {
+                    if ($.kind !== kind) {
+                        return abort({
+                            'context node': parent,
+                            'path': path,
+                            'type': ['assertion failed', {
+                                'expected': kind,
+                                'found': $.kind,
+                            }]
+                        })
+                    }
+                    return null
+                }
+            )
+            return internal_create_iterator_context(
+                iterator,
+                abort,
+                parent,
+                path
+            )
+        },
         peek_for_state: (
-            internal_path_description,
             callback
         ) => {
             return iterator.peek(
-                ($) => abort({
-                    'parent': $p.parent,
-                    'problem': ['end of node list', null],
-                    'external location description': $p['location description'],
-                    'module name': $p['module name'],
-                    'internal path description': internal_path_description,
+                () => abort({
+                    'context node': parent,
+                    'path': path,
+                    'type': ['missing child', {
+                        'kind': p_.literal.not_set(),
+                    }]
                 }),
                 ($) => callback(
-                    $,
-                )
-            )
-        },
-        consume_group: (
-            internal_path_description,
-            kind,
-            callback
-        ) => {
-            return consume_internal(
-                internal_path_description,
-                ($, parent) => create_node_context(
-                    $,
-                    abort,
-                    {
-                        
-                        'parent': parent,
-                        'location description': $p['location description'] + ">" + internal_path_description,
-                        'module name': $p['module name'],
-                    },
-                    (context) => {
-
-                        if ($.kind !== kind) {
-                            return abort({
-                                'parent': parent,
-                                'problem': ['unexpected node', $],
-                                'external location description': $p['location description'],
-                                'module name': $p['module name'],
-                                'internal path description': internal_path_description,
-                            })
-                        } else return callback(
-                            $,
-                            context
-                        )
-                    }
-                )
-            )
-        },
-        consume_state: (
-            internal_path_description,
-            callback
-        ) => {
-            return consume_internal(
-                internal_path_description,
-                ($, parent) => create_node_context(
-                    $,
-                    abort,
-                    {
-                        'parent': parent,
-                        'module name': $p['module name'],
-                        'location description': $p['location description'],
-                    },
-                    (context) => callback(
-                        $,
-                        context
-                    )
-                )
-            )
-        },
-        consume_component: (
-            internal_path_description,
-            func
-        ) => {
-            return consume_internal(
-                internal_path_description,
-                ($, parent) => create_node_context(
-                    $,
-                    abort,
-                    {
-                        'location description': $p['location description'],
-                        'parent': parent,
-                        'module name': $p['module name'],
-                    },
-                    (context) => func(
-                        $,
-                        abort,
-                        {
-                            'location description': internal_path_description,
-                            'parent': parent
-                        }
-                    )
-                )
-            )
-        },
-        consume_literal: (
-            internal_path_description,
-            kind,
-        ) => {
-            return consume_internal(
-                internal_path_description,
-                ($, parent) => {
-                    // if ($.type[0] !== 'literal') {
-                    //     return P_unreachable_code_path("error in the parser; consuming a node as a literal, but the node is not a literal")
-                    // }
-                    if ($.kind !== kind) {
-                        return abort({
-                            'parent': parent,
-                            'problem': ['unexpected node', $],
-                            'external location description': $p['location description'],
-                            'module name': $p['module name'],
-                            'internal path description': internal_path_description,
-                        })
-                    } else return $
-                }
-            )
-        },
-        consume_keyword: (
-            internal_path_description,
-            kind,
-        ) => {
-            return consume_internal(
-                internal_path_description,
-                ($, parent) => {
-                    // if ($.type[0] !== 'keyword or punctuation') {
-                    //     return P_unreachable_code_path("error in the parser; consuming a node as a keyword or punctuation, but the node is not a keyword or punctuation")
-                    // }
-                    if ($.kind !== kind) {
-                        return abort({
-                            'parent': parent,
-                            'problem': ['unexpected node', $],
-                            'external location description': $p['location description'],
-                            'module name': $p['module name'],
-                            'internal path description': internal_path_description,
-                        })
-                    } else return null
-                }
-            )
-        },
-        consume_syntax_list: (
-            internal_path_description,
-            callback
-        ) => {
-            const list_with_syntaxlist_wrapper_x = <T extends p_di.Value>(
-                $: d_in.Node,
-                parent: d_in.Node,
-                abort: Abort<d_function.Error_Inner>,
-                internal_path_description: string,
-                callback: (node: d_in.Node) => T
-            ): p_di.List<T> => $.kind !== "SyntaxList"
-                    ? abort({
-                        'parent': parent,
-                        'problem': ['unexpected node', $],
-                        'external location description': $p['location description'],
-                        'internal path description': internal_path_description,
-                        'module name': $p['module name'],
+                    $.kind,
+                    () => abort({
+                        'context node': parent,
+                        'path': path,
+                        'type': ['unexpected option', {
+                            'found': $.kind
+                        }]
                     })
-                    : p_iterate({
-                        list: $.children,
-                        end_info: null,
-                        assign: (iterator) => iterator.build_list({
-                            'has_more_items': ($) => true,
-                            'handle': () => iterator.consume(
-                                ($) => P_unreachable_code_path("has more items -> true"),
-                                ($): T => callback($),
-                            )
-                        }),
-                        on_dangling_item: ($) => abort({
-                            'parent': parent,
-                            'problem': ['unexpected node', $],
-                            'external location description': $p['location description'],
-                            'internal path description': internal_path_description,
-                            'module name': $p['module name'],
-                        }),
-                    })
-            return consume_internal(
-                internal_path_description,
-                ($) => {
-                    return list_with_syntaxlist_wrapper_x(
-                        $,
-                        $p.parent,
-                        abort,
-                        internal_path_description,
-                        ($) => create_node_context(
-                            $,
-                            abort,
-                            $p,
-                            (context) => callback(
-                                $,
-                                context
-                            )
-                        )
-
-                    )
-                }
-            )
-        },
-        construct_component: (
-            internal_path_description,
-            func
-        ) => {
-            return func(
-                iterator,
-                abort,
-                {
-                    'location description': $p['location description'] + ":" + internal_path_description,
-                    'parent': $p.parent
-                }
+                )
             )
         },
         optional: (
-            condition,
+            kind,
             callback
         ) => {
             return iterator.peek(
                 () => p_.literal.not_set(),
                 ($) => {
-                    if (condition($)) {
-                        return p_.literal.set(create_iterator_context(
-                            iterator,
-                            abort,
-                            $p,
-                            callback
+                    if ($.kind === kind) {
+                        return p_.literal.set(callback(
+                            internal_create_iterator_context(
+                                iterator,
+                                abort,
+                                parent,
+                                path
+                            )
                         ))
                     } else {
                         return p_.literal.not_set()
                     }
                 }
             )
-        }
-    })
-}
-
-export type Node_Context = {
-
-    abort: Abort<string>
-    assert_kind: <T extends p_di.Value>(
-        internal_path_description: string,
-        expected_kind: string,
-        callback: (
-            node: d_in.Node,
-            context: Node_Context,
-        ) => T
-    ) => T
-    parse_children: <T extends p_di.Value>(
-        internal_path_description: string,
-        callback: (
-            context: Iterator_Context
-        ) => T
-    ) => T
-    call_with_this_node: <T extends p_di.Value>(
-        internal_path_description: string,
-        func: p_ri.Refiner_With_Parameter<
-            T,
-            d_function.Error_Inner,
-            d_in.Node,
-            {
-                'location description': string
-                'parent': d_in.Node
-            }
-        >
-    ) => T
-    process_children_as_list: <T extends p_di.Value>(
-        internal_path_description: string,
-        callback: (
-            node: d_in.Node,
-            context: Node_Context
-        ) => T
-    ) => p_di.List<T>
-}
-
-export const create_node_context = <T>(
-    context_node: d_in.Node,
-    abort: Abort<d_function.Error_Inner>,
-    $p: Helper_Parameters,
-    callback: (context: Node_Context) => T
-): T => {
-    const process_children_as_group_x = <T extends p_di.Value>(
-        $: d_in.Node,
-        abort: Abort<d_function.Error_Inner>,
-        internal_path_description: string,
-        callback: (
-            context: Iterator_Context
-        ) => T
-    ): T => {
-        const parent = $
-
-        return p_iterate({
-            list: $.children,
-            end_info: null,
-            assign: (iterator): T => create_iterator_context(
-                iterator,
-                abort,
-                $p,
-                (context) => callback(
-                    context
-                )
-            ),
-            on_dangling_item: ($) => abort({
-                'parent': parent,
-                'problem': ['unexpected node', $],
-                'external location description': $p['location description'],
-                'internal path description': internal_path_description,
-                'module name': $p['module name'],
-            }),
-        })
-    }
-
-    const process_children_as_list_x = <T extends p_di.Value>(
-        $: d_in.Node,
-        abort: Abort<d_function.Error_Inner>,
-        callback: (
-            node: d_in.Node,
-            context: Node_Context,
-        ) => T
-    ): p_di.List<T> => {
-        return p_iterate({
-            list: $.children,
-            end_info: null,
-            assign: (iterator) => iterator.build_list({
-                'has_more_items': ($) => true,
-                'handle': () => iterator.consume(
-                    ($) => P_unreachable_code_path("has more items -> true"),
-                    ($): T => create_node_context(
-                        $,
-                        abort,
-                        $p,
-                        (context) => callback($, context)
-                    )
-                )
-            }),
-            on_dangling_item: ($) => P_unreachable_code_path("build_list processes all items"),
-        })
-    }
-    return callback({
-        assert_kind: (
-            internal_path_description,
-            expected_kind,
+        },
+        optional_set_if_not: (
+            kind,
             callback
         ) => {
-            if (context_node.kind !== expected_kind) {
-                return abort({
-                    'parent': context_node,
-                    'problem': ['unexpected node', context_node],
-                    'external location description': $p['location description'],
-                    'module name': $p['module name'],
-                    'internal path description': internal_path_description,
-                })
-            }
-            return create_node_context(
-                context_node,
-                abort,
-                $p,
-                (context) => callback(
-                    context_node,
-                    context
+            return iterator.peek(
+                () => {
+                    return p_.literal.not_set()
+                },
+                ($) => {
+                    if ($.kind !== kind) {
+                        return p_.literal.set(callback(
+                            internal_create_iterator_context(
+                                iterator,
+                                abort,
+                                parent,
+                                path
+                            )
+                        ))
+                    } else {
+                        return p_.literal.not_set()
+                    }
+                }
+            )
+        },
+        based_on_first_node: (
+            callback
+        ) => {
+            return callback(
+                internal_create_iterator_context(
+                    iterator,
+                    abort,
+                    parent,
+                    path
                 )
             )
         },
-        call_with_this_node: (
-            internal_path_description,
+        defer_parsing_to_component: (
             func
-        ) => func(
-            context_node,
-            abort,
-            {
-                'location description': internal_path_description,
-                'parent': context_node
-            }
-        ),
+        ) => {
+            return func(
+                iterator,
+                abort,
+                {
+                    'location description': path,
+                    'parent': parent
+                }
+            )
+        },
+        consume_component: (
+            func
+        ) => {
+            const child = consume_internal()
+            return func(
+                child,
+                abort,
+                {
+                    'parent': parent,
+                    'path': path
+                }
+            )
+        },
+        consume_literal: (
+        ) => {
+            return consume_internal()
 
-
-        parse_children: (
-            internal_path_description,
+        },
+        consume_keyword: (
+        ) => {
+            const child = consume_internal()
+            return null
+        },
+        consume_and_parse_children_as_type: (
             callback
-        ) => process_children_as_group_x(
-            context_node,
-            abort,
-            internal_path_description,
-            (context) => callback(context)
-
-        ),
-        process_children_as_list: (
-            internal_path_description,
+        ) => {
+            const child = consume_internal()
+            return p_iterate({
+                list: child.children,
+                end_info: null,
+                assign: (iterator) => callback(
+                    internal_create_iterator_context(
+                        iterator,
+                        abort,
+                        child,
+                        path
+                    )
+                ),
+                on_dangling_item: ($) => abort({
+                    'context node': parent,
+                    'path': path,
+                    'type': ['dangling child', {
+                        'found': $
+                    }]
+                }),
+            })
+        },
+        consume_and_parse_children_as_separated_list: (
+            separator_kind,
             callback
-        ) => process_children_as_list_x(
-            context_node,
+        ) => {
+            const child = consume_internal()
+
+            return p_iterate({
+                list: child.children,
+                end_info: null,
+                assign: (iterator) => iterator.build_list({
+                    'has_more_items': ($) => true,
+                    'handle': () => {
+
+                        return iterator.peek(
+                            ($) => P_unreachable_code_path("this callback is only called if there are more items"),
+                            ($) => {
+                                if ($.kind === separator_kind) {
+                                    iterator.consume(
+                                        ($) => P_unreachable_code_path("this callback is only called if there are more items"),
+                                        ($) => null
+                                    )
+                                    return ['separator', null]
+                                } else {
+                                    return ['entry', callback(internal_create_iterator_context(
+                                        iterator,
+                                        abort,
+                                        child,
+                                        path
+                                    ))]
+                                }
+                            },
+                        )
+                    }
+                }),
+                on_dangling_item: ($) => P_unreachable_code_path("build_list processes all items"),
+            })
+        },
+        consume_and_parse_children_as_non_separated_list: (
+            callback
+        ) => {
+            const child = consume_internal()
+
+            return p_iterate({
+                list: child.children,
+                end_info: null,
+                assign: (iterator) => iterator.build_list({
+                    'has_more_items': ($) => true,
+                    'handle': () => {
+
+                        return iterator.peek(
+                            ($) => P_unreachable_code_path("this callback is only called if there are more items"),
+                            ($) => callback(
+                                internal_create_iterator_context(
+                                    iterator,
+                                    abort,
+                                    child,
+                                    path
+                                )),
+                        )
+                    }
+                }),
+                on_dangling_item: ($) => P_unreachable_code_path("build_list processes all items"),
+            })
+        },
+    }
+}
+
+export const create_iterator_context = <T extends p_di.Value>(
+    iterator: p_pi.Iterator<d_in.Node, null>,
+    abort: Abort<d_function.Error_Inner>,
+    $p: Production_Parameters,
+    name: string,
+    callback: (context: Iterator_Context) => T
+): T => {
+    return callback(
+        internal_create_iterator_context(
+            iterator,
             abort,
-            (node, context) => callback(node, context)
-        ),
-        abort: (internal_path_description) => abort({
-            'parent': context_node,
-            'problem': ['unexpected node', context_node],
-            'external location description': $p['location description'],
-            'internal path description': internal_path_description,
-            'module name': $p['module name'],
-        })
-    })
+            $p.parent,
+            name,
+        )
+    )
 }

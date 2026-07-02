@@ -1,4 +1,4 @@
-
+import * as p_di from "pareto-core/dist/interface/data"
 
 //data types
 import * as d_path from "pareto-resources/dist/interface/generated/liana/schemas/fs_unrestricted_path/data"
@@ -9,16 +9,34 @@ export type Error = {
     'inner': Error_Inner
 }
 
-export type Error_Inner = {
+export type Refiner_Parameters = {
     'parent': d_ast.Node
-    'problem':
-    | ['end of node list', null]
-    | ['unexpected node', d_ast.Node]
-    'external location description': string
-    'module name': string
-    'internal path description': string
+    'path': string
 }
 
-export type Expected =
-    | ['nothing', null]
-    | ['something', string]
+export type Error_Inner = {
+    'context node': d_ast.Node
+    'path': string
+    'type':
+    | ['wrong root', {
+        'found': string
+    }]
+    | ['refiner called for wrong kind', {
+        'parent': d_ast.Node
+        'expected': string
+        'found': string
+    }]
+    | ['dangling child', {
+        'found': d_ast.Node
+    }]
+    | ['missing child', {
+        'kind': p_di.Optional_Value<string>
+    }]
+    | ['assertion failed', {
+        'expected': string
+        'found': string
+    }]
+    | ['unexpected option', {
+        'found': string
+    }]
+}

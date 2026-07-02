@@ -23,8 +23,4 @@ export const Source_File: p_i.Refiner_With_Parameter<
         'path': $p.path,
         'inner': $,
     }),
-    {
-        'parent': $,
-        'location description': "ROOT"
-    }
 )
