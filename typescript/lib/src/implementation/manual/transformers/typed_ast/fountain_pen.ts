@@ -633,13 +633,14 @@ export const Initializer: p_i.Transformer<d_in.Initializer, d_out.Phrase> = ($) 
     Expression($['expression']),
 ]))
 
-export const JSDoc: p_i.Transformer<d_in.JSDoc, d_out.Phrase> = ($) => p_.from.optional($).decide(
-    ($) => sh.ph.composed(p_.literal.list([
-        sh.ph.literal("/**"),
-        sh.ph.literal("FIX JSDoc"),
-        sh.ph.literal("*/")
-    ])),
-    () => sh.ph.nothing()
+export const JSDoc: p_i.Transformer<d_in.JSDoc, d_out.Phrase> = ($) => sh.ph.composed(
+    p_.from.list($).map(
+        ($) => sh.ph.composed(p_.literal.list([
+            sh.ph.literal("/**"),
+            sh.ph.literal("FIX JSDoc"),
+            sh.ph.literal("*/")
+        ])),
+    )
 )
 
 export const Heritage: p_i.Transformer<d_in.Heritage, d_out.Phrase> = ($) => p_.from.optional($).decide(
