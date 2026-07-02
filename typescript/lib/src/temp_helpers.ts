@@ -70,28 +70,34 @@ export type Node_Context = {
 
 export type Iterator_Context = {
     /**
-     * increments the path with the given property name, and returns a new iterator context for the next child. The path is used for error reporting
+     * Updates the path label used for error reporting. Returns the SAME iterator — NO side effects, NO consumption.
+     * Use for each property that you are going to set: 'my prop': context.prop('my prop').xxx
      */
     prop: (
         propery_name: string
     ) => Iterator_Context
     /**
-     * increments the path with the name of the selected option, and returns a new iterator context for the next child. The path is used for error reporting
+     * Updates the path label (marks the selected option) for error reporting. Returns the SAME iterator — NO side effects, NO consumption.
+     * Use this as the first thing when setting the data part of an option: ['my option', context.option('my option').xxx]
      */
     option: (
         option_name: string
     ) => Iterator_Context
 
     /**
-     * makes sure that the next child is of the given kind, and returns the same iterator. No need to use it if this was the match of the switch/case statement
+     * Peeks at the next child and reports an error if its kind does not match. Does NOT consume. Returns the same iterator.
+     * Useful only for properties, not for options that were used as the 'case' in a switch statement.
+     * iow: No need to call this if the kind was already matched in the switch/case of peek_for_state.
      */
     assert_kind: (
         kind: string
     ) => Iterator_Context
 
     /**
-     * if you need to set a state, use this to get access to the kind of the next child, and set a state based on that. If there is no next child, the callback will be skipped.
-     * The callback can call the abort function to abort the parsing, or return a state. The state will be returned by this function.
+     * Peeks at the kind of the next child WITHOUT consuming it, then calls the callback with the kind.
+     * The callback must consume whatever it needs via consume_* methods.
+     * Use abort() to report an error for unexpected kinds — NOTE: abort does NOT backtrack, it reports an error and
+     * returns a fallback; it cannot be used to "try and undo".
      */
     peek_for_state: <T extends p_di.State>(
         callback: (
@@ -101,17 +107,31 @@ export type Iterator_Context = {
     ) => T
 
     /**
-     * tests the kind of the next child, and if it matches the given kind, calls the callback which must set the value. If it doesn't match, returns a not_set option.
+     * Peeks at the next child. If its kind matches, calls the callback (which must consume the node via a consume_* call)
+     * and returns Some(result). If it does not match, does NOT consume and returns None.
+     * The iterator is NOT automatically advanced — the callback is responsible for consuming the matched node.
      */
     peek_for_optional: <T extends p_di.Value>(
         kind: string,
         callback: (context: Iterator_Context) => T
     ) => p_di.Optional_Value<T>
+    /**
+     * Peeks at the next child. If its kind does NOT match the given kind, calls the callback (which must consume)
+     * and returns Some(result). If it matches, does NOT consume and returns None.
+     * This is the inverse of peek_for_optional.
+     */
     optional_set_if_not: <T extends p_di.Value>(
         kind: string,
         callback: (context: Iterator_Context) => T
     ) => p_di.Optional_Value<T>
 
+    /**
+     * Calls the callback with the current iterator context WITHOUT consuming or peeking at any node.
+     * The callback receives the same iterator position, so any consumption inside it advances the shared iterator.
+     * Use this to perform sequential multi-step consumption in an expression context — e.g., when building
+     * an object literal where you need a named 'context' variable to call multiple consume_* steps in order,
+     * but you cannot use imperative 'const' statements at that point.
+     */
     based_on_first_node: <T extends p_di.Value>(
         callback: (
             context: Iterator_Context
@@ -131,7 +151,10 @@ export type Iterator_Context = {
         func: Refiner<T>
     ) => T
     /**
-     * 
+     * Consumes the next node and processes its children with the given callback.
+     * The callback receives a new Iterator_Context over the children of the consumed node.
+     * Reports an error if any children remain unconsumed after the callback returns.
+     * Use this when the current node acts as a container (e.g., a SyntaxList or a compound AST node).
      */
     consume_and_parse_children_as_type: <T extends p_di.Value>(
         callback: (
@@ -146,8 +169,8 @@ export type Iterator_Context = {
     ) => d_primitives.Keyword
 
     /**
-     * 
-     * for nodes that can have children, but when you don't want to process them
+     * Consumes the next node and discards its contents (including children). Use only when the content is irrelevant
+     * and you explicitly do not want to process it. Avoid in favour of properly typed consume_* calls.
      */
     consume_blob: (
     ) => d_primitives.Blob
@@ -157,12 +180,25 @@ export type Iterator_Context = {
      */
     consume_literal: (
     ) => d_primitives.Literal
+
+    /**
+     * checks if there is a next node, and if so, calls the callback. This function does not consume the node, and the callback is responsible for consuming it if it wants to.
+     */
     consume_and_parse_children_as_separated_list: <T extends p_di.Value>(
         separator_kind: string,
         callback: (
             context: Iterator_Context
         ) => T
     ) => Separated_List<T>
+
+    /**
+     * consumes the next node and processes its children with the given callback.
+     * The callback receives a new Iterator_Context over the children of the consumed node.
+     * Reports an error if any children remain unconsumed after the callback returns.
+     * Use this when the current node acts as a container (e.g., a SyntaxList or a compound AST node).
+     * The difference with consume_and_parse_children_as_type is that this function does not expect any separators between the children.
+     * Use this when the current node acts as a container (e.g., a SyntaxList or a compound AST node) and the children are not separated by any kind of separator.
+     */
     consume_and_parse_children_as_non_separated_list: <T extends p_di.Value>(
         callback: (
             context: Iterator_Context
