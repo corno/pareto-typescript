@@ -127,6 +127,10 @@ export const Binding_Pattern: p_i.Transformer<d_in.Binding_Pattern, d_out.Phrase
                                     switch ($[0]) {
                                         case 'separator': return p_.option($, ($) => sh.ph.literal(", "))
                                         case 'entry': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
+                                            p_.from.optional($['dot dot dot token']).decide(
+                                                ($) => sh.ph.literal("..."),
+                                                () => sh.ph.nothing()
+                                            ),
                                             Property_Name($['property name']),
                                             p_.from.optional($['binding']).decide(
                                                 ($) => sh.ph.composed(p_.literal.list([

@@ -74,7 +74,7 @@ export type Binding_Pattern__Object = {
 }
 
 export type Binding_Pattern__Object__Element = {
-    // 'dot dot dot token': p_.Optional_Value<d_primitives.Keyword>
+    'dot dot dot token': p_.Optional_Value<d_primitives.Keyword>
     'property name': Property_Name
     'binding': p_.Optional_Value<{
         'colon token': d_primitives.Keyword

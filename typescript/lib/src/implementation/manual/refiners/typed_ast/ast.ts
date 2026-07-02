@@ -39,6 +39,7 @@ export const Optional_Arguments: h.Production<d_out.Optional_Arguments> = (itera
     (context): d_out.Optional_Arguments => context.peek_for_optional(
         "OpenParenToken",
         (context) => ({
+            'question dot token': context.prop("question dot token").peek_for_optional("QuestionDotToken", (context) => context.consume_keyword()),
             'open parenthesis token': context.prop("open parenthesis token").assert_kind("OpenParenToken").consume_keyword(),
             'arguments': context.prop("arguments").assert_kind("SyntaxList").consume_and_parse_children_as_separated_list(
                 "CommaToken",
@@ -133,14 +134,11 @@ export const Binding_Pattern: h.Production<d_out.Binding_Pattern> = ($, abort, $
                                 "CommaToken",
                                 (context): d_out.Binding_Pattern__Object__Element => context.consume_and_parse_children_as_type(
                                     (context): d_out.Binding_Pattern__Object__Element => ({
+                                        'dot dot dot token': context.prop("dot dot dot token").peek_for_optional(
+                                            "DotDotDotToken",
+                                            (context) => context.consume_keyword()
+                                        ),
                                         'property name': context.prop("property name").defer_parsing_to_component(Property_Name),
-                                        // 'dot dot dot token': context.prop("dot dot dot token").optional(
-                                        //     "DotDotDotToken",
-                                        //     (context) => context.consume_keyword(
-                                        //         "'dot dot dot token'",
-                                        //         "DotDotDotToken",
-                                        //     )
-                                        // ),
                                         'binding': context.prop("binding").peek_for_optional(
                                             "ColonToken",
                                             (context) => ({
