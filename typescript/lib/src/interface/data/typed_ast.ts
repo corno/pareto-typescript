@@ -190,6 +190,7 @@ export type Expression =
     | ['delete', Expression__Delete]
     | ['element access', {
         'expression': Expression
+        'question dot token': p_.Optional_Value<d_primitives.Keyword>
         'open bracket token': d_primitives.Keyword
         'argument expression': Expression
         'close bracket token': d_primitives.Keyword
@@ -270,7 +271,6 @@ export type Expression__Array_Literal = {
 }
 
 export type Expression__Arrow_Function = {
-    'type parameters': Type_Parameters
     'parameters': Expression__Arrow_Function_Parameters
     'type': Return_Type_Annotation
     'equals greater than token': d_primitives.Keyword
@@ -288,7 +288,10 @@ export type Expression__Assertion = {
 
 
 export type Expression__Arrow_Function_Parameters =
-    | ['with parentheses', Parameters]
+    | ['with parentheses', {
+        'type parameters': Type_Parameters
+        'parameters': Parameters
+    }]
     | ['without parentheses', Expression__Arrow_Function__Without_Parentheses]
 
 export type Expression__Arrow_Function__Without_Parentheses = {

@@ -296,11 +296,13 @@ export const Expression: p_i.Transformer<d_in.Expression, d_out.Phrase> = ($) =>
                 sh.ph.literal("]"),
             ])))
             case 'arrow function': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
-                Type_Parameters($['type parameters']),
                 p_.from.state($['parameters']).decide(
                     ($) => {
                         switch ($[0]) {
-                            case 'with parentheses': return p_.option($, ($) => Parameters($))
+                            case 'with parentheses': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
+                                Type_Parameters($['type parameters']),
+                                Parameters($['parameters']),
+                            ])))
                             case 'without parentheses': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                                 JSDoc($['parameter']['jsdoc']),
                                 Binding_Pattern($.parameter.name),
@@ -418,6 +420,10 @@ export const Expression: p_i.Transformer<d_in.Expression, d_out.Phrase> = ($) =>
             ])))
             case 'element access': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                 Expression($['expression']),
+                p_.from.optional($['question dot token']).decide(
+                    ($) => sh.ph.literal("?."),
+                    () => sh.ph.nothing()
+                ),
                 sh.ph.literal("["),
                 Expression($['argument expression']),
                 sh.ph.literal("]"),

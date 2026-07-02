@@ -13,6 +13,14 @@ import * as d_function from "./interface/data/typed_ast_from_ast"
 import * as d_primitives from "./interface/data/primitives"
 import { Abort } from 'pareto-core/dist/interface/__internal/Abort'
 
+/*
+
+Some pointers on how to use this API:
+-have a look at the typed_ast/ast.ts file to see how the AST is refined into a typed AST. The functions there are the ones that you will be calling from your own code.
+-use the same parameter names as the ones specified in this file, like 'context', 'abort', 'kind'
+
+*/
+
 export type Production_Parameters = {
     'location description': string
     'parent': d_in.Node
@@ -180,6 +188,18 @@ export type Iterator_Context = {
      */
     consume_literal: (
     ) => d_primitives.Literal
+
+    /**
+     * use this to consume a list of nodes, where the list is terminated by a node that is not part of the list. The callback is called for each node in the list, and must consume it via a consume_* call. The callback must return a value for each node, which will be collected into a list and returned.
+     */
+    consume_partial_list: <T extends p_di.Value>(
+        has_more_items: (
+            kind: string
+        ) => boolean,
+        callback: (
+            context: Iterator_Context
+        ) => T
+    ) => p_di.List<T>
 
     /**
      * checks if there is a next node, and if so, calls the callback. This function does not consume the node, and the callback is responsible for consuming it if it wants to.
@@ -519,6 +539,25 @@ const internal_create_iterator_context = (
                 () => null
             )
             return null
+        },
+        consume_partial_list: (
+            has_more_items,
+            callback
+        ) => {
+            return iterator.build_list({
+                'has_more_items': ($) => has_more_items($.kind),
+                'handle': () => {
+                    const child = consume_internal()
+                    return callback(
+                        internal_create_iterator_context(
+                            iterator,
+                            abort,
+                            child,
+                            path
+                        )
+                    )
+                }
+            })
         },
         consume_and_parse_children_as_type: (
             callback

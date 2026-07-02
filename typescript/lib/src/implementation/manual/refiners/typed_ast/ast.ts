@@ -334,7 +334,6 @@ export const Expression: h.Production<d_out.Expression> = ($, abort, $p) => h.cr
                 )]
                 case "ArrowFunction": return ['arrow function', context.option("arrow function").consume_and_parse_children_as_type(
                     (context): d_out.Expression__Arrow_Function => ({
-                        'type parameters': context.prop("type parameters").defer_parsing_to_component(Type_Parameters),
                         'parameters': context.prop("parameters").peek_for_state(
                             (kind, abort): d_out.Expression__Arrow_Function_Parameters => {
                                 switch (kind) {
@@ -374,14 +373,20 @@ export const Expression: h.Production<d_out.Expression> = ($, abort, $p) => h.cr
                                                             )
                                                         })
                                                     )]
-                                                    default: return ['with parentheses', context.defer_parsing_to_component(Parameters)]
+                                                    default: return ['with parentheses', {
+                                                        'type parameters': context.prop("type parameters").defer_parsing_to_component(Type_Parameters),
+                                                        'parameters': context.prop("parameters").defer_parsing_to_component(Parameters),
+                                                    }]
                                                 }
                                             })
                                         } else {
                                             return phase1
                                         }
                                     }
-                                    default: return ['with parentheses', context.option("with parentheses").defer_parsing_to_component(Parameters)]
+                                    default: return ['with parentheses', {
+                                        'type parameters': context.prop("type parameters").defer_parsing_to_component(Type_Parameters),
+                                        'parameters': context.prop("parameters").defer_parsing_to_component(Parameters),
+                                    }]
                                 }
                             }
                         ),
@@ -509,6 +514,7 @@ export const Expression: h.Production<d_out.Expression> = ($, abort, $p) => h.cr
                 case "ElementAccessExpression": return ['element access', context.option("element access").consume_and_parse_children_as_type(
                     (context) => ({
                         'expression': context.prop("expression").defer_parsing_to_component(Expression),
+                        'question dot token': context.prop("question dot token").peek_for_optional("QuestionDotToken", (context) => context.consume_keyword()),
                         'open bracket token': context.prop("open bracket token").assert_kind("OpenBracketToken").consume_keyword(),
                         'argument expression': context.prop("argument expression").defer_parsing_to_component(Expression),
                         'close bracket token': context.prop("close bracket token").assert_kind("CloseBracketToken").consume_keyword(),
