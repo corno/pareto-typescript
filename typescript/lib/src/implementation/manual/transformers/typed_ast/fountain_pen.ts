@@ -180,6 +180,17 @@ export const Class_Body: p_i.Transformer<d_in.Class_Body, d_out.Phrase> = ($) =>
                                             Optional_Type($['type']),
                                             Semi_Colon($['semicolon']),
                                         ])))
+                                        case 'set accessor': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
+                                            JSDoc($['jsdoc']),
+                                            sh.ph.literal("set "),
+                                            Property_Name($['name']),
+                                            Parameters($['parameters']),
+                                            Return_Type_Annotation($['return type']),
+                                            p_.from.optional($['body']).decide(
+                                                ($) => Block($),
+                                                () => sh.ph.nothing()
+                                            ),
+                                        ])))
                                         default: return p_.au($[0])
                                     }
                                 }
@@ -854,6 +865,10 @@ export const Statement: p_i.Transformer<d_in.Statement, d_out.Phrase> = ($) => s
                 ])))
                 case 'export declaration': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                     sh.ph.literal("export "),
+                    p_.from.optional($['type keyword']).decide(
+                        ($) => sh.ph.literal("type "),
+                        () => sh.ph.nothing()
+                    ),
                     p_.from.state($['type']).decide(
                         ($) => {
                             switch ($[0]) {

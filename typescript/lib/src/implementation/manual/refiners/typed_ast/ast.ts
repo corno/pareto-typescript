@@ -251,6 +251,20 @@ export const Class_Body: h.Production<d_out.Class_Body> = ($, abort, $p) => h.cr
                                 'semicolon': context.prop("semicolon").defer_parsing_to_component(Optional_Semicolon)
                             })
                         )]
+                        case "SetAccessor": return ['set accessor', context.option("set accessor").consume_and_parse_children_as_type(
+                            (context): d_out.Class_Body__Member__Set_Accessor => ({
+                                'jsdoc': context.prop("jsdoc").defer_parsing_to_component(JSDoc),
+                                'set keyword': context.prop("set keyword").assert_kind("SetKeyword").consume_keyword(),
+                                'name': context.prop("name").defer_parsing_to_component(Property_Name),
+                                'parameters': context.prop("parameters").defer_parsing_to_component(Parameters),
+                                'return type': context.prop("return type").defer_parsing_to_component(Return_Type_Annotation),
+                                'body': context.prop("body").optional(
+                                    "Block",
+                                    (context) => context.consume_component(Block)
+                                ),
+                                'semicolon': context.prop("semicolon").defer_parsing_to_component(Optional_Semicolon)
+                            })
+                        )]
                         default: return abort(null)
                     }
                 }
@@ -299,7 +313,7 @@ export const Expression: h.Production<d_out.Expression> = ($, abort, $p) => h.cr
                     (context): d_out.Expression__Arrow_Function => ({
                         'type parameters': context.prop("type parameters").defer_parsing_to_component(Type_Parameters),
                         'parameters': context.prop("parameters").peek_for_state(
-                            (kind): d_out.Expression__Arrow_Function_Parameters => {
+                            (kind, abort): d_out.Expression__Arrow_Function_Parameters => {
                                 switch (kind) {
                                     //this seems to be a misuse of the concept of 'SyntaxList'; there is exactly 1 element expected
                                     case "SyntaxList": return ['without parentheses', context.option("without parentheses").consume_and_parse_children_as_type(
@@ -320,7 +334,7 @@ export const Expression: h.Production<d_out.Expression> = ($, abort, $p) => h.cr
                         'type': context.prop("type").defer_parsing_to_component(Optional_Type),
                         'equals greater than token': context.prop("equals greater than token").assert_kind("EqualsGreaterThanToken").consume_keyword(),
                         'body': context.prop("body").peek_for_state(
-                            (kind) => {
+                            (kind, abort) => {
                                 switch (kind) {
                                     case "Block": return ['block', context.option("block").consume_component(Block,)]
                                     default: return ['expression', context.option("expression").defer_parsing_to_component(Expression),]
@@ -407,7 +421,7 @@ export const Expression: h.Production<d_out.Expression> = ($, abort, $p) => h.cr
                 case "CallExpression": return ['call', context.option("call").consume_and_parse_children_as_type(
                     (context): d_out.Expression__Call => ({
                         'callee': context.prop("callee").peek_for_state(
-                            (kind) => {
+                            (kind, abort) => {
                                 switch (kind) {
                                     case "ImportKeyword": return ['import', context.option("import").consume_keyword()]
                                     case "SuperKeyword": return ['super', context.option("super").consume_keyword()]
@@ -925,7 +939,7 @@ export const Return_Type_Annotation: h.Production<d_out.Return_Type_Annotation> 
         (context) => ({
             'colon token': context.prop("colon token").assert_kind("ColonToken").consume_keyword(),
             'kind': context.prop("kind").peek_for_state(
-                (kind) => {
+                (kind, abort) => {
                     switch (kind) {
                         case "TypePredicate": return ['type predicate', context.option("type predicate").consume_and_parse_children_as_type(
                             (context) => ({
@@ -1116,8 +1130,12 @@ export const Statement: h.Production<d_out.Statement> = ($, abort, $p) => h.crea
                     (context): d_out.Statement__Export_Declaration => ({
                         'jsdoc': context.prop("jsdoc").defer_parsing_to_component(JSDoc),
                         'export keyword': context.prop("export keyword").assert_kind("ExportKeyword").consume_keyword(),
+                        'type keyword': context.prop("type keyword").optional(
+                            "TypeKeyword",
+                            (context) => context.consume_keyword()
+                        ),
                         'type': context.prop("type").peek_for_state(
-                            (kind): d_out.Statement__Export_Declaration['type'] => {
+                            (kind, abort): d_out.Statement__Export_Declaration['type'] => {
                                 switch (kind) {
                                     case "AsteriskToken": return ['all', context.option("all").based_on_first_node(
                                         (context) => ({
@@ -1358,7 +1376,7 @@ export const Statement: h.Production<d_out.Statement> = ($, abort, $p) => h.crea
                         'jsdoc': context.prop("jsdoc").defer_parsing_to_component(JSDoc),
                         'modifiers': context.prop("modifiers").defer_parsing_to_component(Statement_Modifiers),
                         'type': context.prop("type").peek_for_state(
-                            (kind) => {
+                            (kind, abort) => {
                                 switch (kind) {
                                     case "ModuleKeyword": return ['module', context.option("module").based_on_first_node(
                                         (context): d_out.Statement__Module_Declaration__Module => ({

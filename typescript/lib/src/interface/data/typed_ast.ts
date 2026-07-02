@@ -103,6 +103,7 @@ export type Class_Body__Member =
     | ['get accessor', Class_Body__Member__Get_Accessor]
     | ['method', Class_Body__Member__Method]
     | ['property', Class_Body__Member__Property]
+    | ['set accessor', Class_Body__Member__Set_Accessor]
 
 export type Class_Body__Member__Constructor = {
     'jsdoc': JSDoc
@@ -143,6 +144,17 @@ export type Class_Body__Member__Property = {
     // 'question token': p_.Optional_Value<d_ast.Keyword>
     'type': Optional_Type
     'optional initializer': Optional_Initializer
+    'semicolon': Optional_Semi_Colon
+}
+
+export type Class_Body__Member__Set_Accessor = {
+    'jsdoc': JSDoc
+    // 'modifiers': Modifiers
+    'set keyword': d_ast.Keyword
+    'name': Property_Name
+    'parameters': Parameters
+    'return type': Return_Type_Annotation
+    'body': p_.Optional_Value<Block>
     'semicolon': Optional_Semi_Colon
 }
 
@@ -729,6 +741,7 @@ export type Statement__Enum_Declaration__Member = {
 export type Statement__Export_Declaration = {
     'jsdoc': JSDoc
     'export keyword': d_ast.Keyword
+    'type keyword': p_.Optional_Value<d_ast.Keyword>
     'type':
     | ['all', {
         'asterisk token': d_ast.Keyword
