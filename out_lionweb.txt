@@ -1,139 +1,42 @@
-                ...
-                ...
-                ...
-                ...
-                ...
-                ...
-                ...
-                ...
-                ...
-                ...
-                ...
-                ...
-                ...
-                ...
-                ...
-                ...
-                ...
-                ...
-                ...
-                ...
-                ...
-                ...
-                ...
-                ...
-                ...
-                ...
-                ...
-                ...
-                ...
-                ...
-                ...
-                ...
-                ...
-                ...
-                ...
-                ...
-                ...
-            Node: AsyncKeyword
-            Node: AsyncKeyword
-            Node: CloseBraceToken
-            Node: CloseBraceToken
-            Node: CloseParenToken
-            Node: CommaToken
-            Node: CommaToken
-            Node: CommaToken
-            Node: CommaToken
-            Node: DotToken
-            Node: EqualsGreaterThanToken
-            Node: ExportKeyword
-            Node: ExportKeyword
-            Node: GreaterThanToken
-            Node: GreaterThanToken
-            Node: Identifier
-            Node: Identifier
-            Node: Identifier
-            Node: JSDocLink
+processing error: Statement|type alias.type keyword: assertion failed (expected: TypeKeyword, found: JSDoc) @ ./../../../typescript_codebases/lionweb-typescript/packages/json/src/types.ts:10:1: 
+    snippet:
+    Node: TypeAliasDeclaration
+        Node: JSDoc
             Node: JSDocSeeTag
-            Node: JSDocText
-            Node: JSDocText
-            Node: LessThanToken
-            Node: LessThanToken
-            Node: NumberKeyword
-            Node: OpenBraceToken
-            Node: OpenBraceToken
-            Node: OpenParenToken
-            Node: Parameter
-            Node: Parameter
-            Node: Parameter
-            Node: Parameter
-            Node: SyntaxList
-            Node: SyntaxList
-            Node: SyntaxList
-            Node: SyntaxList
-            Node: SyntaxList
-            Node: ThisKeyword
-            Node: TypeParameter
-            Node: TypeParameter
-            Node: TypeParameter
-            Node: TypeParameter
-            Node: TypeParameter
-        Node: Block
-        Node: Block
-        Node: CloseBracketToken
-        Node: CloseParenToken
-        Node: CloseParenToken
-        Node: ColonToken
-        Node: ColonToken
-        Node: EqualsGreaterThanToken
-        Node: EqualsGreaterThanToken
+                ...
+                ...
+        Node: JSDoc
+        Node: SyntaxList
+            Node: ExportKeyword
+        Node: TypeKeyword
+        Node: Identifier
         Node: EqualsToken
+        Node: StringKeyword
+processing error: Statement|type alias.type keyword: assertion failed (expected: TypeKeyword, found: JSDoc) @ ./../../../typescript_codebases/lionweb-typescript/packages/ts-utils/src/comparer.ts:9:1: 
+    snippet:
+    Node: TypeAliasDeclaration
+        Node: JSDoc
+        Node: JSDoc
+            Node: JSDocText
+            Node: JSDocLink
+                ...
+            Node: JSDocText
+        Node: SyntaxList
+            Node: ExportKeyword
+        Node: TypeKeyword
+        Node: Identifier
+        Node: LessThanToken
+        Node: SyntaxList
+            Node: TypeParameter
+                ...
+        Node: GreaterThanToken
         Node: EqualsToken
         Node: FunctionType
-        Node: GreaterThanToken
-        Node: GreaterThanToken
-        Node: GreaterThanToken
-        Node: Identifier
-        Node: Identifier
-        Node: JSDoc
-        Node: JSDoc
-        Node: JSDoc
-        Node: JSDoc
-        Node: LessThanToken
-        Node: LessThanToken
-        Node: LessThanToken
-        Node: NumericLiteral
-        Node: OpenBracketToken
-        Node: OpenParenToken
-        Node: OpenParenToken
-        Node: PropertyAccessExpression
-        Node: QuestionDotToken
-        Node: StringKeyword
-        Node: SyntaxList
-        Node: SyntaxList
-        Node: SyntaxList
-        Node: SyntaxList
-        Node: SyntaxList
-        Node: SyntaxList
-        Node: SyntaxList
-        Node: SyntaxList
-        Node: SyntaxList
-        Node: TypeKeyword
-        Node: TypeKeyword
-        Node: TypeReference
-        Node: TypeReference
-    Node: ArrowFunction
-    Node: ArrowFunction
-    Node: ElementAccessExpression
-    Node: TypeAliasDeclaration
-    Node: TypeAliasDeclaration
-    snippet:
-    snippet:
-    snippet:
-    snippet:
-    snippet:
-processing error: Expression|element access.open bracket token: assertion failed (expected: OpenBracketToken, found: QuestionDotToken) @ ./../../../typescript_codebases/lionweb-typescript/packages/class-core/src/base-types.ts:208:16: 
-processing error: Parameters.open parenthesis token: assertion failed (expected: OpenParenToken, found: LessThanToken) @ ./../../../typescript_codebases/lionweb-typescript/packages/delta-protocol-low-level-client-browser/src/low-level-client.ts:37:44: 
-processing error: Parameters.open parenthesis token: assertion failed (expected: OpenParenToken, found: LessThanToken) @ ./../../../typescript_codebases/lionweb-typescript/packages/delta-protocol-low-level-client-ws/src/low-level-client.ts:38:39: 
-processing error: Statement|type alias.type keyword: assertion failed (expected: TypeKeyword, found: JSDoc) @ ./../../../typescript_codebases/lionweb-typescript/packages/json/src/types.ts:10:1: 
-processing error: Statement|type alias.type keyword: assertion failed (expected: TypeKeyword, found: JSDoc) @ ./../../../typescript_codebases/lionweb-typescript/packages/ts-utils/src/comparer.ts:9:1: 
+            Node: OpenParenToken
+            Node: SyntaxList
+                ...
+                ...
+                ...
+            Node: CloseParenToken
+            Node: EqualsGreaterThanToken
+            Node: NumberKeyword

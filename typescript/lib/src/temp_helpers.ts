@@ -192,7 +192,7 @@ export type Iterator_Context = {
     /**
      * use this to consume a list of nodes, where the list is terminated by a node that is not part of the list. The callback is called for each node in the list, and must consume it via a consume_* call. The callback must return a value for each node, which will be collected into a list and returned.
      */
-    consume_partial_list: <T extends p_di.Value>(
+    parse_partial_list: <T extends p_di.Value>(
         has_more_items: (
             kind: string
         ) => boolean,
@@ -540,19 +540,18 @@ const internal_create_iterator_context = (
             )
             return null
         },
-        consume_partial_list: (
+        parse_partial_list: (
             has_more_items,
             callback
         ) => {
             return iterator.build_list({
                 'has_more_items': ($) => has_more_items($.kind),
                 'handle': () => {
-                    const child = consume_internal()
                     return callback(
                         internal_create_iterator_context(
                             iterator,
                             abort,
-                            child,
+                            parent,
                             path
                         )
                     )

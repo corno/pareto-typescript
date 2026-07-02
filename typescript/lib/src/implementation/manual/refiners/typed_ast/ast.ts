@@ -810,8 +810,8 @@ export const JSDoc: h.Production<d_out.JSDoc> = (iterator, abort, $p) => h.creat
     abort,
     $p,
     "JSDoc",
-    (context) => context.consume_partial_list(
-        ($) => $ === "JSDoc",
+    (context) => context.peek_for_optional(
+        "JSDoc",
         (context) => context.consume_blob()
     )
 )
