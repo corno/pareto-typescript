@@ -903,7 +903,7 @@ export const Object_Type: h.Production<d_out.Object_Type> = (iterator, abort, $p
                         case "MethodSignature": return ['method', context.option("method").consume_and_parse_children_as_type(
                             (context): d_out.Object_Type__Signature__Method => ({
                                 'jsdoc': context.prop("jsdoc").defer_parsing_to_component(JSDoc),
-                                'identifier': context.prop("identifier").assert_kind("Identifier").consume_literal(),
+                                'identifier': context.prop("identifier").defer_parsing_to_component(Property_Name),
                                 'question token': context.prop("question token").peek_for_optional(
                                     "QuestionToken",
                                     (context) => context.consume_keyword()
@@ -1538,6 +1538,7 @@ export const Statement: h.Production<d_out.Statement> = ($, abort, $p) => h.crea
                         'type': context.prop("type").peek_for_state(
                             (kind, abort) => {
                                 switch (kind) {
+                                    case "Identifier": return ['global', context.option("global").consume_literal()]
                                     case "ModuleKeyword": return ['module', context.option("module").based_on_first_node(
                                         (context): d_out.Statement__Module_Declaration__Module => ({
                                             'keyword': context.prop("keyword").consume_keyword(),
@@ -1643,9 +1644,14 @@ export const Statement: h.Production<d_out.Statement> = ($, abort, $p) => h.crea
                             (context): d_out.Statement__Try__Catch_Clause => context.consume_and_parse_children_as_type(
                                 (context) => ({
                                     'catch keyword': context.prop("catch keyword").assert_kind("CatchKeyword").consume_keyword(),
-                                    'open parenthesis token': context.prop("open parenthesis token").assert_kind("OpenParenToken").consume_keyword(),
-                                    'variable declaration': context.prop("variable declaration").consume_component(VariableDeclaration),
-                                    'close parenthesis token': context.prop("close parenthesis token").assert_kind("CloseParenToken").consume_keyword(),
+                                    'binding': context.prop("binding").peek_for_optional(
+                                        "OpenParenToken",
+                                        (context) => ({
+                                            'open parenthesis token': context.prop("open parenthesis token").assert_kind("OpenParenToken").consume_keyword(),
+                                            'variable declaration': context.prop("variable declaration").consume_component(VariableDeclaration),
+                                            'close parenthesis token': context.prop("close parenthesis token").assert_kind("CloseParenToken").consume_keyword(),
+                                        })
+                                    ),
                                     'block': context.prop("block").consume_component(Block),
                                 })
                             )
@@ -1924,6 +1930,12 @@ export const Type: h.Production<d_out.Type> = ($, abort, $p) => h.create_iterato
                 case "NeverKeyword": return ['never', context.option("never").consume_keyword()]
                 case "NumberKeyword": return ['number', context.option("number").consume_keyword()]
                 case "ObjectKeyword": return ['object', context.option("object").consume_keyword()]
+                case "OptionalType": return ['optional type', context.option("optional type").consume_and_parse_children_as_type(
+                    (context): d_out.Type__Optional => ({
+                        'type': context.prop("type").defer_parsing_to_component(Type),
+                        'question token': context.prop("question token").assert_kind("QuestionToken").consume_keyword(),
+                    })
+                )]
                 case "ParenthesizedType": return ['parenthesized', context.option("parenthesized").consume_and_parse_children_as_type(
                     (context): d_out.Type__Parenthesized => ({
                         'open parenthesis token': context.prop("open parenthesis token").assert_kind("OpenParenToken").consume_keyword(),
@@ -1933,6 +1945,9 @@ export const Type: h.Production<d_out.Type> = ($, abort, $p) => h.create_iterato
                 )]
                 case "StringKeyword": return ['string', context.option("string").consume_keyword()]
                 case "SymbolKeyword": return ['symbol', context.option("symbol").consume_keyword()]
+                case "ThisType": return ['this', context.option("this").consume_and_parse_children_as_type(
+                    (context) => context.assert_kind("ThisKeyword").consume_keyword()
+                )]
                 case "TupleType": return ['tuple type', context.option("tuple type").consume_and_parse_children_as_type(
                     (context): d_out.Type__Tuple => ({
                         'open bracket token': context.prop("open bracket token").assert_kind("OpenBracketToken").consume_keyword(),

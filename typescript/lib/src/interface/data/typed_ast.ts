@@ -553,7 +553,7 @@ export type Object_Type__Signature__Index = {
 
 export type Object_Type__Signature__Method = {
     'jsdoc': JSDoc
-    'identifier': Identifier
+    'identifier': Property_Name
     'question token': p_.Optional_Value<d_primitives.Keyword>
     'type parameters': Type_Parameters
     'parameters': Parameters
@@ -951,6 +951,7 @@ export type Statement__Module_Declaration = {
     'jsdoc': JSDoc
     'modifiers': Statement_Modifiers
     'type':
+    | ['global', Identifier]
     | ['module', Statement__Module_Declaration__Module]
     | ['namespace', {
         'keyword': d_primitives.Keyword
@@ -1022,9 +1023,11 @@ export type Statement__Try = {
 
 export type Statement__Try__Catch_Clause = {
     'catch keyword': d_primitives.Keyword
-    'open parenthesis token': d_primitives.Keyword
-    'variable declaration': Variable_Declaration
-    'close parenthesis token': d_primitives.Keyword
+    'binding': p_.Optional_Value<{
+        'open parenthesis token': d_primitives.Keyword
+        'variable declaration': Variable_Declaration
+        'close parenthesis token': d_primitives.Keyword
+    }>
     'block': Block
 }
 
@@ -1084,10 +1087,12 @@ export type Type =
     | ['never', d_primitives.Keyword]
     | ['number', d_primitives.Keyword]
     | ['object', d_primitives.Keyword]
+    | ['optional type', Type__Optional]
     | ['parenthesized', Type__Parenthesized]
     | ['query', Type__Query]
     | ['string', d_primitives.Keyword]
     | ['symbol', d_primitives.Keyword]
+    | ['this', d_primitives.Keyword]
     | ['tuple type', Type__Tuple]
     | ['template literal type', Type__Template_Literal]
     | ['type literal', Object_Type]
@@ -1211,6 +1216,11 @@ export type Type__Mapped = {
     'semicolon': Optional_Semi_Colon
     'dummy syntax list': d_primitives.Keyword // I have no idea why there is a SyntaxList. The instance I saw was empty
     'close brace token': d_primitives.Keyword
+}
+
+export type Type__Optional = {
+    'type': Type
+    'question token': d_primitives.Keyword
 }
 
 export type Type__Parenthesized = {

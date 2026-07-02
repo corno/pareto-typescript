@@ -761,7 +761,7 @@ export const Object_Type: p_i.Transformer<d_in.Object_Type, d_out.Phrase> = ($) 
                                     case 'method': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                                         JSDoc($['jsdoc']),
                                         // Signature_Modifiers($.modifiers),
-                                        sh.ph.literal($.identifier.text),
+                                        Property_Name($['identifier']),
                                         Type_Parameters($['type parameters']),
                                         p_.from.optional($['question token']).decide(
                                             ($) => sh.ph.literal("?"),
@@ -1285,6 +1285,7 @@ export const Statement: p_i.Transformer<d_in.Statement, d_out.Phrase> = ($) => s
                     p_.from.state($['type']).decide(
                         ($) => {
                             switch ($[0]) {
+                                case 'global': return p_.option($, ($) => Identifier($))
                                 case 'module': return p_.option($, ($) => sh.ph.composed(
                                     p_.literal.list([
                                         sh.ph.literal("module "),
@@ -1372,16 +1373,20 @@ export const Statement: p_i.Transformer<d_in.Statement, d_out.Phrase> = ($) => s
                     sh.ph.literal("try "),
                     Block($['try block']),
                     sh.ph.composed(p_.literal.list([
-                        sh.ph.literal(" catch ("),
                         p_.from.optional($['catch clause']).decide(
                             ($) => sh.ph.composed(p_.literal.list([
-                                Variable_Declaration($['variable declaration']),
+                                sh.ph.literal(" catch"),
+                                p_.from.optional($['binding']).decide(
+                                    ($) => sh.ph.composed(p_.literal.list([
+                                        sh.ph.literal(" ("),
+                                        Variable_Declaration($['variable declaration']),
+                                        sh.ph.literal(")"),
+                                    ])),
+                                    () => sh.ph.nothing()
+                                ),
+                                sh.ph.literal(" "),
+                                Block($['block']),
                             ])),
-                            () => sh.ph.nothing()
-                        ),
-                        sh.ph.literal(") "),
-                        p_.from.optional($['catch clause']).decide(
-                            ($) => Block($['block']),
                             () => sh.ph.nothing()
                         ),
                         p_.from.optional($['finally block']).decide(
@@ -1700,8 +1705,13 @@ export const Type: p_i.Transformer<d_in.Type, d_out.Phrase> = ($) => p_.from.sta
                     )
                 ),
             ))
+            case 'optional type': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
+                Type($['type']),
+                sh.ph.literal("?"),
+            ])))
             case 'undefined': return p_.option($, ($) => sh.ph.literal("undefined"))
             case 'unknown': return p_.option($, ($) => sh.ph.literal("unknown"))
+            case 'this': return p_.option($, ($) => sh.ph.literal("this"))
             case 'void': return p_.option($, ($) => sh.ph.literal("void"))
             case 'template literal type': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                 sh.ph.literal($.head.text),
