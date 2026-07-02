@@ -249,6 +249,7 @@ export type Expression =
     }]
     | ['property access', Expression__Property_Access]
     | ['regular expression literal', d_primitives.Literal]
+    | ['satisfies', Expression__Satisfies]
     | ['string literal', String_Literal]
     | ['super', d_primitives.Keyword]
     | ['tagged template', Expression__Tagged_Template]
@@ -309,6 +310,12 @@ export type Expression__Arrow_Function__Without_Parentheses = {
 export type Expression__As = {
     'expression': Expression
     'as keyword': d_primitives.Keyword
+    'type': Type
+}
+
+export type Expression__Satisfies = {
+    'expression': Expression
+    'satisfies keyword': d_primitives.Keyword
     'type': Type
 }
 
@@ -1074,6 +1081,7 @@ export type Type =
     | ['conditional', Type__Conditional]
     | ['constructor', Type__Constructor]
     | ['function', Type__Function_Type]
+    | ['import type', Type__Import]
     | ['indexed access', Type__Indexed_Access]
     | ['infer', Type__Infer]
     | ['intersection', Type__Intersection]
@@ -1143,6 +1151,18 @@ export type Type__Function_Type = {
     'type': Optional_Type
     'equals greater than token': d_primitives.Keyword
     'return type': Type
+}
+
+export type Type__Import = {
+    'import keyword': d_primitives.Keyword
+    'open parenthesis token': d_primitives.Keyword
+    'argument': d_primitives.Literal
+    'close parenthesis token': d_primitives.Keyword
+    'qualifier': p_.Optional_Value<{
+        'dot token': d_primitives.Keyword
+        'name': Entity_Name
+    }>
+    'type arguments': Type_Arguments
 }
 
 export type Type__Indexed_Access = {

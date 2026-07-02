@@ -337,6 +337,11 @@ export const Expression: p_i.Transformer<d_in.Expression, d_out.Phrase> = ($) =>
                 sh.ph.literal(" as "),
                 Type($['type']),
             ])))
+            case 'satisfies': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
+                Expression($['expression']),
+                sh.ph.literal(" satisfies "),
+                Type($['type']),
+            ])))
             case 'assertion': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                 sh.ph.literal("<"),
                 Type($['type']),
@@ -1505,6 +1510,19 @@ export const Type: p_i.Transformer<d_in.Type, d_out.Phrase> = ($) => p_.from.sta
                 Optional_Type($['type']),
                 sh.ph.literal(" => "),
                 Type($['return type']),
+            ])))
+            case 'import type': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
+                sh.ph.literal("import("),
+                sh.ph.literal($['argument'].text),
+                sh.ph.literal(")"),
+                p_.from.optional($['qualifier']).decide(
+                    ($) => sh.ph.composed(p_.literal.list([
+                        sh.ph.literal("."),
+                        Entity_Name($['name']),
+                    ])),
+                    () => sh.ph.nothing()
+                ),
+                Type_Arguments($['type arguments']),
             ])))
             case 'indexed access': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                 Type($['object type']),

@@ -408,6 +408,13 @@ export const Expression: h.Production<d_out.Expression> = ($, abort, $p) => h.cr
                         'type': context.prop("type").defer_parsing_to_component(Type),
                     })
                 )]
+                case "SatisfiesExpression": return ['satisfies', context.option("satisfies").consume_and_parse_children_as_type(
+                    (context): d_out.Expression__Satisfies => ({
+                        'expression': context.prop("expression").defer_parsing_to_component(Expression),
+                        'satisfies keyword': context.prop("satisfies keyword").assert_kind("SatisfiesKeyword").consume_keyword(),
+                        'type': context.prop("type").defer_parsing_to_component(Type),
+                    })
+                )]
                 case "TypeAssertionExpression": return ['assertion', context.option("assertion").consume_and_parse_children_as_type(
                     (context): d_out.Expression__Assertion => ({
                         'less than token': context.prop("less than token").assert_kind("LessThanToken").consume_keyword(),
@@ -1869,6 +1876,24 @@ export const Type: h.Production<d_out.Type> = ($, abort, $p) => h.create_iterato
                         'equals greater than token': context.prop("equals greater than token").assert_kind("EqualsGreaterThanToken").consume_keyword(),
                         'return type': context.prop("return type").defer_parsing_to_component(Type),
                         'type': context.prop("type").defer_parsing_to_component(Optional_Type)
+                    })
+                )]
+                case "ImportType": return ['import type', context.option("import type").consume_and_parse_children_as_type(
+                    (context): d_out.Type__Import => ({
+                        'import keyword': context.prop("import keyword").assert_kind("ImportKeyword").consume_keyword(),
+                        'open parenthesis token': context.prop("open parenthesis token").assert_kind("OpenParenToken").consume_keyword(),
+                        'argument': context.prop("argument").assert_kind("LiteralType").consume_and_parse_children_as_type(
+                            (context) => context.assert_kind("StringLiteral").consume_literal()
+                        ),
+                        'close parenthesis token': context.prop("close parenthesis token").assert_kind("CloseParenToken").consume_keyword(),
+                        'qualifier': context.prop("qualifier").peek_for_optional(
+                            "DotToken",
+                            (context) => ({
+                                'dot token': context.prop("dot token").consume_keyword(),
+                                'name': context.prop("name").defer_parsing_to_component(Entity_Name),
+                            })
+                        ),
+                        'type arguments': context.prop("type arguments").defer_parsing_to_component(Type_Arguments),
                     })
                 )]
                 case "LiteralType": return ['literal type', context.option("literal type").consume_and_parse_children_as_type(
