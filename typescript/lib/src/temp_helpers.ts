@@ -101,9 +101,9 @@ export type Iterator_Context = {
     ) => T
 
     /**
-     * tests the kind of the next child, and if it matches the given kind, consumes it and returns the result of the callback. If it doesn't match, returns a not_set option.
+     * tests the kind of the next child, and if it matches the given kind, calls the callback which must set the value. If it doesn't match, returns a not_set option.
      */
-    optional: <T extends p_di.Value>(
+    peek_for_optional: <T extends p_di.Value>(
         kind: string,
         callback: (context: Iterator_Context) => T
     ) => p_di.Optional_Value<T>
@@ -364,7 +364,7 @@ const internal_create_iterator_context = (
                 )
             )
         },
-        optional: (
+        peek_for_optional: (
             kind,
             callback
         ) => {

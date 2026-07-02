@@ -274,7 +274,6 @@ export const Expression: p_i.Transformer<d_in.Expression, d_out.Phrase> = ($) =>
                 sh.ph.literal("]"),
             ])))
             case 'arrow function': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
-                Signature_Modifiers($['modifiers']),
                 Type_Parameters($['type parameters']),
                 p_.from.state($['parameters']).decide(
                     ($) => {
@@ -554,6 +553,7 @@ export const Expression: p_i.Transformer<d_in.Expression, d_out.Phrase> = ($) =>
                     )
                 )
             ])))
+            case 'super': return p_.option($, ($) => sh.ph.literal("super"))
             case 'this': return p_.option($, ($) => sh.ph.literal("this"))
             case 'true keyword': return p_.option($, ($) => sh.ph.literal("true"))
             case 'type of': return p_.option($, ($) => sh.ph.composed(p_.literal.list([

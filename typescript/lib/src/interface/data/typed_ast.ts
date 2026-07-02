@@ -246,6 +246,7 @@ export type Expression =
     | ['property access', Expression__Property_Access]
     | ['regular expression literal', d_primitives.Literal]
     | ['string literal', String_Literal]
+    | ['super', d_primitives.Keyword]
     | ['template', Expression__Template]
     | ['this', d_primitives.Keyword]
     | ['true keyword', d_primitives.Keyword]
@@ -269,7 +270,6 @@ export type Expression__Array_Literal = {
 }
 
 export type Expression__Arrow_Function = {
-    'modifiers': Signature_Modifiers
     'type parameters': Type_Parameters
     'parameters': Expression__Arrow_Function_Parameters
     'type': Return_Type_Annotation

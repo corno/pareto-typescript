@@ -1,5 +1,303 @@
-
-processing error: Expression: unknown option: 'SuperKeyword'
-processing error: Expression|element access.open bracket token: assertion failed (expected: OpenBracketToken, found: QuestionDotToken)
-processing error: Signature_Modifiers: unknown option: 'Parameter'
-processing error: Statement|type alias.type keyword: assertion failed (expected: TypeKeyword, found: JSDoc)
+processing error: Signature_Modifiers: unknown option: 'Parameter' @ ./../../../typescript_codebases/lionweb-typescript/packages/validation/src/runners/Utils.ts:47:27: 
+    snippet:
+    Node: SyntaxList
+        Node: Parameter
+            Node: Identifier
+processing error: Signature_Modifiers: unknown option: 'Parameter' @ ./../../../typescript_codebases/lionweb-typescript/packages/validation/src/validators/LionWebLanguageReferenceValidator.ts:139:65: 
+    snippet:
+    Node: SyntaxList
+        Node: Parameter
+            Node: Identifier
+processing error: Signature_Modifiers: unknown option: 'Parameter' @ ./../../../typescript_codebases/lionweb-typescript/packages/validation/src/validators/generic/SyntaxValidator.ts:229:44: 
+    snippet:
+    Node: SyntaxList
+        Node: Parameter
+            Node: Identifier
+processing error: Signature_Modifiers: unknown option: 'Parameter' @ ./../../../typescript_codebases/lionweb-typescript/packages/validation/src/validators/generic/schema/SyntaxDefinition.ts:66:28: 
+    snippet:
+    Node: SyntaxList
+        Node: Parameter
+            Node: Identifier
+processing error: Signature_Modifiers: unknown option: 'Parameter' @ ./../../../typescript_codebases/lionweb-typescript/packages/validation/src/validators/LionWebReferenceValidator.ts:66:46: 
+    snippet:
+    Node: SyntaxList
+        Node: Parameter
+            Node: Identifier
+processing error: Signature_Modifiers: unknown option: 'Parameter' @ ./../../../typescript_codebases/lionweb-typescript/packages/validation/src/validators/LionWebLanguageValidator.ts:29:53: 
+    snippet:
+    Node: SyntaxList
+        Node: Parameter
+            Node: Identifier
+processing error: Signature_Modifiers: unknown option: 'Parameter' @ ./../../../typescript_codebases/lionweb-typescript/packages/validation/src/languages/CompositeLionWebLanguageWrapper.ts:27:49: 
+    snippet:
+    Node: SyntaxList
+        Node: Parameter
+            Node: Identifier
+processing error: Signature_Modifiers: unknown option: 'Parameter' @ ./../../../typescript_codebases/lionweb-typescript/packages/validation/src/languages/LionWebLanguageWrapper.ts:64:69: 
+    snippet:
+    Node: SyntaxList
+        Node: Parameter
+            Node: Identifier
+processing error: Signature_Modifiers: unknown option: 'Parameter' @ ./../../../typescript_codebases/lionweb-typescript/packages/cli/src/serialization/measure-command.ts:10:24: 
+    snippet:
+    Node: SyntaxList
+        Node: Parameter
+            Node: Identifier
+processing error: Signature_Modifiers: unknown option: 'Parameter' @ ./../../../typescript_codebases/lionweb-typescript/packages/cli/src/serialization/textualize-command.ts:16:42: 
+    snippet:
+    Node: SyntaxList
+        Node: Parameter
+            Node: Identifier
+processing error: Signature_Modifiers: unknown option: 'Parameter' @ ./../../../typescript_codebases/lionweb-typescript/packages/cli/src/m2/generate-ts-types-command.ts:49:17: 
+    snippet:
+    Node: SyntaxList
+        Node: Parameter
+            Node: Identifier
+processing error: Signature_Modifiers: unknown option: 'Parameter' @ ./../../../typescript_codebases/lionweb-typescript/packages/cli/src/validate-command.ts:6:76: 
+    snippet:
+    Node: SyntaxList
+        Node: Parameter
+            Node: Identifier
+processing error: Signature_Modifiers: unknown option: 'Parameter' @ ./../../../typescript_codebases/lionweb-typescript/packages/cli/src/lionweb-cli.ts:50:16: 
+    snippet:
+    Node: SyntaxList
+        Node: Parameter
+            Node: Identifier
+processing error: Signature_Modifiers: unknown option: 'Parameter' @ ./../../../typescript_codebases/lionweb-typescript/packages/core/src/deserializer.ts:155:100: 
+    snippet:
+    Node: SyntaxList
+        Node: Parameter
+            Node: Identifier
+processing error: Signature_Modifiers: unknown option: 'Parameter' @ ./../../../typescript_codebases/lionweb-typescript/packages/core/src/serializer.ts:212:38: 
+    snippet:
+    Node: SyntaxList
+        Node: Parameter
+            Node: Identifier
+processing error: Signature_Modifiers: unknown option: 'Parameter' @ ./../../../typescript_codebases/lionweb-typescript/packages/core/src/m3/reading-writing.ts:142:21: 
+    snippet:
+    Node: SyntaxList
+        Node: Parameter
+            Node: Identifier
+processing error: Statement|type alias.type keyword: assertion failed (expected: TypeKeyword, found: JSDoc) @ ./../../../typescript_codebases/lionweb-typescript/packages/json/src/types.ts:10:1: 
+    snippet:
+    Node: TypeAliasDeclaration
+        Node: JSDoc
+            Node: JSDocSeeTag
+                ...
+                ...
+        Node: JSDoc
+        Node: SyntaxList
+            Node: ExportKeyword
+        Node: TypeKeyword
+        Node: Identifier
+        Node: EqualsToken
+        Node: StringKeyword
+processing error: Expression: unknown option: 'SuperKeyword' @ ./../../../typescript_codebases/lionweb-typescript/packages/class-core-test-language/src/gen/TestLanguage.g.ts:380:29: 
+    snippet:
+    Node: PropertyAccessExpression
+        Node: SuperKeyword
+        Node: DotToken
+        Node: Identifier
+processing error: Signature_Modifiers: unknown option: 'Parameter' @ ./../../../typescript_codebases/lionweb-typescript/packages/utilities/src/serialization/textualizer.ts:42:39: 
+    snippet:
+    Node: SyntaxList
+        Node: Parameter
+            Node: Identifier
+processing error: Signature_Modifiers: unknown option: 'Parameter' @ ./../../../typescript_codebases/lionweb-typescript/packages/utilities/src/serialization/metrics/measurer.ts:23:91: 
+    snippet:
+    Node: SyntaxList
+        Node: Parameter
+            Node: Identifier
+processing error: Signature_Modifiers: unknown option: 'Parameter' @ ./../../../typescript_codebases/lionweb-typescript/packages/utilities/src/m3/textualizer.ts:76:80: 
+    snippet:
+    Node: SyntaxList
+        Node: Parameter
+            Node: Identifier
+processing error: Signature_Modifiers: unknown option: 'Parameter' @ ./../../../typescript_codebases/lionweb-typescript/packages/utilities/src/m3/infer-languages.ts:41:38: 
+    snippet:
+    Node: SyntaxList
+        Node: Parameter
+            Node: Identifier
+processing error: Signature_Modifiers: unknown option: 'Parameter' @ ./../../../typescript_codebases/lionweb-typescript/packages/utilities/src/m3/diagrams/PlantUML-generator.ts:97:62: 
+    snippet:
+    Node: SyntaxList
+        Node: Parameter
+            Node: Identifier
+processing error: Signature_Modifiers: unknown option: 'Parameter' @ ./../../../typescript_codebases/lionweb-typescript/packages/utilities/src/m3/diagrams/Mermaid-generator.ts:62:35: 
+    snippet:
+    Node: SyntaxList
+        Node: Parameter
+            Node: Identifier
+processing error: Signature_Modifiers: unknown option: 'Parameter' @ ./../../../typescript_codebases/lionweb-typescript/packages/json-utils/src/NodeUtils.ts:26:13: 
+    snippet:
+    Node: SyntaxList
+        Node: Parameter
+            Node: Identifier
+processing error: Signature_Modifiers: unknown option: 'Parameter' @ ./../../../typescript_codebases/lionweb-typescript/packages/json-utils/src/LionWebJsonChunkWrapper.ts:51:29: 
+    snippet:
+    Node: SyntaxList
+        Node: Parameter
+            Node: Identifier
+processing error: Statement|type alias.type keyword: assertion failed (expected: TypeKeyword, found: JSDoc) @ ./../../../typescript_codebases/lionweb-typescript/packages/ts-utils/src/comparer.ts:9:1: 
+    snippet:
+    Node: TypeAliasDeclaration
+        Node: JSDoc
+        Node: JSDoc
+            Node: JSDocText
+            Node: JSDocLink
+                ...
+            Node: JSDocText
+        Node: SyntaxList
+            Node: ExportKeyword
+        Node: TypeKeyword
+        Node: Identifier
+        Node: LessThanToken
+        Node: SyntaxList
+            Node: TypeParameter
+                ...
+        Node: GreaterThanToken
+        Node: EqualsToken
+        Node: FunctionType
+            Node: OpenParenToken
+            Node: SyntaxList
+                ...
+                ...
+                ...
+            Node: CloseParenToken
+            Node: EqualsGreaterThanToken
+            Node: NumberKeyword
+processing error: Expression|element access.open bracket token: assertion failed (expected: OpenBracketToken, found: QuestionDotToken) @ ./../../../typescript_codebases/lionweb-typescript/packages/class-core/src/base-types.ts:208:16: 
+    snippet:
+    Node: ElementAccessExpression
+        Node: PropertyAccessExpression
+            Node: ThisKeyword
+            Node: DotToken
+            Node: Identifier
+        Node: QuestionDotToken
+        Node: OpenBracketToken
+        Node: NumericLiteral
+        Node: CloseBracketToken
+processing error: Signature_Modifiers: unknown option: 'Parameter' @ ./../../../typescript_codebases/lionweb-typescript/packages/json-diff/src/LionWebJsonDiff.ts:91:56: 
+    snippet:
+    Node: SyntaxList
+        Node: Parameter
+            Node: Identifier
+processing error: Signature_Modifiers: unknown option: 'Parameter' @ ./../../../typescript_codebases/lionweb-typescript/packages/json-diff/src/DiffResult.ts:19:33: 
+    snippet:
+    Node: SyntaxList
+        Node: Parameter
+            Node: Identifier
+processing error: Signature_Modifiers: unknown option: 'Parameter' @ ./../../../typescript_codebases/lionweb-typescript/packages/test/src/validation/validation.test.ts:36:37: 
+    snippet:
+    Node: SyntaxList
+        Node: Parameter
+            Node: Identifier
+processing error: Signature_Modifiers: unknown option: 'Parameter' @ ./../../../typescript_codebases/lionweb-typescript/packages/test/src/core/serializer.test.ts:193:65: 
+    snippet:
+    Node: SyntaxList
+        Node: Parameter
+            Node: Identifier
+processing error: Signature_Modifiers: unknown option: 'Parameter' @ ./../../../typescript_codebases/lionweb-typescript/packages/test/src/core/constraints.test.ts:147:35: 
+    snippet:
+    Node: SyntaxList
+        Node: Parameter
+            Node: Identifier
+processing error: Signature_Modifiers: unknown option: 'Parameter' @ ./../../../typescript_codebases/lionweb-typescript/packages/test/src/utilities/infer-languages.test.ts:48:28: 
+    snippet:
+    Node: SyntaxList
+        Node: Parameter
+            Node: Identifier
+processing error: Signature_Modifiers: unknown option: 'Parameter' @ ./../../../typescript_codebases/lionweb-typescript/packages/test/src/ts-utils/recursion.test.ts:9:71: 
+    snippet:
+    Node: SyntaxList
+        Node: Parameter
+            Node: Identifier
+processing error: Signature_Modifiers: unknown option: 'Parameter' @ ./../../../typescript_codebases/lionweb-typescript/packages/test/src/ts-utils/cycles.test.ts:12:45: 
+    snippet:
+    Node: SyntaxList
+        Node: Parameter
+            Node: Identifier
+processing error: Signature_Modifiers: unknown option: 'Parameter' @ ./../../../typescript_codebases/lionweb-typescript/packages/test/src/test-utils/test-helpers.ts:6:38: 
+    snippet:
+    Node: SyntaxList
+        Node: Parameter
+            Node: Identifier
+processing error: Signature_Modifiers: unknown option: 'Parameter' @ ./../../../typescript_codebases/lionweb-typescript/packages/test/src/instances/test-node.ts:40:40: 
+    snippet:
+    Node: SyntaxList
+        Node: Parameter
+            Node: Identifier
+processing error: Signature_Modifiers: unknown option: 'Parameter' @ ./../../../typescript_codebases/lionweb-typescript/packages/test/src/instances/library.ts:49:19: 
+    snippet:
+    Node: SyntaxList
+        Node: Parameter
+            Node: Identifier
+processing error: Signature_Modifiers: unknown option: 'Parameter' @ ./../../../typescript_codebases/lionweb-typescript/packages/test/src/instances/multi.ts:15:34: 
+    snippet:
+    Node: SyntaxList
+        Node: Parameter
+            Node: Identifier
+processing error: Signature_Modifiers: unknown option: 'Parameter' @ ./../../../typescript_codebases/lionweb-typescript/packages/test/src/languages/with-enum.ts:8:37: 
+    snippet:
+    Node: SyntaxList
+        Node: Parameter
+            Node: Identifier
+processing error: Signature_Modifiers: unknown option: 'Parameter' @ ./../../../typescript_codebases/lionweb-typescript/packages/class-core-test/src/convenience.tests.ts:32:80: 
+    snippet:
+    Node: SyntaxList
+        Node: Parameter
+            Node: Identifier
+processing error: Signature_Modifiers: unknown option: 'Parameter' @ ./../../../typescript_codebases/lionweb-typescript/packages/class-core-test/src/mvp1.tests.ts:99:53: 
+    snippet:
+    Node: SyntaxList
+        Node: Parameter
+            Node: Identifier
+processing error: Signature_Modifiers: unknown option: 'Parameter' @ ./../../../typescript_codebases/lionweb-typescript/packages/class-core-test/src/deltas/receivers.tests.ts:26:54: 
+    snippet:
+    Node: SyntaxList
+        Node: Parameter
+            Node: Identifier
+processing error: Expression: unknown option: 'SuperKeyword' @ ./../../../typescript_codebases/lionweb-typescript/packages/class-core-test/src/gen/LionCore_M3.g.ts:334:29: 
+    snippet:
+    Node: PropertyAccessExpression
+        Node: SuperKeyword
+        Node: DotToken
+        Node: Identifier
+processing error: Expression: unknown option: 'SuperKeyword' @ ./../../../typescript_codebases/lionweb-typescript/packages/class-core-test/src/gen/Meta-test.g.ts:109:16: 
+    snippet:
+    Node: PropertyAccessExpression
+        Node: SuperKeyword
+        Node: DotToken
+        Node: Identifier
+processing error: Expression: unknown option: 'SuperKeyword' @ ./../../../typescript_codebases/lionweb-typescript/packages/class-core-test/src/gen/io.lionweb.mps.specific.g.ts:181:29: 
+    snippet:
+    Node: PropertyAccessExpression
+        Node: SuperKeyword
+        Node: DotToken
+        Node: Identifier
+processing error: Signature_Modifiers: unknown option: 'Parameter' @ ./../../../typescript_codebases/lionweb-typescript/packages/class-core-test/src/value-managers/annotations.tests.ts:203:69: 
+    snippet:
+    Node: SyntaxList
+        Node: Parameter
+            Node: Identifier
+processing error: Expression: unknown option: 'SuperKeyword' @ ./../../../typescript_codebases/lionweb-typescript/packages/build/src/deltas/definition/Deltas.g.ts:315:16: 
+    snippet:
+    Node: PropertyAccessExpression
+        Node: SuperKeyword
+        Node: DotToken
+        Node: Identifier
+processing error: Signature_Modifiers: unknown option: 'Parameter' @ ./../../../typescript_codebases/lionweb-typescript/packages/class-core-generator/src/reflective-layer.templates.ts:154:88: 
+    snippet:
+    Node: SyntaxList
+        Node: Parameter
+            Node: Identifier
+processing error: Signature_Modifiers: unknown option: 'Parameter' @ ./../../../typescript_codebases/lionweb-typescript/packages/class-core-generator/src/index-ts.ts:37:61: 
+    snippet:
+    Node: SyntaxList
+        Node: Parameter
+            Node: Identifier
+processing error: Signature_Modifiers: unknown option: 'Parameter' @ ./../../../typescript_codebases/lionweb-typescript/packages/class-core-generator/src/mega-factory.templates.ts:43:25: 
+    snippet:
+    Node: SyntaxList
+        Node: Parameter
+            Node: Identifier
