@@ -18,6 +18,9 @@ export type Error_Inner = {
     'context node': d_ast.Node
     'path': string
     'type':
+    | ['not a leaf', {
+        'found': string
+    }]
     | ['wrong root', {
         'found': string
     }]
@@ -36,7 +39,7 @@ export type Error_Inner = {
         'expected': string
         'found': string
     }]
-    | ['unexpected option', {
+    | ['unknown option', {
         'found': string
     }]
 }

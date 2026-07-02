@@ -1,0 +1,47 @@
+
+processing error: Arguments.open parenthesis token: assertion failed (expected: OpenParenToken, found: QuestionDotToken)
+processing error: Binding_Pattern.modifiers: unknown option: 'PrivateKeyword'
+processing error: Binding_Pattern|object binding pattern.elements: dangling child :EqualsToken
+processing error: Class_Body.members|get accessor.get keyword: assertion failed (expected: GetKeyword, found: SyntaxList)
+processing error: Class_Body.members|property: dangling child :ExclamationToken
+processing error: Class_Body.members|property: dangling child :QuestionToken
+processing error: Class.identifier: assertion failed (expected: Identifier, found: SyntaxList)
+processing error: Expression: unknown option: 'QualifiedName'
+processing error: Expression: unknown option: 'SatisfiesExpression'
+processing error: Expression: unknown option: 'SemicolonToken'
+processing error: Expression: unknown option: 'SpreadElement'
+processing error: Expression: unknown option: 'TaggedTemplateExpression'
+processing error: Expression|arrow function|without parentheses.parameter: assertion failed (expected: Parameter, found: AsyncKeyword)
+processing error: Expression|binary.operator token: unknown option: 'CommaToken'
+processing error: Expression|element access.open bracket token: assertion failed (expected: OpenBracketToken, found: QuestionDotToken)
+processing error: Expression|object literal.properties: unknown option: 'GetAccessor'
+processing error: Expression|object literal.properties: unknown option: 'SpreadAssignment'
+processing error: Expression|prefix unary.operator token: unknown option: 'MinusMinusToken'
+processing error: Expression|prefix unary.operator token: unknown option: 'TildeToken'
+processing error: Expression|property access.dot token: assertion failed (expected: DotToken, found: QuestionDotToken)
+processing error: Object_Type.signatures: unknown option: 'GetAccessor'
+processing error: Object_Type.signatures|method.identifier: assertion failed (expected: Identifier, found: ComputedPropertyName)
+processing error: Parameters.open parenthesis token: assertion failed (expected: OpenParenToken, found: Identifier)
+processing error: Parameters.open parenthesis token: assertion failed (expected: OpenParenToken, found: LessThanToken)
+processing error: Property_Name: unknown option: 'DotDotDotToken'
+processing error: QualifiedName: refiner called for wrong kind (expected: QualifiedName, found: Identifier)
+processing error: Return_Type_Annotation|type predicate.identifier: assertion failed (expected: Identifier, found: ThisType)
+processing error: Signature_Modifiers: unknown option: 'OverrideKeyword'
+processing error: Statement_Modifiers: unknown option: 'AbstractKeyword'
+processing error: Statement: unknown option: 'ModuleDeclaration'
+processing error: Statement|function.identifier: assertion failed (expected: Identifier, found: AsteriskToken)
+processing error: Statement|import.clause.type: unknown option: 'TypeKeyword'
+processing error: Statement|try.catch clause.open parenthesis token: assertion failed (expected: OpenParenToken, found: Block)
+processing error: Type: unknown option: 'BigIntKeyword'
+processing error: Type: unknown option: 'ImportType'
+processing error: Type: unknown option: 'NamedTupleMember'
+processing error: Type: unknown option: 'OptionalType'
+processing error: Type: unknown option: 'TemplateLiteralType'
+processing error: Type: unknown option: 'ThisType'
+processing error: Type: unknown option: 'TypePredicate'
+processing error: Type|infer.identifier: missing: Identifier
+processing error: Type|mapped.close bracket token: assertion failed (expected: CloseBracketToken, found: AsKeyword)
+processing error: Type|mapped.colon token: assertion failed (expected: ColonToken, found: QuestionToken)
+processing error: Type|mapped.open bracket token: assertion failed (expected: OpenBracketToken, found: MinusToken)
+processing error: Type|mapped.open bracket token: assertion failed (expected: OpenBracketToken, found: ReadonlyKeyword)
+processing error: VariableDeclaration: refiner called for wrong kind (expected: VariableDeclaration, found: CommaToken)

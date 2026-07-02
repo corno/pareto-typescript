@@ -20,9 +20,8 @@ export const Error: p_i.Transformer<d_in.Error, d_out.Phrase> = ($) => sh.ph.com
     p_.from.state($.inner.type).decide(
         ($) => {
             switch ($[0]) {
-                case 'wrong root': return p_.option($, ($) => sh.ph.literal("wrong root"))
-                case 'refiner called for wrong kind': return p_.option($, ($) => sh.ph.composed([
-                    sh.ph.literal("refiner called for wrong kind"),
+                case 'assertion failed': return p_.option($, ($) => sh.ph.composed([
+                    sh.ph.literal("assertion failed"),
                     sh.ph.literal(" (expected: "),
                     sh.ph.literal($.expected),
                     sh.ph.literal(", found: "),
@@ -32,6 +31,11 @@ export const Error: p_i.Transformer<d_in.Error, d_out.Phrase> = ($) => sh.ph.com
                 case 'dangling child': return p_.option($, ($) => sh.ph.composed([
                     sh.ph.literal("dangling child :"),
                     sh.ph.literal($.found.kind),
+                ]))
+                case 'not a leaf': return p_.option($, ($) => sh.ph.composed([
+                    sh.ph.literal("not a leaf: '"),
+                    sh.ph.literal($.found),
+                    sh.ph.literal("'"),
                 ]))
                 case 'missing child': return p_.option($, ($) => sh.ph.composed([
                     sh.ph.literal("missing"),
@@ -45,19 +49,20 @@ export const Error: p_i.Transformer<d_in.Error, d_out.Phrase> = ($) => sh.ph.com
                         () => sh.ph.nothing(),
                     ),
                 ]))
-                case 'assertion failed': return p_.option($, ($) => sh.ph.composed([
-                    sh.ph.literal("assertion failed"),
+                case 'refiner called for wrong kind': return p_.option($, ($) => sh.ph.composed([
+                    sh.ph.literal("refiner called for wrong kind"),
                     sh.ph.literal(" (expected: "),
                     sh.ph.literal($.expected),
                     sh.ph.literal(", found: "),
                     sh.ph.literal($.found),
                     sh.ph.literal(")"),
                 ]))
-                case 'unexpected option': return p_.option($, ($) => sh.ph.composed([
-                    sh.ph.literal("unexpected option: '"),
+                case 'unknown option': return p_.option($, ($) => sh.ph.composed([
+                    sh.ph.literal("unknown option: '"),
                     sh.ph.literal($.found),
                     sh.ph.literal("'")
                 ]))
+                case 'wrong root': return p_.option($, ($) => sh.ph.literal("wrong root"))
                 default: return p_.au($[0])
             }
         }

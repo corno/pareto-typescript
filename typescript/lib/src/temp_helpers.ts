@@ -1,4 +1,5 @@
 import * as p_ from 'pareto-core/dist/implementation/refiner'
+import * as p_t from 'pareto-core/dist/implementation/transformer'
 import * as p_pi from 'pareto-core/dist/interface/production'
 import * as p_ri from 'pareto-core/dist/interface/refiner'
 import * as p_di from 'pareto-core/dist/interface/data'
@@ -112,6 +113,12 @@ export type Iterator_Context = {
     ) => T
     consume_keyword: (
     ) => null
+    /**
+     * 
+     * for nodes that can have children, but when you don't want to process them
+     */
+    consume_blob: (
+    ) => d_in.Node
     consume_literal: (
     ) => d_in.Node
     consume_and_parse_children_as_separated_list: <T extends p_di.Value>(
@@ -314,7 +321,7 @@ const internal_create_iterator_context = (
                     () => abort({
                         'context node': parent,
                         'path': path,
-                        'type': ['unexpected option', {
+                        'type': ['unknown option', {
                             'found': $.kind
                         }]
                     })
@@ -404,14 +411,41 @@ const internal_create_iterator_context = (
                 }
             )
         },
+        consume_blob: (
+        ) => {
+            const child = consume_internal()
+            return child
+
+        },
         consume_literal: (
         ) => {
-            return consume_internal()
+            const child = consume_internal()
+            p_t.from.list(child.children).on_has_items(
+                ($) => abort({
+                    'context node': parent,
+                    'path': path,
+                    'type': ['not a leaf', {
+                        'found': child.kind
+                    }]
+                }),
+                () => null
+            )
+            return child
 
         },
         consume_keyword: (
         ) => {
             const child = consume_internal()
+            p_t.from.list(child.children).on_has_items(
+                ($) => abort({
+                    'context node': parent,
+                    'path': path,
+                    'type': ['not a leaf', {
+                        'found': child.kind
+                    }]
+                }),
+                () => null
+            )
             return null
         },
         consume_and_parse_children_as_type: (
