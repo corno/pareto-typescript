@@ -540,6 +540,7 @@ export const Expression: p_i.Transformer<d_in.Expression, d_out.Phrase> = ($) =>
 
             case 'null keyword': return p_.option($, ($) => sh.ph.literal("null"))
             case 'numeric literal': return p_.option($, ($) => sh.ph.literal($.text))
+            case 'omitted expression': return p_.option($, ($) => sh.ph.nothing())
             case 'parenthesized': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                 sh.ph.literal("("),
                 Expression($['expression']),

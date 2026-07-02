@@ -225,6 +225,7 @@ export type Expression =
     | ['null keyword', d_primitives.Keyword]
     | ['numeric literal', d_primitives.Literal]
     | ['object literal', Expression__Object_Literal]
+    | ['omitted expression', null]
     | ['parenthesized', {
         'open parenthesis token': d_primitives.Keyword
         'expression': Expression

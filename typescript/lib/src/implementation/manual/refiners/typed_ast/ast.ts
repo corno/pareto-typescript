@@ -646,6 +646,7 @@ export const Expression: h.Production<d_out.Expression> = ($, abort, $p) => h.cr
                         'close brace token': context.prop("close brace token").assert_kind("CloseBraceToken").consume_keyword(),
                     })
                 )]
+                case "OmittedExpression": return ['omitted expression', context.option("omitted expression").consume_keyword()]
                 case "ParenthesizedExpression": return ['parenthesized', context.option("parenthesized").consume_and_parse_children_as_type(
                     (context) => ({
                         'open parenthesis token': context.prop("open parenthesis token").assert_kind("OpenParenToken").consume_keyword(),
