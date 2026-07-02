@@ -11,6 +11,7 @@ export type Separated_List<T extends p_di.Value> = p_.List<
 >
 
 export type Arguments = {
+    'question dot token': p_.Optional_Value<d_primitives.Keyword>
     'open parenthesis token': d_primitives.Keyword
     'arguments': Separated_List<Arguments__L>
     'close parenthesis token': d_primitives.Keyword
@@ -238,16 +239,19 @@ export type Expression =
 
     | ['prefix unary', {
         'operator token':
-        | ['!', d_primitives.Keyword]
+        | ['--', d_primitives.Keyword]
         | ['-', d_primitives.Keyword]
+        | ['!', d_primitives.Keyword]
         | ['+', d_primitives.Keyword]
         | ['++', d_primitives.Keyword]
+        | ['~', d_primitives.Keyword]
         'operand': Expression
     }]
     | ['property access', Expression__Property_Access]
     | ['regular expression literal', d_primitives.Literal]
     | ['string literal', String_Literal]
     | ['super', d_primitives.Keyword]
+    | ['tagged template', Expression__Tagged_Template]
     | ['template', Expression__Template]
     | ['this', d_primitives.Keyword]
     | ['true keyword', d_primitives.Keyword]
@@ -451,6 +455,13 @@ export type Expression__Template_Span = {
     'suffix':
     | ['middle', d_primitives.Literal]
     | ['tail', d_primitives.Literal]
+}
+
+export type Expression__Tagged_Template = {
+    'tag': Expression
+    'template':
+    | ['no substitution template literal', d_primitives.Literal]
+    | ['template', Expression__Template]
 }
 
 export type Expression_With_Type_Arguments = {

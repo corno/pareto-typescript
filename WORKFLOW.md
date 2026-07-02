@@ -74,4 +74,4 @@ export const Optional_Foo: h.Production<d_out.Optional_Foo> = (iterator, abort, 
 1. **User states the error** (copy from `out_lionweb.txt`)
 2. **I create a minimal test file and run analyze_file** to show the AST
 3. **I propose the fix** across schema + refiner + transformer — user approves or corrects
-4. **I implement** and build to verify
+4. **I implement** and build to verify and then run ./typescript/app/dist/bin/analyze_file.js <path_to_file_with_the_error>

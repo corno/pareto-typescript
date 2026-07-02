@@ -9,6 +9,10 @@ import * as d_in from "../../../../interface/data/typed_ast"
 import * as sh from "pareto-fountain-pen/dist/shorthands/prose/target"
 
 export const Arguments: p_i.Transformer<d_in.Arguments, d_out.Phrase> = ($) => sh.ph.composed(p_.literal.list([
+    p_.from.optional($['question dot token']).decide(
+        () => sh.ph.literal("?."),
+        () => sh.ph.nothing()
+    ),
     sh.ph.literal("("),
     sh.ph.indent(
         sh.pg.sentences(
@@ -549,9 +553,11 @@ export const Expression: p_i.Transformer<d_in.Expression, d_out.Phrase> = ($) =>
                     ($) => {
                         switch ($[0]) {
                             case '!': return p_.option($, ($) => sh.ph.literal("!"))
+                            case '--': return p_.option($, ($) => sh.ph.literal("--"))
                             case '-': return p_.option($, ($) => sh.ph.literal("-"))
                             case '+': return p_.option($, ($) => sh.ph.literal("+"))
                             case '++': return p_.option($, ($) => sh.ph.literal("++"))
+                            case '~': return p_.option($, ($) => sh.ph.literal("~"))
                             default: return p_.au($[0])
                         }
                     }
@@ -581,6 +587,36 @@ export const Expression: p_i.Transformer<d_in.Expression, d_out.Phrase> = ($) =>
             ])))
             case 'regular expression literal': return p_.option($, ($) => sh.ph.literal($.text))
             case 'string literal': return p_.option($, ($) => sh.ph.literal($.text))
+            case 'tagged template': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
+                Expression($['tag']),
+                p_.from.state($['template']).decide(
+                    ($) => {
+                        switch ($[0]) {
+                            case 'no substitution template literal': return p_.option($, ($) => sh.ph.literal($.text))
+                            case 'template': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
+                                sh.ph.literal($['head'].text),
+                                sh.ph.composed(
+                                    p_.from.list($['template spans']).map(
+                                        ($) => sh.ph.composed(p_.literal.list([
+                                            Expression($['expression']),
+                                            p_.from.state($['suffix']).decide(
+                                                ($) => {
+                                                    switch ($[0]) {
+                                                        case 'middle': return p_.option($, ($) => sh.ph.literal($.text))
+                                                        case 'tail': return p_.option($, ($) => sh.ph.literal($.text))
+                                                        default: return p_.au($[0])
+                                                    }
+                                                }
+                                            )
+                                        ]))
+                                    )
+                                )
+                            ])))
+                            default: return p_.au($[0])
+                        }
+                    }
+                ),
+            ])))
             case 'template': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                 sh.ph.literal($.head.text),
                 sh.ph.composed(

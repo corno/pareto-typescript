@@ -9,6 +9,7 @@ export const Arguments: h.Production<d_out.Arguments> = ($, abort, $p) => h.crea
     $p,
     "Arguments",
     (context): d_out.Arguments => ({
+        'question dot token': context.prop("question dot token").peek_for_optional("QuestionDotToken", (c) => c.consume_keyword()),
         'open parenthesis token': context.prop("open parenthesis token").assert_kind("OpenParenToken").consume_keyword(),
         'arguments': context.prop("arguments").assert_kind("SyntaxList").consume_and_parse_children_as_separated_list(
             "CommaToken",
@@ -667,9 +668,11 @@ export const Expression: h.Production<d_out.Expression> = ($, abort, $p) => h.cr
                             (kind, abort) => {
                                 switch (kind) {
                                     case "ExclamationToken": return ['!', context.option("!").consume_keyword()]
+                                    case "MinusMinusToken": return ['--', context.option("--").consume_keyword()]
                                     case "MinusToken": return ['-', context.option("-").consume_keyword()]
                                     case "PlusToken": return ['+', context.option("+").consume_keyword()]
                                     case "PlusPlusToken": return ['++', context.option("++").consume_keyword()]
+                                    case "TildeToken": return ['~', context.option("~").consume_keyword()]
                                     default: return abort(null)
                                 }
                             }
@@ -702,6 +705,40 @@ export const Expression: h.Production<d_out.Expression> = ($, abort, $p) => h.cr
                 )]
                 case "RegularExpressionLiteral": return ['regular expression literal', context.option("regular expression literal").consume_literal()]
                 case "StringLiteral": return ['string literal', context.option("string literal").consume_literal()]
+                case "TaggedTemplateExpression": return ['tagged template', context.option("tagged template").consume_and_parse_children_as_type(
+                    (context): d_out.Expression__Tagged_Template => ({
+                        'tag': context.prop("tag").defer_parsing_to_component(Expression),
+                        'template': context.prop("template").peek_for_state(
+                            (kind, abort): d_out.Expression__Tagged_Template['template'] => {
+                                switch (kind) {
+                                    case "NoSubstitutionTemplateLiteral": return ['no substitution template literal', context.option("no substitution template literal").consume_literal()]
+                                    case "TemplateExpression": return ['template', context.option("template").consume_and_parse_children_as_type(
+                                        (context): d_out.Expression__Template => ({
+                                            'head': context.prop("head").assert_kind("TemplateHead").consume_literal(),
+                                            'template spans': context.prop("template spans").assert_kind("SyntaxList").consume_and_parse_children_as_non_separated_list(
+                                                (context) => context.consume_and_parse_children_as_type(
+                                                    (context) => ({
+                                                        'expression': context.prop("expression").defer_parsing_to_component(Expression),
+                                                        'suffix': context.prop("suffix").peek_for_state(
+                                                            (kind, abort) => {
+                                                                switch (kind) {
+                                                                    case "TemplateTail": return ['tail', context.option("tail").consume_literal()]
+                                                                    case "TemplateMiddle": return ['middle', context.option("middle").consume_literal()]
+                                                                    default: return abort(null)
+                                                                }
+                                                            }
+                                                        )
+                                                    })
+                                                )
+                                            )
+                                        })
+                                    )]
+                                    default: return abort(null)
+                                }
+                            }
+                        ),
+                    })
+                )]
                 case "TemplateExpression": return ['template', context.option("template").consume_and_parse_children_as_type(
                     (context): d_out.Expression__Template => ({
                         'head': context.prop("head").assert_kind("TemplateHead").consume_literal(),
