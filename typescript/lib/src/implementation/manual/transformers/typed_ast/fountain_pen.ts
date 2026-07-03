@@ -13,6 +13,7 @@ export const Arguments: p_i.Transformer<d_in.Arguments, d_out.Phrase> = ($) => s
         () => sh.ph.literal("?."),
         () => sh.ph.nothing()
     ),
+    Type_Arguments($['type arguments']),
     sh.ph.literal("("),
     sh.ph.indent(
         sh.pg.sentences(
@@ -59,6 +60,7 @@ export const Binding_Pattern: p_i.Transformer<d_in.Binding_Pattern, d_out.Phrase
                 ($) => p_.from.state($).decide(
                     ($) => {
                         switch ($[0]) {
+                            case 'async': return p_.option($, ($) => sh.ph.literal("async "))
                             case 'declare': return p_.option($, ($) => sh.ph.literal("declare "))
                             case 'decorator': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                                 sh.ph.literal("@"),
@@ -226,6 +228,7 @@ export const Class_Body: p_i.Transformer<d_in.Class_Body, d_out.Phrase> = ($) =>
                                                 }
                                             ),
                                             Parameters($['parameters']),
+                                            Return_Type_Annotation($['return type']),
                                             p_.from.optional($['body']).decide(
                                                 ($) => Block($),
                                                 () => sh.ph.nothing()
@@ -296,6 +299,7 @@ export const Class_Body: p_i.Transformer<d_in.Class_Body, d_out.Phrase> = ($) =>
                                             Semi_Colon($['semicolon']),
                                         ])))
                                         case 'static block': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
+                                            Statement_Modifiers($['modifiers']),
                                             sh.ph.literal("static"),
                                             Block($['body']),
                                         ])))
@@ -306,12 +310,15 @@ export const Class_Body: p_i.Transformer<d_in.Class_Body, d_out.Phrase> = ($) =>
                                             sh.ph.literal($.parameter.identifier.text),
                                             sh.ph.literal(": "),
                                             Type($.parameter.type),
+                                            p_.from.optional($.parameter.initializer).decide(
+                                                ($) => sh.ph.composed(p_.literal.list([sh.ph.literal(" = "), Expression($['expression'])])),
+                                                () => sh.ph.nothing()
+                                            ),
                                             sh.ph.literal("]"),
-                                            sh.ph.literal(": "),
-                                            Type($.type),
+                                            Return_Type_Annotation($['return type']),
                                             Semi_Colon($.semicolon),
                                         ])))
-                                        case 'semicolon element': return p_.option($, () => sh.ph.literal(";"))
+                                        case 'semicolon element': return p_.option($, ($) => sh.ph.composed(p_.literal.list([JSDoc($['jsdoc']), sh.ph.literal(";")])))
                                         default: return p_.au($[0])
                                     }
                                 }
@@ -912,8 +919,7 @@ export const Object_Type: p_i.Transformer<d_in.Object_Type, d_out.Phrase> = ($) 
                                         sh.ph.literal(": "),
                                         Type($.parameter.type),
                                         sh.ph.literal("]"),
-                                        sh.ph.literal(": "),
-                                        Type($.type),
+                                        Return_Type_Annotation($['return type']),
                                         Semi_Colon($.semicolon),
                                     ])))
                                     case 'method': return p_.option($, ($) => sh.ph.composed(p_.literal.list([

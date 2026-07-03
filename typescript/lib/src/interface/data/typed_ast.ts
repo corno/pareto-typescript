@@ -7,6 +7,7 @@ import { e } from 'pareto-core/dist/implementation/query'
 
 export type Arguments = {
     'question dot token': p_.Optional_Value<d_primitives.Keyword>
+    'type arguments': Type_Arguments
     'open parenthesis token': d_primitives.Keyword
     'arguments': Separated_List<Arguments.L>
     'close parenthesis token': d_primitives.Keyword
@@ -29,6 +30,7 @@ export type As_Alias = {
 export type Binding_Pattern = {
     'jsdoc': JSDoc
     'modifiers': p_.Optional_Value<p_.List<
+        | ['async', d_primitives.Keyword]
         | ['readonly', d_primitives.Keyword]
         | ['public', d_primitives.Keyword]
         | ['declare', d_primitives.Keyword]
@@ -120,7 +122,7 @@ export namespace Class_Body {
         | ['index signature', Object_Type.Signature.Index]
         | ['method', Member.Method]
         | ['property', Member.Property]
-        | ['semicolon element', null]
+        | ['semicolon element', { 'jsdoc': JSDoc }]
         | ['set accessor', Member.Set_Accessor]
         | ['static block', Member.Static_Block]
     export namespace Member {
@@ -131,6 +133,7 @@ export namespace Class_Body {
             | ['constructor keyword', d_primitives.Keyword]
             | ['constructor keyword as string literal', d_primitives.Keyword]
             'parameters': Parameters
+            'return type': Return_Type_Annotation
             'body': p_.Optional_Value<Block>
             'semicolon': Semi_Colon
         }
@@ -177,6 +180,7 @@ export namespace Class_Body {
             'semicolon': Semi_Colon
         }
         export type Static_Block = {
+            'modifiers': Statement_Modifiers
             'static keyword': d_primitives.Keyword
             'body': Block
         }
@@ -615,10 +619,13 @@ export namespace Object_Type {
                 'identifier': Identifier
                 'colon token': d_primitives.Keyword
                 'type': Type //this is too broad, only certain types are allowed; string, number, symbol, template literal, union of those (not fully sure if there's more)
+                'initializer': p_.Optional_Value<{
+                    'equals token': d_primitives.Keyword
+                    'expression': Expression
+                }>
             }
             'close bracket token': d_primitives.Keyword
-            'colon token': d_primitives.Keyword
-            'type': Type
+            'return type': Return_Type_Annotation
             'semicolon': Semi_Colon
         }
         export type Method = {
