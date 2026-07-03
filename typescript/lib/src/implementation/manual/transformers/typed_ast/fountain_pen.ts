@@ -46,11 +46,6 @@ export const Arguments: p_i.Transformer<d_in.Arguments, d_out.Phrase> = ($) => s
     sh.ph.literal(")"),
 ]))
 
-export const Optional_Arguments: p_i.Transformer<d_in.Optional_Arguments, d_out.Phrase> = ($) => p_.from.optional($).decide(
-    ($) => Arguments($),
-    () => sh.ph.nothing()
-)
-
 export const Binding_Pattern: p_i.Transformer<d_in.Binding_Pattern, d_out.Phrase> = ($) => sh.ph.composed(p_.literal.list([
     p_.from.optional($['modifiers']).decide(
         ($) => sh.ph.composed(
@@ -546,7 +541,7 @@ export const Expression: p_i.Transformer<d_in.Expression, d_out.Phrase> = ($) =>
             case 'new': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                 sh.ph.literal("new "),
                 Expression($['expression']),
-                Optional_Arguments($['arguments']),
+                p_.from.optional($['arguments']).decide(($) => Arguments($), () => sh.ph.nothing()),
             ])))
             case 'no substitution template literal': return p_.option($, ($) => sh.ph.literal($.text))
             case 'non null': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
