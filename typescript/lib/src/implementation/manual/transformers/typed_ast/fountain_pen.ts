@@ -210,6 +210,7 @@ export const Class_Body: p_i.Transformer<d_in.Class_Body, d_out.Phrase> = ($) =>
                                         ])))
                                         case 'get accessor': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                                             JSDoc($['jsdoc']),
+                                            Signature_Modifiers($['modifiers']),
                                             sh.ph.literal("get "),
                                             Property_Name($['name']),
                                             Parameters($['parameters']),
@@ -239,6 +240,10 @@ export const Class_Body: p_i.Transformer<d_in.Class_Body, d_out.Phrase> = ($) =>
                                             Property_Name($['name']),
                                             p_.from.optional($['question token']).decide(
                                                 () => sh.ph.literal("?"),
+                                                () => sh.ph.nothing()
+                                            ),
+                                            p_.from.optional($['exclamation token']).decide(
+                                                () => sh.ph.literal("!"),
                                                 () => sh.ph.nothing()
                                             ),
                                             Optional_Type($['type']),

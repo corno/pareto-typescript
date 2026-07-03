@@ -231,6 +231,7 @@ export const Class_Body: h.Production<d_out.Class_Body> = ($, abort, $p) => h.cr
                         case "GetAccessor": return ['get accessor', context.option("get accessor").consume_and_parse_children_as_type(
                             (context): d_out.Class_Body__Member__Get_Accessor => ({
                                 'jsdoc': context.prop("jsdoc").defer_parsing_to_component(JSDoc),
+                                'modifiers': context.prop("modifiers").defer_parsing_to_component(Signature_Modifiers),
                                 'get keyword': context.prop("get keyword").assert_kind("GetKeyword").consume_keyword(),
                                 'name': context.prop("name").defer_parsing_to_component(Property_Name),
                                 'parameters': context.prop("parameters").defer_parsing_to_component(Parameters),
@@ -265,6 +266,10 @@ export const Class_Body: h.Production<d_out.Class_Body> = ($, abort, $p) => h.cr
                                 'name': context.prop("name").defer_parsing_to_component(Property_Name),
                                 'question token': context.prop("question token").peek_for_optional(
                                     "QuestionToken",
+                                    (context) => context.consume_keyword()
+                                ),
+                                'exclamation token': context.prop("exclamation token").peek_for_optional(
+                                    "ExclamationToken",
                                     (context) => context.consume_keyword()
                                 ),
                                 'type': context.prop("type").defer_parsing_to_component(Optional_Type),

@@ -119,7 +119,7 @@ export type Class_Body__Member__Constructor = {
 
 export type Class_Body__Member__Get_Accessor = {
     'jsdoc': JSDoc
-    // 'modifiers': Modifiers
+    'modifiers': Signature_Modifiers
     'get keyword': d_primitives.Keyword
     'name': Property_Name
     'parameters': Parameters
@@ -145,6 +145,7 @@ export type Class_Body__Member__Property = {
     'modifiers': Signature_Modifiers
     'name': Property_Name
     'question token': p_.Optional_Value<d_primitives.Keyword>
+    'exclamation token': p_.Optional_Value<d_primitives.Keyword>
     'type': Optional_Type
     'optional initializer': Optional_Initializer
     'semicolon': Optional_Semi_Colon
