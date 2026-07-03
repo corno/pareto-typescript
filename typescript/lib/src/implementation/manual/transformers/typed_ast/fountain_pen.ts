@@ -611,6 +611,7 @@ export const Expression: p_i.Transformer<d_in.Expression, d_out.Phrase> = ($) =>
                                         ($) => {
                                             switch ($[0]) {
                                                 case 'method': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
+                                                    Signature_Modifiers($['modifiers']),
                                                     p_.from.optional($['asterisk token']).decide(
                                                         () => sh.ph.literal("*"),
                                                         () => sh.ph.nothing()
@@ -1093,6 +1094,7 @@ export const Property_Name: p_i.Transformer<d_in.Property_Name, d_out.Phrase> = 
             ])))
             case 'identifier': return p_.option($, ($) => sh.ph.literal($.text))
             case 'numeric literal': return p_.option($, ($) => Numeric_Literal($))
+            case 'big int literal': return p_.option($, ($) => sh.ph.literal($.text))
             case 'private identifier': return p_.option($, ($) => sh.ph.literal($.text))
             case 'string literal': return p_.option($, ($) => sh.ph.literal($.text))
             default: return p_.au($[0])
@@ -1144,6 +1146,8 @@ export const Signature_Modifiers: p_i.Transformer<d_in.Signature_Modifiers, d_ou
                             sh.ph.literal(" "),
                         ])))
                         case 'export': return p_.option($, ($) => sh.ph.literal("export "))
+                        case 'in': return p_.option($, ($) => sh.ph.literal("in "))
+                        case 'out': return p_.option($, ($) => sh.ph.literal("out "))
                         case 'override': return p_.option($, ($) => sh.ph.literal("override "))
                         case 'private': return p_.option($, ($) => sh.ph.literal("private "))
                         case 'protected': return p_.option($, ($) => sh.ph.literal("protected "))

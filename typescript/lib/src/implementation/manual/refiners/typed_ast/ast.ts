@@ -727,6 +727,7 @@ export const Expression: h.Production<d_out.Expression> = ($, abort, $p) => h.cr
                                         case "MethodDeclaration": return ['method', context.option("method").consume_and_parse_children_as_type(
                                             (context): d_out.Expression.Object_Literal.Property.Method => ({
                                                 'jsdoc': context.prop("jsdoc").defer_parsing_to_component(JSDoc),
+                                                'modifiers': context.prop("modifiers").defer_parsing_to_component(Signature_Modifiers),
                                                 'asterisk token': context.prop("asterisk token").peek_for_optional(
                                                     "AsteriskToken",
                                                     (context) => context.consume_keyword()
@@ -1383,6 +1384,7 @@ export const Property_Name: h.Production<d_out.Property_Name> = ($, abort, $p) =
                     case "Identifier": return ['identifier', context.option("identifier").defer_parsing_to_component(Identifier)]
                     case "NumericLiteral": return ['numeric literal', context.option("numeric literal").defer_parsing_to_component(Numeric_Literal)]
                     case "PrivateIdentifier": return ['private identifier', context.option("private identifier").defer_parsing_to_component(Identifier)]
+                    case "BigIntLiteral": return ['big int literal', context.option("big int literal").consume_literal()]
                     case "StringLiteral": return ['string literal', context.option("string literal").defer_parsing_to_component(String_Literal)]
                     default: return abort(null)
                 }
@@ -1465,6 +1467,8 @@ export const Signature_Modifiers: h.Production<d_out.Signature_Modifiers> = (ite
                         )]
                         case "PrivateKeyword": return ['private', context.option("private").consume_keyword()]
                         case "PublicKeyword": return ['public', context.option("public").consume_keyword()]
+                        case "InKeyword": return ['in', context.option("in").consume_keyword()]
+                        case "OutKeyword": return ['out', context.option("out").consume_keyword()]
                         case "ReadonlyKeyword": return ['readonly', context.option("readonly").consume_keyword()]
                         default: return abort(null)
                     }

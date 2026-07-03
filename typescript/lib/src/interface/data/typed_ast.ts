@@ -463,6 +463,7 @@ export namespace Expression {
             }
             export type Method = {
                 'jsdoc': JSDoc
+                'modifiers': Signature_Modifiers
                 'asterisk token': p_.Optional_Value<d_primitives.Keyword>
                 'name': Property_Name
                 'type parameters': Type_Parameters
@@ -702,6 +703,7 @@ export type Property_Name = {
         | ['async', d_primitives.Keyword]
     >>
     'type':
+    | ['big int literal', d_primitives.Literal]
     | ['computed', Property_Name.Computed]
     | ['identifier', Identifier]
     | ['numeric literal', Numeric_Literal]
@@ -746,6 +748,8 @@ export namespace Signature_Modifiers {
         | ['async', d_primitives.Keyword]
         | ['const', d_primitives.Keyword]
         | ['declare', d_primitives.Keyword]
+        | ['in', d_primitives.Keyword]
+        | ['out', d_primitives.Keyword]
         | ['decorator', {
             'at token': d_primitives.Keyword
             'expression': Expression
