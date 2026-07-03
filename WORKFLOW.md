@@ -4,33 +4,53 @@
 
 We are reverse-engineering the TypeScript AST into a typed schema. The tool `analyze_file.js` walks a `.ts` file using the TypeScript compiler API and tries to parse each node using the schema/refiner. Errors mean a node kind or structure was not yet handled.
 
-## The error file
+## Scanning a codebase for errors
 
-Errors come from running a full scan of a codebase (e.g. lionweb-typescript):
-```
-cd packages/pareto-typescript
-find ../../../typescript_codebases/lionweb-typescript/ -name "*.ts" -type f \
+```bash
+# From packages/pareto-typescript:
+find ../../../typescript_codebases/TypeScript/src/ -name "*.ts" -type f \
   -not -path "*/node_modules/*" -not -path "*/dist/*" \
   -exec node ./typescript/app/dist/bin/analyze_file.js {} \; \
-  > /dev/null 2> out_lionweb.txt
-grep -v "^$" out_lionweb.txt | sort -u
+  > /dev/null 2> ./temp/out_ts_src.txt
+
+# Show unique errors:
+sort -u ./temp/out_ts_src.txt | grep "^processing error:"
 ```
-Each line is one error. Errors look like:
-- `Expression|object literal.properties: unknown option: 'GetAccessor'` — unhandled AST node kind
-- `Arguments.open parenthesis token: missing: OpenParenToken` — expected token not found
-- `Expression|arrow function|without parentheses.parameter: assertion failed (expected: Parameter, found: AsyncKeyword)` — wrong node at that position
 
-## Seeing the AST for an error
+Other available corpora: `lionweb-typescript/`, `pareto_canon/` etc.
 
-1. Write a minimal `/tmp/test_X.ts` that triggers the error (e.g. `const x = new Foo` for missing OpenParenToken)
-2. Run from workspace root:
-   ```
-   node ./packages/pareto-typescript/typescript/app/dist/bin/analyze_file.js /tmp/test_X.ts
-   ```
-3. The error output shows the AST path and the offending node kind, plus the node tree (parent→child). Use this to understand what children to expect.
+## Error format
 
-## Build command (from workspace root `/home/corno/workspace/pareto-canon`)
+Each error has a path, a message, a source location, and an AST snippet:
 ```
+processing error: Parameters.open parenthesis token: assertion failed (expected: OpenParenToken, found: LessThanToken) @ path/to/file.ts:10:5:
+    snippet:
+    Node: FunctionDeclaration
+        Node: LessThanToken
+        Node: SyntaxList
+            ...
+        Node: GreaterThanToken
+        Node: OpenParenToken
+```
+
+Error message types:
+- `unknown option: 'GetAccessor'` — unhandled node kind in a `peek_for_state` switch
+- `assertion failed (expected: X, found: Y)` — unexpected node at that position (usually a missing optional field before it)
+- `missing: X` — expected node was not found
+- `not a leaf: 'SyntaxList'` — tried to `consume_literal()` on a non-leaf node
+
+**Reading the snippet**: The top node is the one being parsed. Its direct children are listed at one indent level; children of children are shown with `...` (collapsed). The error occurs when the refiner tries to consume a child but finds an unexpected node kind.
+
+## Diagnosing: "assertion failed (expected: X, found: Y)"
+
+This means the refiner consumed the preceding fields correctly, then hit node Y where it expected X. **Y is an unhandled optional field** that appears before X in the AST. Add a `peek_for_optional("Y", ...)` in the refiner (and the corresponding field in the schema) immediately before the field that fails.
+
+## Build command
+
+```bash
+# From packages/pareto-typescript:
+pdt package . build-and-test; echo "EXIT:$?"
+# Or from workspace root:
 pdt package ./packages/pareto-typescript build-and-test; echo "EXIT:$?"
 ```
 EXIT:0 = success.
@@ -41,37 +61,92 @@ EXIT:0 = success.
 - **Refiner**: `typescript/lib/src/implementation/manual/refiners/typed_ast/ast.ts`
 - **Transformer**: `typescript/lib/src/implementation/manual/transformers/typed_ast/fountain_pen.ts`
 
-## Key API rules (refiner `ast.ts`) — CRITICAL
+## Productions vs Refiners
 
-- `context.prop("name")` — **path label only**, NO side effects, NO consumption
-- `context.option("name")` — **path label only**, NO side effects, NO consumption
-- `context.optional("TokenKind", fn)` — **actually peeks and optionally consumes** a node
-- `context.peek_for_state((kind, abort) => ...)` — peeks at next node kind, branches
-- `context.assert_kind("X").consume_keyword()` — assert kind then consume
-- `context.defer_parsing_to_component(Foo)` — delegate to another Production
-- `context.consume_component(Foo)` — consume current node as component
-- `context.consume_literal()` — consume a literal value node
-- `context.consume_and_parse_children_as_type(fn)` — consume node, recurse into children
-- `context.consume_and_parse_children_as_separated_list("Sep", fn)` — SyntaxList with separators
-
-## Optional pattern model
-
+**Production** — consumes from an **iterator** (multiple siblings). Uses `create_iterator_context`.
 ```typescript
-// schema
-export type Optional_Foo = p_.Optional_Value<Foo>
+export const Foo: h.Production<d_out.Foo> = (iterator, abort, $p) =>
+    h.create_iterator_context(iterator, abort, $p, "Foo", (context) => ({ ... }))
+```
 
-// refiner
-export const Optional_Foo: h.Production<d_out.Optional_Foo> = (iterator, abort, $p) =>
-    h.create_iterator_context(iterator, abort, $p, "Optional_Foo",
-        (context): d_out.Optional_Foo => context.optional("OpenTokenKind", (context) => ({
-            'field': context.prop("field").consume_keyword(),
-        }))
+**Refiner** — consumes from a **single node** (its children). Uses `create_node_context` + `parse_children_as_type`.
+```typescript
+export const Foo: h.Refiner<d_out.Foo> = ($, abort, $p) =>
+    h.create_node_context($, abort, $p, "NodeKind", (context): d_out.Foo =>
+        context.parse_children_as_type((context): d_out.Foo => ({ ... }))
     )
 ```
 
+`parse_children_as_type` is only available inside `create_node_context`.
+
+Called from refiner: use `context.prop("x").defer_parsing_to_component(Foo)` for Productions, `context.prop("x").consume_component(Foo)` for Refiners.
+
+## Key API (refiner/production context)
+
+| Call | Effect |
+|---|---|
+| `context.prop("name")` | **Path label only** — no consumption, no side effects |
+| `context.option("name")` | **Path label only** — no consumption, no side effects |
+| `context.peek_for_optional("Kind", fn)` | Peek: if next node is "Kind", consume it and call fn |
+| `context.peek_for_state((kind, abort) => ...)` | Peek at next node kind, dispatch via switch |
+| `context.assert_kind("X").consume_keyword()` | Assert node kind then consume as keyword |
+| `context.consume_keyword()` | Consume current node as keyword (no kind check) |
+| `context.consume_literal()` | Consume current node as literal (must be a leaf) |
+| `context.defer_parsing_to_component(Foo)` | Pass iterator to Production `Foo` |
+| `context.consume_component(Foo)` | Consume this node, pass it to Refiner `Foo` |
+| `context.consume_and_parse_children_as_type(fn)` | Consume node, recurse into its children |
+| `context.consume_and_parse_children_as_separated_list("Sep", fn)` | SyntaxList with separators |
+| `context.consume_and_parse_children_as_non_separated_list(fn)` | SyntaxList without separators |
+
+## peek_for_optional patterns
+
+**Single optional token** (e.g. `?`, `*`, `!`):
+```typescript
+// schema
+'asterisk token': p_.Optional_Value<d_primitives.Keyword>
+// refiner
+'asterisk token': context.prop("asterisk token").peek_for_optional(
+    "AsteriskToken",
+    (context) => context.consume_keyword()
+),
+```
+
+**Optional object with multiple sibling fields** (fn receives the outer context, consumes siblings):
+```typescript
+// schema
+'initializer': p_.Optional_Value<{ 'equals token': d_primitives.Keyword; 'expression': Expression }>
+// refiner — fn returns a plain object, NOT consume_and_parse_children_as_type
+'initializer': context.prop("initializer").peek_for_optional(
+    "EqualsToken",
+    (context) => ({
+        'equals token': context.prop("equals token").assert_kind("EqualsToken").consume_keyword(),
+        'expression': context.prop("expression").defer_parsing_to_component(Expression),
+    })
+),
+```
+
+**Optional component node** (the node itself is an optional child):
+```typescript
+'body': context.prop("body").peek_for_optional(
+    "Block",
+    (context) => context.consume_component(Block)
+),
+```
+
+## Common AST patterns
+
+- **Variance modifiers** (`in T`, `out T`, `const T`): TypeParameter may have a SyntaxList of modifier keywords before the Identifier. Check via `peek_for_optional("SyntaxList", ...)`.
+- **Generator functions** (`function*`, `*method()`): `AsteriskToken` appears after `function` keyword or modifiers, before the name.
+- **Optional method names**: `export default function() {}` — Identifier is absent. Use `peek_for_optional("Identifier", ...)`.
+- **JSDoc on statements**: Some statement kinds (e.g. `if`) carry JSDoc as first child.
+- **RestType**: Children are `DotDotDotToken` then the type — both must be consumed.
+- **ConstructorType** with generics: `new<T>()` — has `LessThanToken` before `OpenParenToken`.
+
 ## Our collaboration protocol
 
-1. **User states the error** (copy from `out_lionweb.txt`)
-2. **I create a minimal test file and run analyze_file** to show the AST
-3. **I propose the fix** across schema + refiner + transformer — user approves or corrects
-4. **I implement** and build to verify and then run ./typescript/app/dist/bin/analyze_file.js <path_to_file_with_the_error>
+1. **User provides the error output** (from `out_ts_src.txt` or similar)
+2. **Read the snippet** — the AST structure is usually enough to diagnose without a test file
+3. **If unclear, write a minimal `/tmp/test_X.ts`** and run `analyze_file.js` on it
+4. **Fix all 3 files** (schema + refiner + transformer) — apply with `multi_replace_string_in_file`
+5. **Build** with `pdt package . build-and-test; echo "EXIT:$?"`
+6. **Re-scan** with the full corpus to verify the error count drops
