@@ -1362,10 +1362,10 @@ export const Source_File: h.Root<d_out.Source_File> = ($, abort) => h.create_roo
     )
 )
 
-const parse_module_body: h.Production<d_out.Statement.Module_Declaration.Module_Body> = (iterator, abort, $p) => h.create_iterator_context(
+export const Module_Body: h.Production<d_out.Module_Body> = (iterator, abort, $p) => h.create_iterator_context(
     iterator, abort, $p, "Module_Body",
-    (context): d_out.Statement.Module_Declaration.Module_Body => context.peek_for_state(
-        (kind, abort): d_out.Statement.Module_Declaration.Module_Body => {
+    (context): d_out.Module_Body => context.peek_for_state(
+        (kind, abort): d_out.Module_Body => {
             switch (kind) {
                 case "ModuleBlock": return ['module block', context.option("module block").consume_and_parse_children_as_type(
                     (context): d_out.Block => ({
@@ -1380,7 +1380,7 @@ const parse_module_body: h.Production<d_out.Statement.Module_Declaration.Module_
                         'module declaration': context.prop("module declaration").assert_kind("ModuleDeclaration").consume_and_parse_children_as_type(
                             (context) => ({
                                 'name': context.prop("name").defer_parsing_to_component(Identifier),
-                                'block': context.prop("block").defer_parsing_to_component(parse_module_body),
+                                'block': context.prop("block").defer_parsing_to_component(Module_Body),
                             })
                         ),
                     })
@@ -1890,7 +1890,7 @@ export const Statement: h.Production<d_out.Statement> = ($, abort, $p) => h.crea
                                 }
                             }
                         ),
-                        'block': context.prop("block").defer_parsing_to_component(parse_module_body),
+                        'block': context.prop("block").defer_parsing_to_component(Module_Body),
                         'semicolon': context.prop("semicolon").defer_parsing_to_component(Optional_Semi_Colon),
                     })
                 )]

@@ -517,6 +517,17 @@ export type Initializer = {
 
 export type JSDoc = p_.List<d_primitives.Blob>
 
+export type Module_Body =
+    | ['module block', Block]
+    | ['dotted', {
+        'dot token': d_primitives.Keyword
+        'module declaration': {
+            'name': Identifier
+            'block': Module_Body
+        }
+    }]
+    | ['shorthand', Optional_Semi_Colon]
+
 export type Numeric_Literal = d_primitives.Literal
 
 export type Object_Type = {
@@ -733,11 +744,11 @@ export type Statement =
         'modifiers': Statement_Modifiers
         'export keyword': d_primitives.Keyword
         'type':
-            | ['default', {
-                'default keyword': d_primitives.Keyword
-                'expression': Expression
-            }]
-            | ['equals', Initializer]
+        | ['default', {
+            'default keyword': d_primitives.Keyword
+            'expression': Expression
+        }]
+        | ['equals', Initializer]
         'semicolon': Optional_Semi_Colon
     }]
     | ['export declaration', Statement.Export_Declaration]
@@ -892,8 +903,8 @@ export namespace Statement {
         'for keyword': d_primitives.Keyword
         'open parenthesis token': d_primitives.Keyword
         'initializer':
-            | ['variable declaration list', Variable_Declaration_List]
-            | ['expression', Expression]
+        | ['variable declaration list', Variable_Declaration_List]
+        | ['expression', Expression]
         'in keyword': d_primitives.Keyword
         'expression': Expression
         'close parenthesis token': d_primitives.Keyword
@@ -905,8 +916,8 @@ export namespace Statement {
         'await keyword': p_.Optional_Value<d_primitives.Keyword>
         'open parenthesis token': d_primitives.Keyword
         'initializer':
-            | ['variable declaration list', Variable_Declaration_List]
-            | ['expression', Expression]
+        | ['variable declaration list', Variable_Declaration_List]
+        | ['expression', Expression]
         'of keyword': d_primitives.Keyword
         'expression': Expression
         'close parenthesis token': d_primitives.Keyword
@@ -949,8 +960,8 @@ export namespace Statement {
                 'named': p_.Optional_Value<{
                     'comma token': d_primitives.Keyword
                     'bindings':
-                        | ['named imports', Named_Imports]
-                        | ['namespace import', Namespace]
+                    | ['named imports', Named_Imports]
+                    | ['namespace import', Namespace]
                 }>
             }]
             | ['defer', {
@@ -1020,7 +1031,7 @@ export namespace Statement {
             'keyword': d_primitives.Keyword
             'name': Identifier
         }]
-        'block': Module_Declaration.Module_Body
+        'block': Module_Body
         'semicolon': Optional_Semi_Colon
     }
     export namespace Module_Declaration {
@@ -1028,16 +1039,6 @@ export namespace Statement {
             'keyword': d_primitives.Keyword
             'name': Property_Name
         }
-        export type Module_Body =
-            | ['module block', Block]
-            | ['dotted', {
-                'dot token': d_primitives.Keyword
-                'module declaration': {
-                    'name': Identifier
-                    'block': Module_Body
-                }
-            }]
-            | ['shorthand', Optional_Semi_Colon]
     }
     export type Namespace_Export = {
         'jsdoc': JSDoc

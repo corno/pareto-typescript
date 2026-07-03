@@ -46,6 +46,11 @@ export const Arguments: p_i.Transformer<d_in.Arguments, d_out.Phrase> = ($) => s
     sh.ph.literal(")"),
 ]))
 
+export const As_Alias: p_i.Transformer<d_in.As_Alias, d_out.Phrase> = ($) => sh.ph.composed(p_.literal.list([
+    sh.ph.literal(" as "),
+    Identifier($['identifier']),
+]))
+
 export const Binding_Pattern: p_i.Transformer<d_in.Binding_Pattern, d_out.Phrase> = ($) => sh.ph.composed(p_.literal.list([
     p_.from.optional($['modifiers']).decide(
         ($) => sh.ph.composed(
@@ -71,6 +76,10 @@ export const Binding_Pattern: p_i.Transformer<d_in.Binding_Pattern, d_out.Phrase
                 ),
             ),
         ),
+        () => sh.ph.nothing()
+    ),
+    p_.from.optional($['dot dot dot token']).decide(
+        () => sh.ph.literal("..."),
         () => sh.ph.nothing()
     ),
     p_.from.state($.type).decide(
@@ -169,7 +178,12 @@ export const Class: p_i.Transformer<d_in.Class, d_out.Phrase> = ($) => sh.ph.com
             ($) => p_.from.state($).decide(
                 ($) => {
                     switch ($[0]) {
-                        case 'tbd': return p_.option($, ($) => sh.ph.literal("/* TODO: class modifier */"))
+                        case 'abstract': return p_.option($, ($) => sh.ph.literal("abstract "))
+                        case 'declare': return p_.option($, ($) => sh.ph.literal("declare "))
+                        case 'decorator': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
+                            sh.ph.literal("@"),
+                            Expression($['expression']),
+                        ])))
                         default: return p_.au($[0])
                     }
                 }
@@ -730,23 +744,6 @@ export const Expression_With_Type_Arguments: p_i.Transformer<d_in.Expression_Wit
     Type_Arguments($['type arguments'])
 ]))
 
-export const Identifier: p_i.Transformer<d_in.Identifier, d_out.Phrase> = ($) => sh.ph.literal($.text)
-
-export const Initializer: p_i.Transformer<d_in.Initializer, d_out.Phrase> = ($) => sh.ph.composed(p_.literal.list([
-    sh.ph.literal(" = "),
-    Expression($['expression']),
-]))
-
-export const JSDoc: p_i.Transformer<d_in.JSDoc, d_out.Phrase> = ($) => sh.ph.composed(
-    p_.from.list($).map(
-        ($) => sh.ph.composed(p_.literal.list([
-            sh.ph.literal("/**"),
-            sh.ph.literal("FIX JSDoc"),
-            sh.ph.literal("*/")
-        ])),
-    )
-)
-
 export const Heritage: p_i.Transformer<d_in.Heritage, d_out.Phrase> = ($) => p_.from.optional($).decide(
     ($) => sh.ph.composed(p_.from.list($).map(
         ($) => sh.ph.composed(
@@ -776,6 +773,50 @@ export const Heritage: p_i.Transformer<d_in.Heritage, d_out.Phrase> = ($) => p_.
     )),
     () => sh.ph.nothing(),
 )
+
+export const Identifier: p_i.Transformer<d_in.Identifier, d_out.Phrase> = ($) => sh.ph.literal($.text)
+
+export const Initializer: p_i.Transformer<d_in.Initializer, d_out.Phrase> = ($) => sh.ph.composed(p_.literal.list([
+    sh.ph.literal(" = "),
+    Expression($['expression']),
+]))
+
+export const JSDoc: p_i.Transformer<d_in.JSDoc, d_out.Phrase> = ($) => sh.ph.composed(
+    p_.from.list($).map(
+        ($) => sh.ph.composed(p_.literal.list([
+            sh.ph.literal("/**"),
+            sh.ph.literal("FIX JSDoc"),
+            sh.ph.literal("*/")
+        ])),
+    )
+)
+
+const Module_Body = ($: d_in.Module_Body): d_out.Phrase =>
+    p_.from.state($).decide(
+        ($) => {
+            switch ($[0]) {
+                case 'module block': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
+                    sh.ph.literal(" {"),
+                    sh.ph.indent(
+                        sh.pg.composed(p_.literal.list([
+                            sh.pg.sentences(p_.literal.list([
+                                sh.sentence(p_.literal.list([])),
+                            ])),
+                            Statements($['statements'])
+                        ])),
+                    ),
+                    sh.ph.literal("}"),
+                ])))
+                case 'dotted': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
+                    sh.ph.literal("."),
+                    sh.ph.literal($['module declaration']['name'].text),
+                    Module_Body($['module declaration']['block']),
+                ])))
+                case 'shorthand': return p_.option($, ($) => Optional_Semi_Colon($))
+                default: return p_.au($[0])
+            }
+        }
+    )
 
 export const Object_Type: p_i.Transformer<d_in.Object_Type, d_out.Phrase> = ($) => sh.ph.composed(p_.literal.list([
     sh.ph.literal("{"),
@@ -883,6 +924,11 @@ export const Optional_Initializer: p_i.Transformer<d_in.Optional_Initializer, d_
     () => sh.ph.nothing()
 )
 
+export const Optional_Semi_Colon: p_i.Transformer<d_in.Optional_Semi_Colon, d_out.Phrase> = ($) => p_.from.optional($).decide(
+    ($) => sh.ph.literal(";"),
+    () => sh.ph.nothing()
+)
+
 export const Optional_Type: p_i.Transformer<d_in.Optional_Type, d_out.Phrase> = ($) => p_.from.optional($).decide(
     ($) => sh.ph.composed(p_.literal.list([
         sh.ph.literal(": "),
@@ -890,6 +936,8 @@ export const Optional_Type: p_i.Transformer<d_in.Optional_Type, d_out.Phrase> = 
     ])),
     () => sh.ph.nothing()
 )
+
+export const Numeric_Literal: p_i.Transformer<d_in.Numeric_Literal, d_out.Phrase> = ($) => sh.ph.literal($.text)
 
 export const Parameters: p_i.Transformer<d_in.Parameters, d_out.Phrase> = ($) => sh.ph.composed(p_.literal.list([
     sh.ph.literal("("),
@@ -960,11 +1008,6 @@ export const Return_Type_Annotation: p_i.Transformer<d_in.Return_Type_Annotation
     () => sh.ph.nothing()
 )
 
-export const Optional_Semi_Colon: p_i.Transformer<d_in.Optional_Semi_Colon, d_out.Phrase> = ($) => p_.from.optional($).decide(
-    ($) => sh.ph.literal(";"),
-    () => sh.ph.nothing()
-)
-
 export const Signature_Modifiers: p_i.Transformer<d_in.Signature_Modifiers, d_out.Phrase> = ($) => p_.from.optional($).decide(
     ($) => sh.ph.composed(
         p_.from.list($).map(
@@ -998,36 +1041,13 @@ export const Signature_Modifiers: p_i.Transformer<d_in.Signature_Modifiers, d_ou
 )
 
 export const Source_File: p_i.Transformer<d_in.Source_File, d_out.Paragraph> = ($) => sh.pg.composed(p_.literal.list([
-    Statements($.statements),
-    JSDoc($['end of file'].jsdoc)
+    Statements($['statements']),
+    sh.pg.sentences(p_.literal.list([
+        sh.sentence(p_.literal.list([
+            JSDoc($['end of file'].jsdoc)
+        ]))
+    ]))
 ]))
-
-const render_module_body = ($: d_in.Statement.Module_Declaration.Module_Body): d_out.Phrase =>
-    p_.from.state($).decide(
-        ($) => {
-            switch ($[0]) {
-                case 'module block': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
-                    sh.ph.literal(" {"),
-                    sh.ph.indent(
-                        sh.pg.composed(p_.literal.list([
-                            sh.pg.sentences(p_.literal.list([
-                                sh.sentence(p_.literal.list([])),
-                            ])),
-                            Statements($['statements'])
-                        ])),
-                    ),
-                    sh.ph.literal("}"),
-                ])))
-                case 'dotted': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
-                    sh.ph.literal("."),
-                    sh.ph.literal($['module declaration']['name'].text),
-                    render_module_body($['module declaration']['block']),
-                ])))
-                case 'shorthand': return p_.option($, ($) => Optional_Semi_Colon($))
-                default: return p_.au($[0])
-            }
-        }
-    )
 
 export const Statement: p_i.Transformer<d_in.Statement, d_out.Phrase> = ($) => sh.ph.composed(p_.literal.list([
     p_.from.state($).decide(
@@ -1554,7 +1574,7 @@ export const Statement: p_i.Transformer<d_in.Statement, d_out.Phrase> = ($) => s
                             }
                         }
                     ),
-                    render_module_body($['block']),
+                    Module_Body($['block']),
                     Optional_Semi_Colon($['semicolon']),
                 ])))
                 case 'namespace export': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
@@ -1728,12 +1748,6 @@ export const Statement_Modifiers: p_i.Transformer<d_in.Statement_Modifiers, d_ou
 
 export const String_Literal: p_i.Transformer<d_in.String_Literal, d_out.Phrase> = ($) => sh.ph.literal($.text)
 
-export const Numeric_Literal: p_i.Transformer<d_in.Numeric_Literal, d_out.Phrase> = ($) => sh.ph.literal($.text)
-
-export const As_Alias: p_i.Transformer<d_in.As_Alias, d_out.Phrase> = ($) => sh.ph.composed(p_.literal.list([
-    sh.ph.literal(" as "),
-    Identifier($['identifier']),
-]))
 
 export const Type_Predicate: p_i.Transformer<d_in.Type_Predicate, d_out.Phrase> = ($) => sh.ph.composed(p_.literal.list([
     p_.from.optional($['asserts keyword']).decide(
