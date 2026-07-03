@@ -543,6 +543,7 @@ export type Object_Type__Signature__Call = {
 export type Object_Type__Signature__Construct = {
     'jsdoc': JSDoc
     'new keyword': d_primitives.Keyword
+    'type parameters': Type_Parameters
     'parameters': Parameters
     'type': Optional_Type
     'semicolon': Optional_Semi_Colon
@@ -641,11 +642,7 @@ export type Return_Type_Annotation = p_.Optional_Value<{
     'colon token': d_primitives.Keyword
     'kind':
     | ['type', Type]
-    | ['type predicate', {
-        'identifier': Identifier
-        'is keyword': d_primitives.Keyword
-        'type': Type
-    }]
+    | ['type predicate', Type__Type_Predicate]
 }>
 
 export type Signature_Modifiers = p_.Optional_Value<p_.List<Signature_Modifiers__L>>
@@ -690,6 +687,11 @@ export type Statement =
         'jsdoc': JSDoc
         'continue keyword': d_primitives.Keyword
         'label': p_.Optional_Value<Identifier>
+        'semicolon': Optional_Semi_Colon
+    }]
+    | ['debugger', {
+        'jsdoc': JSDoc
+        'debugger keyword': d_primitives.Keyword
         'semicolon': Optional_Semi_Colon
     }]
     | ['do', Statement__Do]
@@ -1089,6 +1091,7 @@ export type Type =
     | ['import type', Type__Import]
     | ['indexed access', Type__Indexed_Access]
     | ['infer', Type__Infer]
+    | ['intrinsic', d_primitives.Keyword]
     | ['intersection', Type__Intersection]
     | ['jsdoc all', Type__JSDoc_All]
     | ['jsdoc function', Type__JSDoc_Function]
@@ -1144,6 +1147,7 @@ export type Type__Conditional = {
 }
 
 export type Type__Constructor = {
+    'modifiers': Signature_Modifiers
     'new keyword': d_primitives.Keyword
     // 'type parameters': Type_Parameters
     'parameters': Parameters
@@ -1218,6 +1222,7 @@ export type Type__JSDoc_Unknown = {
 export type Type__Literal = {
     'type':
     | ['false keyword', d_primitives.Keyword]
+    | ['negative numeric literal', { 'minus token': d_primitives.Keyword, 'value': Numeric_Literal }]
     | ['null', d_primitives.Keyword]
     | ['numeric literal', Numeric_Literal]
     | ['string literal', String_Literal]

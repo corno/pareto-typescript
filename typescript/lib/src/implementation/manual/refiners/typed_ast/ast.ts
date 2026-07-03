@@ -897,6 +897,7 @@ export const Object_Type: h.Production<d_out.Object_Type> = (iterator, abort, $p
                             (context): d_out.Object_Type__Signature__Construct => ({
                                 'jsdoc': context.prop("jsdoc").defer_parsing_to_component(JSDoc),
                                 'new keyword': context.prop("new keyword").assert_kind("NewKeyword").consume_keyword(),
+                                'type parameters': context.prop("type parameters").defer_parsing_to_component(Type_Parameters),
                                 'parameters': context.prop("parameters").defer_parsing_to_component(Parameters),
                                 'type': context.prop("type").defer_parsing_to_component(Optional_Type),
                                 'semicolon': context.prop("semicolon").defer_parsing_to_component(Optional_Semicolon),
@@ -1095,10 +1096,29 @@ export const Return_Type_Annotation: h.Production<d_out.Return_Type_Annotation> 
                 (kind, abort) => {
                     switch (kind) {
                         case "TypePredicate": return ['type predicate', context.option("type predicate").consume_and_parse_children_as_type(
-                            (context) => ({
-                                'identifier': context.prop("identifier").assert_kind("Identifier").consume_literal(),
-                                'is keyword': context.prop("is keyword").assert_kind("IsKeyword").consume_keyword(),
-                                'type': context.prop("type").defer_parsing_to_component(Type),
+                            (context): d_out.Type__Type_Predicate => ({
+                                'asserts keyword': context.prop("asserts keyword").peek_for_optional(
+                                    "AssertsKeyword",
+                                    (context) => context.consume_keyword()
+                                ),
+                                'parameter name': context.prop("parameter name").peek_for_state(
+                                    (kind, abort) => {
+                                        switch (kind) {
+                                            case "Identifier": return ['identifier', context.option("identifier").consume_literal()]
+                                            case "ThisType": return ['this', context.option("this").consume_and_parse_children_as_type(
+                                                (context) => context.assert_kind("ThisKeyword").consume_keyword()
+                                            )]
+                                            default: return abort(null)
+                                        }
+                                    }
+                                ),
+                                'is predicate': context.prop("is predicate").peek_for_optional(
+                                    "IsKeyword",
+                                    (context) => ({
+                                        'is keyword': context.prop("is keyword").consume_keyword(),
+                                        'type': context.prop("type").defer_parsing_to_component(Type),
+                                    })
+                                ),
                             })
                         )]
                         default: return ['type', context.option("type").defer_parsing_to_component(Type)]
@@ -1207,6 +1227,13 @@ export const Statement: h.Production<d_out.Statement> = ($, abort, $p) => h.crea
                             "Identifier",
                             (context) => context.consume_literal()
                         ),
+                        'semicolon': context.prop("semicolon").defer_parsing_to_component(Optional_Semicolon),
+                    })
+                )]
+                case "DebuggerStatement": return ['debugger', context.option("debugger").consume_and_parse_children_as_type(
+                    (context) => ({
+                        'jsdoc': context.prop("jsdoc").defer_parsing_to_component(JSDoc),
+                        'debugger keyword': context.prop("debugger keyword").assert_kind("DebuggerKeyword").consume_keyword(),
                         'semicolon': context.prop("semicolon").defer_parsing_to_component(Optional_Semicolon),
                     })
                 )]
@@ -1805,6 +1832,7 @@ export const Type: h.Production<d_out.Type> = ($, abort, $p) => h.create_iterato
                 )]
                 case "ConstructorType": return ['constructor', context.option("constructor").consume_and_parse_children_as_type(
                     (context): d_out.Type__Constructor => ({
+                        'modifiers': context.prop("modifiers").defer_parsing_to_component(Signature_Modifiers),
                         'new keyword': context.prop("new keyword").assert_kind("NewKeyword").consume_keyword(),
                         // 'type parameters': context.prop("type parameters").construct_component(
                         'parameters': context.prop("parameters").defer_parsing_to_component(Parameters),
@@ -1896,6 +1924,7 @@ export const Type: h.Production<d_out.Type> = ($, abort, $p) => h.create_iterato
                         'type': context.prop("type").defer_parsing_to_component(Optional_Type)
                     })
                 )]
+                case "IntrinsicKeyword": return ['intrinsic', context.option("intrinsic").consume_keyword()]
                 case "ImportType": return ['import type', context.option("import type").consume_and_parse_children_as_type(
                     (context): d_out.Type__Import => ({
                         'typeof keyword': context.prop("typeof keyword").peek_for_optional(
@@ -1926,6 +1955,12 @@ export const Type: h.Production<d_out.Type> = ($, abort, $p) => h.create_iterato
                                     case "FalseKeyword": return ['false keyword', context.option("false keyword").consume_keyword()]
                                     case "NullKeyword": return ['null', context.option("null").consume_keyword()]
                                     case "NumericLiteral": return ['numeric literal', context.option("numeric literal").consume_literal()]
+                                    case "PrefixUnaryExpression": return ['negative numeric literal', context.option("negative numeric literal").consume_and_parse_children_as_type(
+                                        (context) => ({
+                                            'minus token': context.prop("minus token").assert_kind("MinusToken").consume_keyword(),
+                                            'value': context.prop("value").assert_kind("NumericLiteral").consume_literal(),
+                                        })
+                                    )]
                                     case "StringLiteral": return ['string literal', context.option("string literal").consume_literal()]
                                     case "TrueKeyword": return ['true keyword', context.option("true keyword").consume_keyword()]
                                     default: return abort(null)

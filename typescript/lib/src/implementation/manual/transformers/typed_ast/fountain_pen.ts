@@ -752,6 +752,7 @@ export const Object_Type: p_i.Transformer<d_in.Object_Type, d_out.Phrase> = ($) 
                                     case 'construct': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                                         JSDoc($['jsdoc']),
                                         sh.ph.literal("new "),
+                                        Type_Parameters($['type parameters']),
                                         Parameters($.parameters),
                                         Optional_Type($.type),
                                         Semi_Colon($.semicolon),
@@ -898,9 +899,26 @@ export const Return_Type_Annotation: p_i.Transformer<d_in.Return_Type_Annotation
                 switch ($[0]) {
                     case 'type': return p_.option($, ($) => Type($))
                     case 'type predicate': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
-                        sh.ph.literal($.identifier.text),
-                        sh.ph.literal(" is "),
-                        Type($['type']),
+                        p_.from.optional($['asserts keyword']).decide(
+                            () => sh.ph.literal("asserts "),
+                            () => sh.ph.nothing()
+                        ),
+                        p_.from.state($['parameter name']).decide(
+                            ($) => {
+                                switch ($[0]) {
+                                    case 'identifier': return p_.option($, ($) => sh.ph.literal($.text))
+                                    case 'this': return p_.option($, ($) => sh.ph.literal("this"))
+                                    default: return p_.au($[0])
+                                }
+                            }
+                        ),
+                        p_.from.optional($['is predicate']).decide(
+                            ($) => sh.ph.composed(p_.literal.list([
+                                sh.ph.literal(" is "),
+                                Type($['type']),
+                            ])),
+                            () => sh.ph.nothing()
+                        ),
                     ])))
                     default: return p_.au($[0])
                 }
@@ -994,6 +1012,11 @@ export const Statement: p_i.Transformer<d_in.Statement, d_out.Phrase> = ($) => s
                     Semi_Colon($['semicolon']),
                 ])))
                 case 'empty': return p_.option($, ($) => sh.ph.literal(";"))
+                case 'debugger': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
+                    JSDoc($['jsdoc']),
+                    sh.ph.literal("debugger"),
+                    Semi_Colon($['semicolon']),
+                ])))
                 case 'enum': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                     JSDoc($['jsdoc']),
                     p_.from.optional($['modifiers']).decide(
@@ -1517,6 +1540,7 @@ export const Type: p_i.Transformer<d_in.Type, d_out.Phrase> = ($) => p_.from.sta
                 Type($['false type']),
             ])))
             case 'constructor': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
+                Signature_Modifiers($['modifiers']),
                 sh.ph.literal("new "),
                 Parameters($['parameters']),
                 sh.ph.literal(" => "),
@@ -1529,6 +1553,7 @@ export const Type: p_i.Transformer<d_in.Type, d_out.Phrase> = ($) => p_.from.sta
                 sh.ph.literal(" => "),
                 Type($['return type']),
             ])))
+            case 'intrinsic': return p_.option($, ($) => sh.ph.literal("intrinsic"))
             case 'import type': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                 p_.from.optional($['typeof keyword']).decide(
                     () => sh.ph.literal("typeof "),
@@ -1609,6 +1634,7 @@ export const Type: p_i.Transformer<d_in.Type, d_out.Phrase> = ($) => p_.from.sta
                 ($) => {
                     switch ($[0]) {
                         case 'false keyword': return p_.option($, ($) => sh.ph.literal("false"))
+                        case 'negative numeric literal': return p_.option($, ($) => sh.ph.literal("-" + $['value'].text))
                         case 'null': return p_.option($, ($) => sh.ph.literal("null"))
                         case 'numeric literal': return p_.option($, ($) => sh.ph.literal($.text))
                         case 'string literal': return p_.option($, ($) => sh.ph.literal($.text))
