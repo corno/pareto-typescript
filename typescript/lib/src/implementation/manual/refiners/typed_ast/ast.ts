@@ -1197,6 +1197,7 @@ export const Property_Name: h.Production<d_out.Property_Name> = ($, abort, $p) =
                     )]
                     case "Identifier": return ['identifier', context.option("identifier").defer_parsing_to_component(Identifier)]
                     case "NumericLiteral": return ['numeric literal', context.option("numeric literal").defer_parsing_to_component(Numeric_Literal)]
+                    case "PrivateIdentifier": return ['private identifier', context.option("private identifier").defer_parsing_to_component(Identifier)]
                     case "StringLiteral": return ['string literal', context.option("string literal").defer_parsing_to_component(String_Literal)]
                     default: return abort(null)
                 }
@@ -1318,7 +1319,11 @@ export const Source_File: h.Root<d_out.Source_File> = ($, abort) => h.create_roo
         (context) => {
             return {
                 'statements': context.prop("statements").consume_component(Statements),
-                'end of file': context.prop("end of file").assert_kind("EndOfFileToken").consume_keyword(),
+                'end of file': context.prop("end of file").assert_kind("EndOfFileToken").consume_and_parse_children_as_type(
+                        (context) => ({
+                            'jsdoc': context.prop("jsdoc").defer_parsing_to_component(JSDoc),
+                        })
+                    ),
             }
         }
     )

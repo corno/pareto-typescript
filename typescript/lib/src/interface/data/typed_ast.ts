@@ -646,6 +646,7 @@ export type Property_Name = {
     | ['computed', Property_Name.Computed]
     | ['identifier', Identifier]
     | ['numeric literal', Numeric_Literal]
+    | ['private identifier', Identifier]
     | ['string literal', String_Literal]
 }
 
@@ -700,7 +701,9 @@ export namespace Signature_Modifiers {
 
 export type Source_File = {
     'statements': Statements
-    'end of file': null
+    'end of file': {
+        'jsdoc': JSDoc
+    }
 }
 
 export type Statement =

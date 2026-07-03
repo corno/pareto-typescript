@@ -932,6 +932,7 @@ export const Property_Name: p_i.Transformer<d_in.Property_Name, d_out.Phrase> = 
             ])))
             case 'identifier': return p_.option($, ($) => sh.ph.literal($.text))
             case 'numeric literal': return p_.option($, ($) => Numeric_Literal($))
+            case 'private identifier': return p_.option($, ($) => sh.ph.literal($.text))
             case 'string literal': return p_.option($, ($) => sh.ph.literal($.text))
             default: return p_.au($[0])
         }
@@ -997,7 +998,10 @@ export const Signature_Modifiers: p_i.Transformer<d_in.Signature_Modifiers, d_ou
     () => sh.ph.nothing()
 )
 
-export const Source_File: p_i.Transformer<d_in.Source_File, d_out.Paragraph> = ($) => Statements($.statements)
+export const Source_File: p_i.Transformer<d_in.Source_File, d_out.Paragraph> = ($) => sh.pg.composed(p_.literal.list([
+    Statements($.statements),
+    JSDoc($['end of file'].jsdoc)
+]))
 
 const render_module_body = ($: d_in.Statement.Module_Declaration.Module_Body): d_out.Phrase =>
     p_.from.state($).decide(
