@@ -234,6 +234,7 @@ export const Class_Body: h.Production<d_out.Class_Body> = ($, abort, $p) => h.cr
                                         }
                                     }
                                 ),
+                                'type parameters': context.prop("type parameters").defer_parsing_to_component(Type_Parameters),
                                 'parameters': context.prop("parameters").defer_parsing_to_component(Parameters),
                                 'return type': context.prop("return type").defer_parsing_to_component(Return_Type_Annotation),
                                 'body': context.prop("body").peek_for_optional(
@@ -330,6 +331,7 @@ export const Class_Body: h.Production<d_out.Class_Body> = ($, abort, $p) => h.cr
                                 'parameter': context.prop("parameter").assert_kind("SyntaxList").consume_and_parse_children_as_type(
                                     (context) => context.assert_kind("Parameter").consume_and_parse_children_as_type(
                                         (context) => ({
+                                            'modifiers': context.prop("modifiers").defer_parsing_to_component(Signature_Modifiers),
                                             'identifier': context.prop("identifier").defer_parsing_to_component(Identifier),
                                             'colon token': context.prop("colon token").assert_kind("ColonToken").consume_keyword(),
                                             'type': context.prop("type").defer_parsing_to_component(Type),
@@ -740,6 +742,7 @@ export const Expression: h.Production<d_out.Expression> = ($, abort, $p) => h.cr
                                         )]
                                         case "ShorthandPropertyAssignment": return ['shorthand property', context.option("shorthand property").consume_and_parse_children_as_type(
                                             (context): d_out.Expression.Object_Literal.Property.Shorthand_Property => ({
+                                                'jsdoc': context.prop("jsdoc").defer_parsing_to_component(JSDoc),
                                                 'name': context.prop("name").defer_parsing_to_component(Identifier),
                                                 'initializer': context.prop("initializer").peek_for_optional(
                                                     "EqualsToken",
@@ -1094,6 +1097,7 @@ export const Module_Specifier: h.Production<d_out.Module_Specifier> = (iterator,
     (context): d_out.Module_Specifier => context.peek_for_state(
         (kind, abort): d_out.Module_Specifier => {
             switch (kind) {
+                case "Identifier": return ['identifier', context.option("identifier").defer_parsing_to_component(Identifier)]
                 case "StringLiteral": return ['string literal', context.option("string literal").consume_literal()]
                 case "TemplateExpression": return ['template', context.option("template").consume_and_parse_children_as_type(
                     (context): d_out.Expression.Template => ({
@@ -1179,6 +1183,7 @@ const Object_Type_Signature: h.Production<d_out.Object_Type.Signature> = (iterat
                         'parameter': context.prop("parameter").assert_kind("SyntaxList").consume_and_parse_children_as_type(
                             (context) => context.assert_kind("Parameter").consume_and_parse_children_as_type(
                                 (context) => ({
+                                    'modifiers': context.prop("modifiers").defer_parsing_to_component(Signature_Modifiers),
                                     'identifier': context.prop("identifier").defer_parsing_to_component(Identifier),
                                     'colon token': context.prop("colon token").assert_kind("ColonToken").consume_keyword(),
                                     'type': context.prop("type").defer_parsing_to_component(Type),
@@ -1933,6 +1938,7 @@ export const Statement: h.Production<d_out.Statement> = ($, abort, $p) => h.crea
                         'jsdoc': context.prop("jsdoc").defer_parsing_to_component(JSDoc),
                         'modifiers': context.prop("modifiers").defer_parsing_to_component(Statement_Modifiers),
                         'import keyword': context.prop("import keyword").assert_kind("ImportKeyword").consume_keyword(),
+                        'type keyword': context.prop("type keyword").peek_for_optional("TypeKeyword", (context) => context.consume_keyword()),
                         'identifier': context.prop("identifier").defer_parsing_to_component(Identifier),
                         'initializer': context.prop("initializer").defer_parsing_to_component(Initializer),
                         'semicolon': context.prop("semicolon").defer_parsing_to_component(Semi_Colon)
@@ -1983,7 +1989,7 @@ export const Statement: h.Production<d_out.Statement> = ($, abort, $p) => h.crea
                                 }
                             }
                         ),
-                        'block': context.prop("block").defer_parsing_to_component(Module_Body),
+                        'block': context.prop("block").optional_set_if_not("SemicolonToken", (context) => context.defer_parsing_to_component(Module_Body)),
                         'semicolon': context.prop("semicolon").defer_parsing_to_component(Semi_Colon),
                     })
                 )]

@@ -3,7 +3,6 @@ import * as p_di from 'pareto-core/dist/interface/data'
 import * as d_primitives from "./primitives"
 
 import * as h from "../../temp_helpers"
-import { e } from 'pareto-core/dist/implementation/query'
 
 export type Arguments = {
     'question dot token': p_.Optional_Value<d_primitives.Keyword>
@@ -136,6 +135,7 @@ export namespace Class_Body {
             'constructor keyword':
             | ['constructor keyword', d_primitives.Keyword]
             | ['constructor keyword as string literal', d_primitives.Keyword]
+            'type parameters': Type_Parameters
             'parameters': Parameters
             'return type': Return_Type_Annotation
             'body': p_.Optional_Value<Block>
@@ -475,6 +475,7 @@ export namespace Expression {
                 'body': p_.Optional_Value<Block>
             }
             export type Shorthand_Property = {
+                'jsdoc': JSDoc
                 'name': Identifier
                 'initializer': p_.Optional_Value<{
                     'equals token': d_primitives.Keyword
@@ -620,6 +621,7 @@ export namespace Object_Type {
             'modifiers': Signature_Modifiers
             'open bracket token': d_primitives.Keyword
             'parameter': {
+                'modifiers': Signature_Modifiers
                 'identifier': Identifier
                 'colon token': d_primitives.Keyword
                 'type': Type //this is too broad, only certain types are allowed; string, number, symbol, template literal, union of those (not fully sure if there's more)
@@ -807,6 +809,7 @@ export type Statement =
         'jsdoc': JSDoc
         'modifiers': Statement_Modifiers
         'import keyword': d_primitives.Keyword
+        'type keyword': p_.Optional_Value<d_primitives.Keyword>
         'identifier': Identifier
         'initializer': Initializer
         'semicolon': Semi_Colon
@@ -1077,7 +1080,7 @@ export namespace Statement {
             'keyword': d_primitives.Keyword
             'name': Identifier
         }]
-        'block': Module_Body
+        'block': p_.Optional_Value<Module_Body>
         'semicolon': Semi_Colon
     }
     export namespace Module_Declaration {
@@ -1185,6 +1188,7 @@ export type Statements = p_.List<Statement>
 export type String_Literal = d_primitives.Literal
 
 export type Module_Specifier =
+    | ['identifier', Identifier]
     | ['string literal', String_Literal]
     | ['template', Expression.Template]
 

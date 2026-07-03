@@ -241,6 +241,7 @@ export const Class_Body: p_i.Transformer<d_in.Class_Body, d_out.Phrase> = ($) =>
                                                     }
                                                 }
                                             ),
+                                            Type_Parameters($['type parameters']),
                                             Parameters($['parameters']),
                                             Return_Type_Annotation($['return type']),
                                             p_.from.optional($['body']).decide(
@@ -321,6 +322,7 @@ export const Class_Body: p_i.Transformer<d_in.Class_Body, d_out.Phrase> = ($) =>
                                             JSDoc($['jsdoc']),
                                             Signature_Modifiers($.modifiers),
                                             sh.ph.literal("["),
+                                            Signature_Modifiers($.parameter.modifiers),
                                             sh.ph.literal($.parameter.identifier.text),
                                             sh.ph.literal(": "),
                                             Type($.parameter.type),
@@ -605,6 +607,7 @@ export const Expression: p_i.Transformer<d_in.Expression, d_out.Phrase> = ($) =>
                                                     Expression($['initializer']),
                                                 ])))
                                                 case 'shorthand property': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
+                                                    JSDoc($['jsdoc']),
                                                     Identifier($['name']),
                                                     p_.from.optional($['initializer']).decide(
                                                         ($) => sh.ph.composed(p_.literal.list([
@@ -929,6 +932,7 @@ export const Object_Type: p_i.Transformer<d_in.Object_Type, d_out.Phrase> = ($) 
                                         JSDoc($['jsdoc']),
                                         Signature_Modifiers($.modifiers),
                                         sh.ph.literal("["),
+                                        Signature_Modifiers($.parameter.modifiers),
                                         sh.ph.literal($.parameter.identifier.text),
                                         sh.ph.literal(": "),
                                         Type($.parameter.type),
@@ -1289,6 +1293,7 @@ export const Statement: p_i.Transformer<d_in.Statement, d_out.Phrase> = ($) => s
                             p_.from.state($['module specifier']).decide(
                                 ($) => {
                                     switch ($[0]) {
+                                        case 'identifier': return p_.option($, ($) => sh.ph.literal($.text))
                                         case 'string literal': return p_.option($, ($) => sh.ph.literal($.text))
                                         case 'template': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                                             sh.ph.literal($.head.text),
@@ -1568,6 +1573,7 @@ export const Statement: p_i.Transformer<d_in.Statement, d_out.Phrase> = ($) => s
                     p_.from.state($['module specifier']).decide(
                         ($) => {
                             switch ($[0]) {
+                                case 'identifier': return p_.option($, ($) => sh.ph.literal($.text))
                                 case 'string literal': return p_.option($, ($) => sh.ph.literal($.text))
                                 case 'template': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                                     sh.ph.literal($.head.text),
@@ -1622,6 +1628,7 @@ export const Statement: p_i.Transformer<d_in.Statement, d_out.Phrase> = ($) => s
                     JSDoc($['jsdoc']),
                     Statement_Modifiers($['modifiers']),
                     sh.ph.literal("import "),
+                    p_.from.optional($['type keyword']).decide(() => sh.ph.literal("type "), () => sh.ph.nothing()),
                     sh.ph.literal($['identifier'].text),
                     Initializer($['initializer']),
                     Semi_Colon($['semicolon']),
@@ -1666,7 +1673,7 @@ export const Statement: p_i.Transformer<d_in.Statement, d_out.Phrase> = ($) => s
                             }
                         }
                     ),
-                    Module_Body($['block']),
+                    p_.from.optional($['block']).decide(($) => Module_Body($), () => sh.ph.nothing()),
                     Semi_Colon($['semicolon']),
                 ])))
                 case 'namespace export': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
