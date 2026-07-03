@@ -468,7 +468,10 @@ export const Expression: p_i.Transformer<d_in.Expression, d_out.Phrase> = ($) =>
                     () => sh.ph.nothing()
                 ),
                 sh.ph.literal("function "),
-                // Identifier($['identifier']),
+                p_.from.optional($['name']).decide(
+                    ($) => sh.ph.composed(p_.literal.list([Identifier($), sh.ph.literal(" ")])),
+                    () => sh.ph.nothing()
+                ),
                 Parameters($['parameters']),
                 Block($['body'])
             ])))
@@ -579,6 +582,7 @@ export const Expression: p_i.Transformer<d_in.Expression, d_out.Phrase> = ($) =>
                 ),
                 Expression($['operand']),
             ])))
+            case 'qualified name': return p_.option($, ($) => Qualified_Name($))
             case 'property access': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                 Expression($['expression']),
                 p_.from.state($['dot token']).decide(
@@ -1704,6 +1708,28 @@ export const Type: p_i.Transformer<d_in.Type, d_out.Phrase> = ($) => p_.from.sta
                     }
                 ),
                 Type($['type']),
+            ])))
+            case 'type predicate': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
+                p_.from.optional($['asserts keyword']).decide(
+                    () => sh.ph.literal("asserts "),
+                    () => sh.ph.nothing()
+                ),
+                p_.from.state($['parameter name']).decide(
+                    ($) => {
+                        switch ($[0]) {
+                            case 'identifier': return p_.option($, ($) => Identifier($))
+                            case 'this': return p_.option($, ($) => sh.ph.literal("this"))
+                            default: return p_.au($[0])
+                        }
+                    }
+                ),
+                p_.from.optional($['is predicate']).decide(
+                    ($) => sh.ph.composed(p_.literal.list([
+                        sh.ph.literal(" is "),
+                        Type($['type']),
+                    ])),
+                    () => sh.ph.nothing()
+                ),
             ])))
             case 'type reference': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                 Entity_Name($['entity name']),

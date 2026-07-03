@@ -558,6 +558,10 @@ export const Expression: h.Production<d_out.Expression> = ($, abort, $p) => h.cr
                             )
                         ),
                         'function keyword': context.prop("function keyword").assert_kind("FunctionKeyword").consume_keyword(),
+                        'name': context.prop("name").peek_for_optional(
+                            "Identifier",
+                            (context) => context.consume_literal()
+                        ),
                         'parameters': context.prop("parameters").defer_parsing_to_component(Parameters),
                         'body': context.prop("body").consume_component(Block)
                     })
@@ -714,6 +718,7 @@ export const Expression: h.Production<d_out.Expression> = ($, abort, $p) => h.cr
                         )
                     })
                 )]
+                case "QualifiedName": return ['qualified name', context.option("qualified name").consume_component(Qualified_Name)]
                 case "RegularExpressionLiteral": return ['regular expression literal', context.option("regular expression literal").consume_literal()]
                 case "StringLiteral": return ['string literal', context.option("string literal").consume_literal()]
                 case "TaggedTemplateExpression": return ['tagged template', context.option("tagged template").consume_and_parse_children_as_type(
@@ -2026,6 +2031,32 @@ export const Type: h.Production<d_out.Type> = ($, abort, $p) => h.create_iterato
                             }
                         ),
                         'type': context.prop("type").defer_parsing_to_component(Type),
+                    })
+                )]
+                case "TypePredicate": return ['type predicate', context.option("type predicate").consume_and_parse_children_as_type(
+                    (context): d_out.Type__Type_Predicate => ({
+                        'asserts keyword': context.prop("asserts keyword").peek_for_optional(
+                            "AssertsKeyword",
+                            (context) => context.consume_keyword()
+                        ),
+                        'parameter name': context.prop("parameter name").peek_for_state(
+                            (kind, abort) => {
+                                switch (kind) {
+                                    case "Identifier": return ['identifier', context.option("identifier").consume_literal()]
+                                    case "ThisType": return ['this', context.option("this").consume_and_parse_children_as_type(
+                                        (context) => context.assert_kind("ThisKeyword").consume_keyword()
+                                    )]
+                                    default: return abort(null)
+                                }
+                            }
+                        ),
+                        'is predicate': context.prop("is predicate").peek_for_optional(
+                            "IsKeyword",
+                            (context) => ({
+                                'is keyword': context.prop("is keyword").consume_keyword(),
+                                'type': context.prop("type").defer_parsing_to_component(Type),
+                            })
+                        ),
                     })
                 )]
                 case "TypeQuery": return ['query', context.option("query").consume_and_parse_children_as_type(

@@ -250,6 +250,7 @@ export type Expression =
         'operand': Expression
     }]
     | ['property access', Expression__Property_Access]
+    | ['qualified name', Qualified_Name]
     | ['regular expression literal', d_primitives.Literal]
     | ['satisfies', Expression__Satisfies]
     | ['string literal', String_Literal]
@@ -401,6 +402,7 @@ export type Expression__Function = {
         | ['async', d_primitives.Keyword]
     >>
     'function keyword': d_primitives.Keyword
+    'name': p_.Optional_Value<Identifier>
     'parameters': Parameters
     'body': Block
 }
@@ -1107,6 +1109,7 @@ export type Type =
     | ['template literal type', Type__Template_Literal]
     | ['type literal', Object_Type]
     | ['type operator', Type__Type_Operator]
+    | ['type predicate', Type__Type_Predicate]
     | ['type reference', Type__Type_Reference]
     | ['union type', Type__Union]
     | ['undefined', d_primitives.Keyword]
@@ -1281,6 +1284,17 @@ export type Type__Type_Operator = {
     | ['unique', d_primitives.Keyword]
     | ['readonly', d_primitives.Keyword]
     'type': Type
+}
+
+export type Type__Type_Predicate = {
+    'asserts keyword': p_.Optional_Value<d_primitives.Keyword>
+    'parameter name':
+    | ['identifier', Identifier]
+    | ['this', d_primitives.Keyword]
+    'is predicate': p_.Optional_Value<{
+        'is keyword': d_primitives.Keyword
+        'type': Type
+    }>
 }
 
 export type Type__Type_Reference = {
