@@ -466,6 +466,7 @@ export namespace Expression {
                 'modifiers': Signature_Modifiers
                 'asterisk token': p_.Optional_Value<d_primitives.Keyword>
                 'name': Property_Name
+                'question token': p_.Optional_Value<d_primitives.Keyword>
                 'type parameters': Type_Parameters
                 'parameters': Parameters
                 'return type': Return_Type_Annotation
@@ -509,6 +510,8 @@ export namespace Expression {
     }
     export type Tagged_Template = {
         'tag': Expression
+        'question dot token': p_.Optional_Value<d_primitives.Keyword>
+        'type arguments': Type_Arguments
         'template':
         | ['no substitution template literal', d_primitives.Literal]
         | ['template', Template]

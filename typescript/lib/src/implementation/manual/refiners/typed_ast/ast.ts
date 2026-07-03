@@ -733,6 +733,10 @@ export const Expression: h.Production<d_out.Expression> = ($, abort, $p) => h.cr
                                                     (context) => context.consume_keyword()
                                                 ),
                                                 'name': context.prop("name").defer_parsing_to_component(Property_Name),
+                                                'question token': context.prop("question token").peek_for_optional(
+                                                    "QuestionToken",
+                                                    (context) => context.consume_keyword()
+                                                ),
                                                 'type parameters': context.prop("type parameters").defer_parsing_to_component(Type_Parameters),
                                                 'parameters': context.prop("parameters").defer_parsing_to_component(Parameters),
                                                 'return type': context.prop("return type").defer_parsing_to_component(Return_Type_Annotation),
@@ -891,6 +895,8 @@ export const Expression: h.Production<d_out.Expression> = ($, abort, $p) => h.cr
                 case "TaggedTemplateExpression": return ['tagged template', context.option("tagged template").consume_and_parse_children_as_type(
                     (context): d_out.Expression.Tagged_Template => ({
                         'tag': context.prop("tag").defer_parsing_to_component(Expression),
+                        'question dot token': context.prop("question dot token").peek_for_optional("QuestionDotToken", (context) => context.consume_keyword()),
+                        'type arguments': context.prop("type arguments").defer_parsing_to_component(Type_Arguments),
                         'template': context.prop("template").peek_for_state(
                             (kind, abort): d_out.Expression.Tagged_Template['template'] => {
                                 switch (kind) {

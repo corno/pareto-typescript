@@ -617,6 +617,10 @@ export const Expression: p_i.Transformer<d_in.Expression, d_out.Phrase> = ($) =>
                                                         () => sh.ph.nothing()
                                                     ),
                                                     Property_Name($['name']),
+                                                    p_.from.optional($['question token']).decide(
+                                                        () => sh.ph.literal("?"),
+                                                        () => sh.ph.nothing()
+                                                    ),
                                                     Type_Parameters($['type parameters']),
                                                     Parameters($['parameters']),
                                                     Return_Type_Annotation($['return type']),
@@ -756,6 +760,8 @@ export const Expression: p_i.Transformer<d_in.Expression, d_out.Phrase> = ($) =>
             case 'string literal': return p_.option($, ($) => sh.ph.literal($.text))
             case 'tagged template': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                 Expression($['tag']),
+                p_.from.optional($['question dot token']).decide(() => sh.ph.literal("?."), () => sh.ph.nothing()),
+                Type_Arguments($['type arguments']),
                 p_.from.state($['template']).decide(
                     ($) => {
                         switch ($[0]) {
