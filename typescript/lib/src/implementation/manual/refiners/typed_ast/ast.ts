@@ -922,6 +922,29 @@ export const String_Literal: h.Production<d_out.String_Literal> = (iterator, abo
     (context): d_out.String_Literal => context.consume_literal()
 )
 
+export const Import_Attributes: h.Refiner<d_out.Import_Attributes> = ($, abort, $p) => h.create_node_context(
+    $,
+    abort,
+    $p,
+    "ImportAttributes",
+    (context): d_out.Import_Attributes => context.parse_children_as_type(
+        (context): d_out.Import_Attributes => ({
+            'open brace token': context.prop("open brace token").assert_kind("OpenBraceToken").consume_keyword(),
+            'entries': context.prop("entries").assert_kind("SyntaxList").consume_and_parse_children_as_separated_list(
+                "CommaToken",
+                (context) => context.assert_kind("ImportAttribute").consume_and_parse_children_as_type(
+                    (context) => ({
+                        'name': context.prop("name").defer_parsing_to_component(Property_Name),
+                        'colon token': context.prop("colon token").assert_kind("ColonToken").consume_keyword(),
+                        'value': context.prop("value").defer_parsing_to_component(String_Literal),
+                    })
+                )
+            ),
+            'close brace token': context.prop("close brace token").assert_kind("CloseBraceToken").consume_keyword(),
+        })
+    )
+)
+
 export const Initializer: h.Production<d_out.Initializer> = ($, abort, $p) => h.create_iterator_context(
     $,
     abort,
@@ -944,6 +967,115 @@ export const JSDoc: h.Production<d_out.JSDoc> = (iterator, abort, $p) => h.creat
     )
 )
 
+const parse_object_type_signature: h.Production<d_out.Object_Type.Signature> = (iterator, abort, $p) => h.create_iterator_context(
+    iterator,
+    abort,
+    $p,
+    "Object_Type_Signature",
+    (context): d_out.Object_Type.Signature => context.peek_for_state(
+        (kind, abort): d_out.Object_Type.Signature => {
+            switch (kind) {
+                case "CallSignature": return ['call', context.option("call").consume_and_parse_children_as_type(
+                    (context): d_out.Object_Type.Signature.Call => ({
+                        'jsdoc': context.prop("jsdoc").defer_parsing_to_component(JSDoc),
+                        'type parameters': context.prop("type parameters").defer_parsing_to_component(Type_Parameters),
+                        'parameters': context.prop("parameters").defer_parsing_to_component(Parameters),
+                        'type': context.prop("type").defer_parsing_to_component(Optional_Type),
+                        'semicolon': context.prop("semicolon").defer_parsing_to_component(Optional_Semi_Colon),
+                    })
+                )]
+                case "ConstructSignature": return ['construct', context.option("construct").consume_and_parse_children_as_type(
+                    (context): d_out.Object_Type.Signature.Construct => ({
+                        'jsdoc': context.prop("jsdoc").defer_parsing_to_component(JSDoc),
+                        'new keyword': context.prop("new keyword").assert_kind("NewKeyword").consume_keyword(),
+                        'type parameters': context.prop("type parameters").defer_parsing_to_component(Type_Parameters),
+                        'parameters': context.prop("parameters").defer_parsing_to_component(Parameters),
+                        'type': context.prop("type").defer_parsing_to_component(Optional_Type),
+                        'semicolon': context.prop("semicolon").defer_parsing_to_component(Optional_Semi_Colon),
+                    })
+                )]
+                case "IndexSignature": return ['index', context.option("index").consume_and_parse_children_as_type(
+                    (context): d_out.Object_Type.Signature.Index => ({
+                        'jsdoc': context.prop("jsdoc").defer_parsing_to_component(JSDoc),
+                        'modifiers': context.prop("modifiers").defer_parsing_to_component(Signature_Modifiers),
+                        'open bracket token': context.prop("open bracket token").assert_kind("OpenBracketToken").consume_keyword(),
+                        'parameter': context.prop("parameter").assert_kind("SyntaxList").consume_and_parse_children_as_type(
+                            (context) => context.assert_kind("Parameter").consume_and_parse_children_as_type(
+                                (context) => ({
+                                    'identifier': context.prop("identifier").defer_parsing_to_component(Identifier),
+                                    'colon token': context.prop("colon token").assert_kind("ColonToken").consume_keyword(),
+                                    'type': context.prop("type").defer_parsing_to_component(Type),
+                                })
+                            )
+                        ),
+                        'close bracket token': context.prop("close bracket token").assert_kind("CloseBracketToken").consume_keyword(),
+                        'colon token': context.prop("colon token").assert_kind("ColonToken").consume_keyword(),
+                        'type': context.prop("type").defer_parsing_to_component(Type),
+                        'semicolon': context.prop("semicolon").defer_parsing_to_component(Optional_Semi_Colon),
+                    })
+                )]
+                case "MethodSignature": return ['method', context.option("method").consume_and_parse_children_as_type(
+                    (context): d_out.Object_Type.Signature.Method => ({
+                        'jsdoc': context.prop("jsdoc").defer_parsing_to_component(JSDoc),
+                        'identifier': context.prop("identifier").defer_parsing_to_component(Property_Name),
+                        'question token': context.prop("question token").peek_for_optional(
+                            "QuestionToken",
+                            (context) => context.consume_keyword()
+                        ),
+                        'type parameters': context.prop("type parameters").defer_parsing_to_component(Type_Parameters),
+                        'parameters': context.prop("parameters").defer_parsing_to_component(Parameters),
+                        'return type': context.prop("return type").defer_parsing_to_component(Return_Type_Annotation),
+                        'semicolon': context.prop("semicolon").defer_parsing_to_component(Optional_Semi_Colon),
+                        'comma': context.prop("comma").peek_for_optional("CommaToken", (context) => context.prop("comma token").consume_keyword()),
+                    })
+                )]
+                case "PropertySignature": return ['property', context.option("property").consume_and_parse_children_as_type(
+                    (context): d_out.Object_Type.Signature.Property => ({
+                        'jsdoc': context.prop("jsdoc").defer_parsing_to_component(JSDoc),
+                        'modifiers': context.prop("modifiers").defer_parsing_to_component(Signature_Modifiers),
+                        'id': context.prop("id").defer_parsing_to_component(Property_Name),
+                        'question token': context.prop("question token").peek_for_optional(
+                            "QuestionToken",
+                            (context) => context.consume_keyword()
+                        ),
+                        'colon token': context.prop("colon token").assert_kind("ColonToken").consume_keyword(),
+                        'type': context.prop("type").defer_parsing_to_component(Type),
+                        'comma token': context.prop("comma token").peek_for_optional(
+                            "CommaToken",
+                            (context) => context.consume_keyword()
+                        ),
+                        'semicolon token': context.prop("semicolon token").peek_for_optional(
+                            "SemicolonToken",
+                            (context) => context.consume_keyword()
+                        ),
+                    })
+                )]
+                case "GetAccessor": return ['get accessor', context.option("get accessor").consume_and_parse_children_as_type(
+                    (context): d_out.Object_Type.Signature.Get_Accessor => ({
+                        'jsdoc': context.prop("jsdoc").defer_parsing_to_component(JSDoc),
+                        'get keyword': context.prop("get keyword").assert_kind("GetKeyword").consume_keyword(),
+                        'name': context.prop("name").defer_parsing_to_component(Property_Name),
+                        'parameters': context.prop("parameters").defer_parsing_to_component(Parameters),
+                        'return type': context.prop("return type").defer_parsing_to_component(Return_Type_Annotation),
+                        'semicolon': context.prop("semicolon").defer_parsing_to_component(Optional_Semi_Colon),
+                    })
+                )]
+                case "SetAccessor": return ['set accessor', context.option("set accessor").consume_and_parse_children_as_type(
+                    (context): d_out.Object_Type.Signature.Set_Accessor => ({
+                        'jsdoc': context.prop("jsdoc").defer_parsing_to_component(JSDoc),
+                        'set keyword': context.prop("set keyword").assert_kind("SetKeyword").consume_keyword(),
+                        'name': context.prop("name").defer_parsing_to_component(Property_Name),
+                        'parameters': context.prop("parameters").defer_parsing_to_component(Parameters),
+                        'return type': context.prop("return type").defer_parsing_to_component(Return_Type_Annotation),
+                        'semicolon': context.prop("semicolon").defer_parsing_to_component(Optional_Semi_Colon),
+                    })
+                )]
+                default: return abort(null)
+            }
+        }
+    )
+)
+
 export const Object_Type: h.Production<d_out.Object_Type> = (iterator, abort, $p) => h.create_iterator_context(
     iterator,
     abort,
@@ -952,109 +1084,7 @@ export const Object_Type: h.Production<d_out.Object_Type> = (iterator, abort, $p
     (context): d_out.Object_Type => ({
         'open brace token': context.prop("open brace token").assert_kind("OpenBraceToken").consume_keyword(),
         'signatures': context.prop("signatures").assert_kind("SyntaxList").consume_and_parse_children_as_non_separated_list(
-            (context): d_out.Object_Type.Signature => context.peek_for_state(
-                (kind, abort): d_out.Object_Type.Signature => {
-                    switch (kind) {
-                        case "CallSignature": return ['call', context.option("call").consume_and_parse_children_as_type(
-                            (context): d_out.Object_Type.Signature.Call => ({
-                                'jsdoc': context.prop("jsdoc").defer_parsing_to_component(JSDoc),
-                                'type parameters': context.prop("type parameters").defer_parsing_to_component(Type_Parameters),
-                                'parameters': context.prop("parameters").defer_parsing_to_component(Parameters),
-                                'type': context.prop("type").defer_parsing_to_component(Optional_Type),
-                                'semicolon': context.prop("semicolon").defer_parsing_to_component(Optional_Semi_Colon),
-
-                            })
-                        )]
-                        case "ConstructSignature": return ['construct', context.option("construct").consume_and_parse_children_as_type(
-                            (context): d_out.Object_Type.Signature.Construct => ({
-                                'jsdoc': context.prop("jsdoc").defer_parsing_to_component(JSDoc),
-                                'new keyword': context.prop("new keyword").assert_kind("NewKeyword").consume_keyword(),
-                                'type parameters': context.prop("type parameters").defer_parsing_to_component(Type_Parameters),
-                                'parameters': context.prop("parameters").defer_parsing_to_component(Parameters),
-                                'type': context.prop("type").defer_parsing_to_component(Optional_Type),
-                                'semicolon': context.prop("semicolon").defer_parsing_to_component(Optional_Semi_Colon),
-                            })
-                        )]
-                        case "IndexSignature": return ['index', context.option("index").consume_and_parse_children_as_type(
-                            (context): d_out.Object_Type.Signature.Index => ({
-                                'jsdoc': context.prop("jsdoc").defer_parsing_to_component(JSDoc),
-                                'modifiers': context.prop("modifiers").defer_parsing_to_component(Signature_Modifiers),
-                                'open bracket token': context.prop("open bracket token").assert_kind("OpenBracketToken").consume_keyword(),
-                                'parameter': context.prop("parameter").assert_kind("SyntaxList").consume_and_parse_children_as_type(
-                                    (context) => context.assert_kind("Parameter").consume_and_parse_children_as_type(
-                                        (context) => ({
-                                            'identifier': context.prop("identifier").defer_parsing_to_component(Identifier),
-                                            'colon token': context.prop("colon token").assert_kind("ColonToken").consume_keyword(),
-                                            'type': context.prop("type").defer_parsing_to_component(Type),
-                                        })
-                                    )
-                                ),
-                                'close bracket token': context.prop("close bracket token").assert_kind("CloseBracketToken").consume_keyword(),
-                                'colon token': context.prop("colon token").assert_kind("ColonToken").consume_keyword(),
-                                'type': context.prop("type").defer_parsing_to_component(Type),
-                                'semicolon': context.prop("semicolon").defer_parsing_to_component(Optional_Semi_Colon),
-                            })
-                        )]
-                        case "MethodSignature": return ['method', context.option("method").consume_and_parse_children_as_type(
-                            (context): d_out.Object_Type.Signature.Method => ({
-                                'jsdoc': context.prop("jsdoc").defer_parsing_to_component(JSDoc),
-                                'identifier': context.prop("identifier").defer_parsing_to_component(Property_Name),
-                                'question token': context.prop("question token").peek_for_optional(
-                                    "QuestionToken",
-                                    (context) => context.consume_keyword()
-                                ),
-                                'type parameters': context.prop("type parameters").defer_parsing_to_component(Type_Parameters),
-                                'parameters': context.prop("parameters").defer_parsing_to_component(Parameters),
-                                'return type': context.prop("return type").defer_parsing_to_component(Return_Type_Annotation),
-                                'semicolon': context.prop("semicolon").defer_parsing_to_component(Optional_Semi_Colon),
-                                'comma': context.prop("comma").peek_for_optional("CommaToken", (context) => context.prop("comma token").consume_keyword()),
-                            })
-                        )]
-                        case "PropertySignature": return ['property', context.option("property").consume_and_parse_children_as_type(
-                            (context): d_out.Object_Type.Signature.Property => ({
-                                'jsdoc': context.prop("jsdoc").defer_parsing_to_component(JSDoc),
-                                'modifiers': context.prop("modifiers").defer_parsing_to_component(Signature_Modifiers),
-                                'id': context.prop("id").defer_parsing_to_component(Property_Name),
-                                'question token': context.prop("question token").peek_for_optional(
-                                    "QuestionToken",
-                                    (context) => context.consume_keyword()
-                                ),
-                                'colon token': context.prop("colon token").assert_kind("ColonToken").consume_keyword(),
-                                'type': context.prop("type").defer_parsing_to_component(Type),
-                                'comma token': context.prop("comma token").peek_for_optional(
-                                    "CommaToken",
-                                    (context) => context.consume_keyword()
-                                ),
-                                'semicolon token': context.prop("semicolon token").peek_for_optional(
-                                    "SemicolonToken",
-                                    (context) => context.consume_keyword()
-                                ),
-                            })
-                        )]
-                        case "GetAccessor": return ['get accessor', context.option("get accessor").consume_and_parse_children_as_type(
-                            (context): d_out.Object_Type.Signature.Get_Accessor => ({
-                                'jsdoc': context.prop("jsdoc").defer_parsing_to_component(JSDoc),
-                                'get keyword': context.prop("get keyword").assert_kind("GetKeyword").consume_keyword(),
-                                'name': context.prop("name").defer_parsing_to_component(Property_Name),
-                                'parameters': context.prop("parameters").defer_parsing_to_component(Parameters),
-                                'return type': context.prop("return type").defer_parsing_to_component(Return_Type_Annotation),
-                                'semicolon': context.prop("semicolon").defer_parsing_to_component(Optional_Semi_Colon),
-                            })
-                        )]
-                        case "SetAccessor": return ['set accessor', context.option("set accessor").consume_and_parse_children_as_type(
-                            (context): d_out.Object_Type.Signature.Set_Accessor => ({
-                                'jsdoc': context.prop("jsdoc").defer_parsing_to_component(JSDoc),
-                                'set keyword': context.prop("set keyword").assert_kind("SetKeyword").consume_keyword(),
-                                'name': context.prop("name").defer_parsing_to_component(Property_Name),
-                                'parameters': context.prop("parameters").defer_parsing_to_component(Parameters),
-                                'return type': context.prop("return type").defer_parsing_to_component(Return_Type_Annotation),
-                                'semicolon': context.prop("semicolon").defer_parsing_to_component(Optional_Semi_Colon),
-                            })
-                        )]
-                        default: return abort(null)
-                    }
-                }
-            ),
+            (context): d_out.Object_Type.Signature => context.defer_parsing_to_component(parse_object_type_signature),
         ),
         'close brace token': context.prop("close brace token").assert_kind("CloseBraceToken").consume_keyword(),
     })
@@ -1492,7 +1522,14 @@ export const Statement: h.Production<d_out.Statement> = ($, abort, $p) => h.crea
                     (context) => ({
                         'for keyword': context.prop("for keyword").assert_kind("ForKeyword").consume_keyword(),
                         'open parenthesis token': context.prop("open parenthesis token").assert_kind("OpenParenToken").consume_keyword(),
-                        'variable declaration list': context.prop("variable declaration list").consume_component(Variable_Declaration_List),
+                        'initializer': context.prop("initializer").peek_for_state(
+                            (kind, abort): d_out.Statement.For_In['initializer'] => {
+                                switch (kind) {
+                                    case "VariableDeclarationList": return ['variable declaration list', context.option("variable declaration list").consume_component(Variable_Declaration_List)]
+                                    default: return ['expression', context.option("expression").defer_parsing_to_component(Expression)]
+                                }
+                            }
+                        ),
                         'in keyword': context.prop("in keyword").assert_kind("InKeyword").consume_keyword(),
                         'expression': context.prop("expression").defer_parsing_to_component(Expression),
                         'close parenthesis token': context.prop("close parenthesis token").assert_kind("CloseParenToken").consume_keyword(),
@@ -1504,7 +1541,14 @@ export const Statement: h.Production<d_out.Statement> = ($, abort, $p) => h.crea
                     (context): d_out.Statement.For_Of => ({
                         'for keyword': context.prop("for keyword").assert_kind("ForKeyword").consume_keyword(),
                         'open parenthesis token': context.prop("open parenthesis token").assert_kind("OpenParenToken").consume_keyword(),
-                        'variable declaration list': context.prop("variable declaration list").consume_component(Variable_Declaration_List),
+                        'initializer': context.prop("initializer").peek_for_state(
+                            (kind, abort): d_out.Statement.For_Of['initializer'] => {
+                                switch (kind) {
+                                    case "VariableDeclarationList": return ['variable declaration list', context.option("variable declaration list").consume_component(Variable_Declaration_List)]
+                                    default: return ['expression', context.option("expression").defer_parsing_to_component(Expression)]
+                                }
+                            }
+                        ),
                         'of keyword': context.prop("of keyword").assert_kind("OfKeyword").consume_keyword(),
                         'expression': context.prop("expression").defer_parsing_to_component(Expression),
                         'close parenthesis token': context.prop("close parenthesis token").assert_kind("CloseParenToken").consume_keyword(),
@@ -2011,8 +2055,17 @@ export const Type: h.Production<d_out.Type> = ($, abort, $p) => h.create_iterato
                         ),
                         'import keyword': context.prop("import keyword").assert_kind("ImportKeyword").consume_keyword(),
                         'open parenthesis token': context.prop("open parenthesis token").assert_kind("OpenParenToken").consume_keyword(),
-                        'argument': context.prop("argument").assert_kind("LiteralType").consume_and_parse_children_as_type(
-                            (context) => context.defer_parsing_to_component(String_Literal)
+                        'argument': context.prop("argument").defer_parsing_to_component(Type),
+                        'attributes': context.prop("attributes").peek_for_optional(
+                            "CommaToken",
+                            (context) => ({
+                                'comma token': context.prop("comma token").consume_keyword(),
+                                'open brace token': context.prop("open brace token").assert_kind("OpenBraceToken").consume_keyword(),
+                                'with keyword': context.prop("with keyword").assert_kind("WithKeyword").consume_keyword(),
+                                'colon token': context.prop("colon token").assert_kind("ColonToken").consume_keyword(),
+                                'import attributes': context.prop("import attributes").consume_component(Import_Attributes),
+                                'close brace token': context.prop("close brace token").assert_kind("CloseBraceToken").consume_keyword(),
+                            })
                         ),
                         'close parenthesis token': context.prop("close parenthesis token").assert_kind("CloseParenToken").consume_keyword(),
                         'qualifier': context.prop("qualifier").peek_for_optional(
@@ -2030,7 +2083,9 @@ export const Type: h.Production<d_out.Type> = ($, abort, $p) => h.create_iterato
                         'type': context.prop("type").peek_for_state(
                             (kind, abort) => {
                                 switch (kind) {
+                                    case "BigIntLiteral": return ['bigint literal', context.option("bigint literal").consume_literal()]
                                     case "FalseKeyword": return ['false keyword', context.option("false keyword").consume_keyword()]
+                                    case "NoSubstitutionTemplateLiteral": return ['no substitution template literal', context.option("no substitution template literal").consume_literal()]
                                     case "NullKeyword": return ['null', context.option("null").consume_keyword()]
                                     case "NumericLiteral": return ['numeric literal', context.option("numeric literal").defer_parsing_to_component(Numeric_Literal)]
                                     case "PrefixUnaryExpression": return ['negative numeric literal', context.option("negative numeric literal").consume_and_parse_children_as_type(
@@ -2055,7 +2110,7 @@ export const Type: h.Production<d_out.Type> = ($, abort, $p) => h.create_iterato
                             (context) => ({
                                 'modifier': context.prop("modifier").peek_for_optional(
                                     "MinusToken",
-                                    (context) => context.consume_keyword()
+                                    (context) => context.consume_literal()
                                 ),
                                 'readonly keyword': context.prop("readonly keyword").assert_kind("ReadonlyKeyword").consume_keyword(),
                             })
@@ -2079,9 +2134,9 @@ export const Type: h.Production<d_out.Type> = ($, abort, $p) => h.create_iterato
                         'question modifier': context.prop("question modifier").optional_set_if_not(
                             "ColonToken",
                             (context) => ({
-                                'modifier': context.prop("modifier").peek_for_optional(
-                                    "MinusToken",
-                                    (context) => context.consume_keyword()
+                                'modifier': context.prop("modifier").optional_set_if_not(
+                                    "QuestionToken",
+                                    (context) => context.consume_literal()
                                 ),
                                 'question token': context.prop("question token").assert_kind("QuestionToken").consume_keyword(),
                             })
@@ -2089,7 +2144,9 @@ export const Type: h.Production<d_out.Type> = ($, abort, $p) => h.create_iterato
                         'colon token': context.prop("colon token").assert_kind("ColonToken").consume_keyword(),
                         'type': context.prop("type").defer_parsing_to_component(Type),
                         'semicolon': context.prop("semicolon").defer_parsing_to_component(Optional_Semi_Colon),
-                        'dummy syntax list': context.prop("dummy syntax list").assert_kind("SyntaxList").consume_keyword(),
+                        'dummy syntax list': context.prop("dummy syntax list").assert_kind("SyntaxList").consume_and_parse_children_as_non_separated_list(
+                            (context): d_out.Object_Type.Signature => context.defer_parsing_to_component(parse_object_type_signature),
+                        ),
                         'close brace token': context.prop("close brace token").assert_kind("CloseBraceToken").consume_keyword(),
                     })
                 )]
@@ -2124,6 +2181,7 @@ export const Type: h.Production<d_out.Type> = ($, abort, $p) => h.create_iterato
                                     switch (kind) {
                                         case "NamedTupleMember": return ['named', context.option("named tuple member").consume_and_parse_children_as_type(
                                             (context) => ({
+                                                'jsdoc': context.prop("jsdoc").defer_parsing_to_component(JSDoc),
                                                 'dot dot dot token': context.prop("dot dot dot token").peek_for_optional(
                                                     "DotDotDotToken",
                                                     (context) => context.consume_keyword()
@@ -2167,7 +2225,8 @@ export const Type: h.Production<d_out.Type> = ($, abort, $p) => h.create_iterato
                 case "TypeQuery": return ['query', context.option("query").consume_and_parse_children_as_type(
                     (context): d_out.Type.Query => ({
                         'typeof keyword': context.prop("typeof keyword").assert_kind("TypeOfKeyword").consume_keyword(),
-                        'name': context.prop("name").defer_parsing_to_component(Entity_Name)
+                        'name': context.prop("name").defer_parsing_to_component(Entity_Name),
+                        'type arguments': context.prop("type arguments").defer_parsing_to_component(Type_Arguments),
                     })
                 )]
                 case "RestType": return ['rest type', context.option("rest type").consume_and_parse_children_as_type(
@@ -2261,9 +2320,10 @@ export const Type_Parameters: h.Production<d_out.Type_Parameters> = (iterator, a
                                 (context) => context.peek_for_state(
                                     (kind, abort) => {
                                         switch (kind) {
+                                            case "ConstKeyword": return ['const', context.option("const").consume_keyword()]
                                             case "InKeyword": return ['in', context.option("in").consume_keyword()]
                                             case "OutKeyword": return ['out', context.option("out").consume_keyword()]
-                                            case "ConstKeyword": return ['const', context.option("const").consume_keyword()]
+                                            case "PublicKeyword": return ['public', context.option("public").consume_keyword()]
                                             default: return abort(null)
                                         }
                                     }

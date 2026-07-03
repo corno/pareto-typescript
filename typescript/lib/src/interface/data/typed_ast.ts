@@ -489,6 +489,19 @@ export namespace Heritage {
 
 export type Identifier = d_primitives.Literal
 
+export type Import_Attributes = {
+    'open brace token': d_primitives.Keyword
+    'entries': h.Separated_List<Import_Attributes.Entry>
+    'close brace token': d_primitives.Keyword
+}
+export namespace Import_Attributes {
+    export type Entry = {
+        'name': Property_Name
+        'colon token': d_primitives.Keyword
+        'value': String_Literal
+    }
+}
+
 export type Initializer = {
     'equals token': d_primitives.Keyword
     'expression': Expression
@@ -855,7 +868,9 @@ export namespace Statement {
     export type For_In = {
         'for keyword': d_primitives.Keyword
         'open parenthesis token': d_primitives.Keyword
-        'variable declaration list': Variable_Declaration_List
+        'initializer':
+            | ['variable declaration list', Variable_Declaration_List]
+            | ['expression', Expression]
         'in keyword': d_primitives.Keyword
         'expression': Expression
         'close parenthesis token': d_primitives.Keyword
@@ -865,7 +880,9 @@ export namespace Statement {
     export type For_Of = {
         'for keyword': d_primitives.Keyword
         'open parenthesis token': d_primitives.Keyword
-        'variable declaration list': Variable_Declaration_List
+        'initializer':
+            | ['variable declaration list', Variable_Declaration_List]
+            | ['expression', Expression]
         'of keyword': d_primitives.Keyword
         'expression': Expression
         'close parenthesis token': d_primitives.Keyword
@@ -1144,7 +1161,15 @@ export namespace Type {
         'typeof keyword': p_.Optional_Value<d_primitives.Keyword>
         'import keyword': d_primitives.Keyword
         'open parenthesis token': d_primitives.Keyword
-        'argument': d_primitives.Literal
+        'argument': Type
+        'attributes': p_.Optional_Value<{
+            'comma token': d_primitives.Keyword
+            'open brace token': d_primitives.Keyword
+            'with keyword': d_primitives.Keyword
+            'colon token': d_primitives.Keyword
+            'import attributes': Import_Attributes
+            'close brace token': d_primitives.Keyword
+        }>
         'close parenthesis token': d_primitives.Keyword
         'qualifier': p_.Optional_Value<{
             'dot token': d_primitives.Keyword
@@ -1192,8 +1217,10 @@ export namespace Type {
     }
     export type Literal = {
         'type':
+        | ['bigint literal', d_primitives.Literal]
         | ['false keyword', d_primitives.Keyword]
         | ['negative numeric literal', { 'minus token': d_primitives.Keyword, 'value': Numeric_Literal }]
+        | ['no substitution template literal', d_primitives.Literal]
         | ['null', d_primitives.Keyword]
         | ['numeric literal', Numeric_Literal]
         | ['string literal', String_Literal]
@@ -1202,7 +1229,7 @@ export namespace Type {
     export type Mapped = {
         'open brace token': d_primitives.Keyword
         'readonly modifier': p_.Optional_Value<{
-            'modifier': p_.Optional_Value<d_primitives.Keyword>
+            'modifier': p_.Optional_Value<d_primitives.Literal>
             'readonly keyword': d_primitives.Keyword
         }>
         'open bracket token': d_primitives.Keyword
@@ -1217,13 +1244,13 @@ export namespace Type {
         }>
         'close bracket token': d_primitives.Keyword
         'question modifier': p_.Optional_Value<{
-            'modifier': p_.Optional_Value<d_primitives.Keyword>
+            'modifier': p_.Optional_Value<d_primitives.Literal>
             'question token': d_primitives.Keyword
         }>
         'colon token': d_primitives.Keyword
         'type': Type
         'semicolon': Optional_Semi_Colon
-        'dummy syntax list': d_primitives.Keyword
+        'dummy syntax list': p_.List<Object_Type.Signature>
         'close brace token': d_primitives.Keyword
     }
     export type Optional = {
@@ -1238,6 +1265,7 @@ export namespace Type {
     export type Query = {
         'typeof keyword': d_primitives.Keyword
         'name': Entity_Name
+        'type arguments': Type_Arguments
     }
     export type Template_Literal = {
         'head': d_primitives.Literal
@@ -1260,6 +1288,7 @@ export namespace Type {
     export namespace Tuple {
         export type Element =
             | ['named', {
+                'jsdoc': JSDoc
                 'dot dot dot token': p_.Optional_Value<d_primitives.Keyword>
                 'name': Identifier
                 'question token': p_.Optional_Value<d_primitives.Keyword>
@@ -1311,9 +1340,10 @@ export type Type_Parameters = p_.Optional_Value<{
 export namespace Type_Parameters {
     export type Entries = {
         'modifiers': p_.Optional_Value<p_.List<
+            | ['const', d_primitives.Keyword]
             | ['in', d_primitives.Keyword]
             | ['out', d_primitives.Keyword]
-            | ['const', d_primitives.Keyword]
+            | ['public', d_primitives.Keyword]
         >>
         'identifier': Identifier
         'extends': p_.Optional_Value<{
