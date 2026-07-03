@@ -595,8 +595,7 @@ export namespace Object_Type {
             'modifiers': Signature_Modifiers
             'id': Property_Name
             'question token': p_.Optional_Value<d_primitives.Keyword>
-            'colon token': d_primitives.Keyword
-            'type': Type
+            'type annotation': Optional_Type
             'comma token': p_.Optional_Value<d_primitives.Keyword>
             'semicolon token': Optional_Semi_Colon
         }
@@ -858,7 +857,7 @@ export namespace Statement {
         }]
         'from clause': p_.Optional_Value<{
             'from keyword': d_primitives.Keyword
-            'string literal': String_Literal
+            'module specifier': Module_Specifier
         }>
         'semicolon': Optional_Semi_Colon
     }
@@ -980,7 +979,7 @@ export namespace Statement {
         'import keyword': d_primitives.Keyword
         'clause': p_.Optional_Value<Import.Clause>
         'from keyword': p_.Optional_Value<d_primitives.Keyword>
-        'string literal': String_Literal
+        'module specifier': Module_Specifier
         'import attributes': p_.Optional_Value<{
             'with keyword': d_primitives.Keyword
             'open brace token': d_primitives.Keyword
@@ -1137,6 +1136,10 @@ export namespace Statement_Modifiers {
 export type Statements = p_.List<Statement>
 
 export type String_Literal = d_primitives.Literal
+
+export type Module_Specifier =
+    | ['string literal', String_Literal]
+    | ['template', Expression.Template]
 
 export type Type =
     | ['any', d_primitives.Keyword]

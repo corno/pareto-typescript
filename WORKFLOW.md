@@ -17,6 +17,11 @@ find ../../../typescript_codebases/TypeScript/src/ -name "*.ts" -type f \
 sort -u ./temp/out_ts_src.txt | grep "^processing error:"
 ```
 
+Or use the faster multithreaded batch tool:
+```bash
+node ./temp/analyze_files_in_batch.js ../../../typescript_codebases/TypeScript/src/ 2> ./temp/out_ts_src.txt
+```
+
 Other available corpora: `lionweb-typescript/`, `pareto_canon/` etc.
 
 ## Error format
@@ -36,8 +41,10 @@ processing error: Parameters.open parenthesis token: assertion failed (expected:
 Error message types:
 - `unknown option: 'GetAccessor'` — unhandled node kind in a `peek_for_state` switch
 - `assertion failed (expected: X, found: Y)` — unexpected node at that position (usually a missing optional field before it)
-- `missing: X` — expected node was not found
+- `missing: X` — expected node was not found (e.g. colon in `{ a }` interface property — use `Optional_Type`)
 - `not a leaf: 'SyntaxList'` — tried to `consume_literal()` on a non-leaf node
+- `not a leaf: 'Decorator'` — Decorator has children (AtToken + expression), needs `consume_and_parse_children_as_type`
+- `dangling child: X` — a child was left unconsumed; the schema is missing a field for it
 
 **Reading the snippet**: The top node is the one being parsed. Its direct children are listed at one indent level; children of children are shown with `...` (collapsed). The error occurs when the refiner tries to consume a child but finds an unexpected node kind.
 
@@ -141,6 +148,15 @@ Called from refiner: use `context.prop("x").defer_parsing_to_component(Foo)` for
 - **JSDoc on statements**: Some statement kinds (e.g. `if`) carry JSDoc as first child.
 - **RestType**: Children are `DotDotDotToken` then the type — both must be consumed.
 - **ConstructorType** with generics: `new<T>()` — has `LessThanToken` before `OpenParenToken`.
+- **Decorator** (`@expr`): Not a leaf — children are `AtToken` + expression. Use `consume_and_parse_children_as_type`. Applies in `Binding_Pattern.modifiers`, `Class.modifiers`, `Statement_Modifiers`, etc.
+- **Class with decorator**: `SyntaxList` appears before `ClassKeyword` when a class has decorators. Use `peek_for_optional("SyntaxList", ...)`, NOT a made-up kind like `"Class_Member_Modifiers"`.
+- **`for await`**: `AwaitKeyword` appears between `ForKeyword` and `OpenParenToken` for `for await (... of ...)` loops. Make it optional with `peek_for_optional("AwaitKeyword", ...)`.
+- **`PrivateIdentifier`**: Valid in `Property_Name` positions (e.g. `#x` in class members). Add as a case alongside `Identifier`.
+- **`EndOfFileToken` with children**: In `.js` files ending with a JSDoc comment, `EndOfFileToken` has a JSDoc child. Use `consume_and_parse_children_as_type` not `consume_keyword()`.
+- **Dotted namespace** (`namespace A.B {}`): AST is `[NamespaceKeyword, Identifier(A), DotToken, ModuleDeclaration(B {})]`. The `DotToken` is followed by a nested `ModuleDeclaration`, not a bare Identifier.
+- **`ExportAssignment`**: Covers both `export default expr` (has `DefaultKeyword`) and `export = expr` (has `EqualsToken`). Use `peek_for_state` to distinguish.
+- **Missing colon in property signature** (`{ a }` in interface): `ColonToken` and type are both absent. Use the existing `Optional_Type` schema type (`p_.Optional_Value<{ 'colon token', 'type' }>`) instead of asserting `ColonToken`.
+- **Module specifier as template** (invalid code): `import x from \`...\`` — TypeScript error recovery produces `TemplateExpression` where `StringLiteral` is expected. Use a `Module_Specifier` union type (`['string literal', ...]` | `['template', ...]`).
 
 ## Our collaboration protocol
 
@@ -150,3 +166,7 @@ Called from refiner: use `context.prop("x").defer_parsing_to_component(Foo)` for
 4. **Fix all 3 files** (schema + refiner + transformer) — apply with `multi_replace_string_in_file`
 5. **Build** with `pdt package . build-and-test; echo "EXIT:$?"`
 6. **Re-scan** with the full corpus to verify the error count drops
+
+## Cost tip
+
+Long chat histories increase the per-turn cost significantly. The repo memory file (`/memories/repo/pareto-typescript-workflow.md`) captures the essential patterns. Starting a new chat periodically (pointing it to this WORKFLOW.md and the current `out_ts.txt`) is cheaper than continuing an old conversation with a large summarised history.

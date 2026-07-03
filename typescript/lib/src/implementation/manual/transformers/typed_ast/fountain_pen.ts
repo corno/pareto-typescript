@@ -857,8 +857,7 @@ export const Object_Type: p_i.Transformer<d_in.Object_Type, d_out.Phrase> = ($) 
                                             ($) => sh.ph.literal("?"),
                                             () => sh.ph.nothing()
                                         ),
-                                        sh.ph.literal(": "),
-                                        Type($['type']),
+                                        Optional_Type($['type annotation']),
                                         p_.from.optional($['comma token']).decide(
                                             ($) => sh.ph.literal(","),
                                             () => sh.ph.nothing()
@@ -1204,7 +1203,33 @@ export const Statement: p_i.Transformer<d_in.Statement, d_out.Phrase> = ($) => s
                     p_.from.optional($['from clause']).decide(
                         ($) => sh.ph.composed(p_.literal.list([
                             sh.ph.literal(" from "),
-                            sh.ph.literal($['string literal'].text),
+                            p_.from.state($['module specifier']).decide(
+                                ($) => {
+                                    switch ($[0]) {
+                                        case 'string literal': return p_.option($, ($) => sh.ph.literal($.text))
+                                        case 'template': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
+                                            sh.ph.literal($.head.text),
+                                            sh.ph.composed(
+                                                p_.from.list($['template spans']).map(
+                                                    ($) => sh.ph.composed(p_.literal.list([
+                                                        Expression($['expression']),
+                                                        p_.from.state($['suffix']).decide(
+                                                            ($) => {
+                                                                switch ($[0]) {
+                                                                    case 'middle': return p_.option($, ($) => sh.ph.literal($.text))
+                                                                    case 'tail': return p_.option($, ($) => sh.ph.literal($.text))
+                                                                    default: return p_.au($[0])
+                                                                }
+                                                            }
+                                                        )
+                                                    ]))
+                                                )
+                                            )
+                                        ])))
+                                        default: return p_.au($[0])
+                                    }
+                                }
+                            ),
                         ])),
                         () => sh.ph.nothing()
                     ),
@@ -1428,7 +1453,33 @@ export const Statement: p_i.Transformer<d_in.Statement, d_out.Phrase> = ($) => s
                         () => sh.ph.literal("from "),
                         () => sh.ph.nothing()
                     ),
-                    sh.ph.literal($['string literal'].text),
+                    p_.from.state($['module specifier']).decide(
+                        ($) => {
+                            switch ($[0]) {
+                                case 'string literal': return p_.option($, ($) => sh.ph.literal($.text))
+                                case 'template': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
+                                    sh.ph.literal($.head.text),
+                                    sh.ph.composed(
+                                        p_.from.list($['template spans']).map(
+                                            ($) => sh.ph.composed(p_.literal.list([
+                                                Expression($['expression']),
+                                                p_.from.state($['suffix']).decide(
+                                                    ($) => {
+                                                        switch ($[0]) {
+                                                            case 'middle': return p_.option($, ($) => sh.ph.literal($.text))
+                                                            case 'tail': return p_.option($, ($) => sh.ph.literal($.text))
+                                                            default: return p_.au($[0])
+                                                        }
+                                                    }
+                                                )
+                                            ]))
+                                        )
+                                    )
+                                ])))
+                                default: return p_.au($[0])
+                            }
+                        }
+                    ),
                     p_.from.optional($['import attributes']).decide(
                         ($) => sh.ph.composed(p_.literal.list([
                             sh.ph.literal(" with {"),

@@ -927,6 +927,40 @@ export const Numeric_Literal: h.Production<d_out.Numeric_Literal> = (iterator, a
     (context): d_out.Numeric_Literal => context.consume_literal()
 )
 
+export const Module_Specifier: h.Production<d_out.Module_Specifier> = (iterator, abort, $p) => h.create_iterator_context(
+    iterator, abort, $p,
+    "Module_Specifier",
+    (context): d_out.Module_Specifier => context.peek_for_state(
+        (kind, abort): d_out.Module_Specifier => {
+            switch (kind) {
+                case "StringLiteral": return ['string literal', context.option("string literal").consume_literal()]
+                case "TemplateExpression": return ['template', context.option("template").consume_and_parse_children_as_type(
+                    (context): d_out.Expression.Template => ({
+                        'head': context.prop("head").assert_kind("TemplateHead").consume_literal(),
+                        'template spans': context.prop("template spans").assert_kind("SyntaxList").consume_and_parse_children_as_non_separated_list(
+                            (context) => context.consume_and_parse_children_as_type(
+                                (context) => ({
+                                    'expression': context.prop("expression").defer_parsing_to_component(Expression),
+                                    'suffix': context.prop("suffix").peek_for_state(
+                                        (kind, abort) => {
+                                            switch (kind) {
+                                                case "TemplateTail": return ['tail', context.option("tail").consume_literal()]
+                                                case "TemplateMiddle": return ['middle', context.option("middle").consume_literal()]
+                                                default: return abort(null)
+                                            }
+                                        }
+                                    )
+                                })
+                            )
+                        )
+                    })
+                )]
+                default: return abort(null)
+            }
+        }
+    )
+)
+
 export const String_Literal: h.Production<d_out.String_Literal> = (iterator, abort, $p) => h.create_iterator_context(
     iterator,
     abort,
@@ -1051,8 +1085,7 @@ const parse_object_type_signature: h.Production<d_out.Object_Type.Signature> = (
                             "QuestionToken",
                             (context) => context.consume_keyword()
                         ),
-                        'colon token': context.prop("colon token").assert_kind("ColonToken").consume_keyword(),
-                        'type': context.prop("type").defer_parsing_to_component(Type),
+                        'type annotation': context.prop("type annotation").defer_parsing_to_component(Optional_Type),
                         'comma token': context.prop("comma token").peek_for_optional(
                             "CommaToken",
                             (context) => context.consume_keyword()
@@ -1534,7 +1567,7 @@ export const Statement: h.Production<d_out.Statement> = ($, abort, $p) => h.crea
                             "FromKeyword",
                             (context) => ({
                                 'from keyword': context.prop("from keyword").assert_kind("FromKeyword").consume_keyword(),
-                                'string literal': context.prop("string literal").defer_parsing_to_component(String_Literal),
+                                'module specifier': context.prop("module specifier").defer_parsing_to_component(Module_Specifier),
                             })
                         ),
                         'semicolon': context.prop("semicolon").defer_parsing_to_component(Optional_Semi_Colon),
@@ -1778,7 +1811,7 @@ export const Statement: h.Production<d_out.Statement> = ($, abort, $p) => h.crea
                             "FromKeyword",
                             (context) => context.consume_keyword()
                         ),
-                        'string literal': context.prop("string literal").defer_parsing_to_component(String_Literal),
+                        'module specifier': context.prop("module specifier").defer_parsing_to_component(Module_Specifier),
                         'import attributes': context.prop("import attributes").peek_for_optional(
                             "ImportAttributes",
                             (context) => context.consume_and_parse_children_as_type(
