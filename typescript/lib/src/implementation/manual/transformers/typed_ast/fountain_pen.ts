@@ -180,7 +180,10 @@ export const Class: p_i.Transformer<d_in.Class, d_out.Phrase> = ($) => sh.ph.com
         () => sh.ph.nothing()
     ),
     sh.ph.literal("class "),
-    Identifier($['identifier']),
+    p_.from.optional($['identifier']).decide(
+        ($) => sh.ph.composed(p_.literal.list([Identifier($), sh.ph.literal(" ")])),
+        () => sh.ph.nothing()
+    ),
     Type_Parameters($['type parameters']),
     Heritage($.heritage),
     Class_Body($['body']),
@@ -668,6 +671,17 @@ export const Expression: p_i.Transformer<d_in.Expression, d_out.Phrase> = ($) =>
                 Expression($['expression']),
             ])))
             case 'void': return p_.option($, ($) => sh.ph.literal("void"))
+            case 'yield': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
+                sh.ph.literal("yield"),
+                p_.from.optional($['asterisk token']).decide(
+                    ($) => sh.ph.literal("*"),
+                    () => sh.ph.nothing()
+                ),
+                p_.from.optional($['expression']).decide(
+                    ($) => sh.ph.composed(p_.literal.list([sh.ph.literal(" "), Expression($)])),
+                    () => sh.ph.nothing()
+                ),
+            ])))
             case 'spread element': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                 sh.ph.literal("..."),
                 Expression($['expression']),
@@ -1579,8 +1593,8 @@ export const Type: p_i.Transformer<d_in.Type, d_out.Phrase> = ($) => p_.from.sta
             ])))
             case 'infer': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                 sh.ph.literal("infer "),
-                Identifier($['identifier']),
-                p_.from.optional($.extends).decide(
+                Identifier($['type parameter']['identifier']),
+                p_.from.optional($['type parameter'].extends).decide(
                     ($) => sh.ph.composed(p_.literal.list([
                         sh.ph.literal(" extends "),
                         Type($.type),
@@ -1649,12 +1663,21 @@ export const Type: p_i.Transformer<d_in.Type, d_out.Phrase> = ($) => p_.from.sta
                     sh.pg.sentences(p_.literal.list([
                         sh.sentence(
                             p_.literal.list([
+                                p_.from.optional($['readonly modifier']).decide(
+                                    ($) => sh.ph.composed(p_.literal.list([
+                                        p_.from.optional($['modifier']).decide(
+                                            ($) => sh.ph.literal("-"),
+                                            () => sh.ph.nothing()
+                                        ),
+                                        sh.ph.literal("readonly "),
+                                    ])),
+                                    () => sh.ph.nothing()
+                                ),
                                 sh.ph.literal("["),
                                 Identifier($['type parameter']['identifier']),
                                 sh.ph.literal(" in "),
                                 Type($['type parameter']['constraint']),
-                                sh.ph.literal("FIXME TODO: Mapped Type Parameter"),
-                                p_.from.optional($['type parameter'].as).decide(
+                                p_.from.optional($['as']).decide(
                                     ($) => sh.ph.composed(p_.literal.list([
                                         sh.ph.literal(" as "),
                                         Type($.type),
@@ -1662,28 +1685,22 @@ export const Type: p_i.Transformer<d_in.Type, d_out.Phrase> = ($) => p_.from.sta
                                     () => sh.ph.nothing()
                                 ),
                                 sh.ph.literal("]"),
+                                p_.from.optional($['question modifier']).decide(
+                                    ($) => sh.ph.composed(p_.literal.list([
+                                        p_.from.optional($['modifier']).decide(
+                                            ($) => sh.ph.literal("-"),
+                                            () => sh.ph.nothing()
+                                        ),
+                                        sh.ph.literal("?"),
+                                    ])),
+                                    () => sh.ph.nothing()
+                                ),
                                 sh.ph.literal(": "),
                                 Type($['type']),
                             ]),
                         )
                     ]))
                 ),
-                // p_.from.optional($['readonly']).decide(
-                //     ($) => sh.ph.literal("readonly "),
-                //     () => sh.ph.nothing()
-                // ),
-                // p_.from.optional($['name type']).decide(
-                //     ($) => sh.ph.composed(p_.literal.list([
-                //         Type_Parameter($),
-                //         sh.ph.literal(" in "),
-                //     ])),
-                //     () => sh.ph.nothing()
-                // ),
-                // Type($['template type']),
-                // p_.from.optional($['optional']).decide(
-                //     ($) => sh.ph.literal("?"),
-                //     () => sh.ph.nothing()
-                // ),
                 sh.ph.literal("}"),
             ])))
             case 'never': return p_.option($, ($) => sh.ph.literal("never"))

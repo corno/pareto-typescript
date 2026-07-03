@@ -197,7 +197,10 @@ export const Class: h.Production<d_out.Class> = ($, abort, $p) => h.create_itera
             )
         ),
         'class keyword': context.prop("class keyword").assert_kind("ClassKeyword").consume_keyword(),
-        'identifier': context.prop("identifier").assert_kind("Identifier").consume_literal(),
+        'identifier': context.prop("identifier").peek_for_optional(
+            "Identifier",
+            (context) => context.consume_literal()
+        ),
         'type parameters': context.prop("type parameters").defer_parsing_to_component(Type_Parameters),
         'heritage': context.prop("heritage").defer_parsing_to_component(Heritage),
         'body': context.prop("body").defer_parsing_to_component(Class_Body),
@@ -793,6 +796,19 @@ export const Expression: h.Production<d_out.Expression> = ($, abort, $p) => h.cr
                     (context) => ({
                         'void keyword': context.prop("void keyword").assert_kind("VoidKeyword").consume_keyword(),
                         'expression': context.prop("expression").defer_parsing_to_component(Expression),
+                    })
+                )]
+                case "YieldExpression": return ['yield', context.option("yield").consume_and_parse_children_as_type(
+                    (context) => ({
+                        'yield keyword': context.prop("yield keyword").assert_kind("YieldKeyword").consume_keyword(),
+                        'asterisk token': context.prop("asterisk token").peek_for_optional(
+                            "AsteriskToken",
+                            (context) => context.consume_keyword()
+                        ),
+                        'expression': context.prop("expression").optional_set_if_not(
+                            "SemicolonToken",
+                            ($) => context.defer_parsing_to_component(Expression)
+                        ),
                     })
                 )]
                 case "SpreadElement": return ['spread element', context.option("spread element").consume_and_parse_children_as_type(
@@ -1851,18 +1867,18 @@ export const Type: h.Production<d_out.Type> = ($, abort, $p) => h.create_iterato
                 case "InferType": return ['infer', context.option("infer").consume_and_parse_children_as_type(
                     (context): d_out.Type__Infer => ({
                         'infer keyword': context.prop("infer keyword").assert_kind("InferKeyword").consume_keyword(),
-                        'identifier': context.prop("identifier").assert_kind("TypeParameter").consume_and_parse_children_as_type(
-                            (context) => context.consume_and_parse_children_as_type(
-                                (context) => context.assert_kind("Identifier").consume_literal()
-                            )
-                        ),
-                        'extends': context.prop("extends").peek_for_optional(
-                            "ExtendsKeyword",
-                            ($) => ({
-                                'extends keyword': context.prop("extends keyword").consume_keyword(),
-                                'type': context.prop("type").defer_parsing_to_component(Type),
+                        'type parameter': context.prop("type parameter").assert_kind("TypeParameter").consume_and_parse_children_as_type(
+                            (context) => ({
+                                'identifier': context.prop("identifier").assert_kind("Identifier").consume_literal(),
+                                'extends': context.prop("extends").peek_for_optional(
+                                    "ExtendsKeyword",
+                                    (context) => ({
+                                        'extends keyword': context.prop("extends keyword").consume_keyword(),
+                                        'type': context.prop("type").defer_parsing_to_component(Type),
+                                    })
+                                ),
                             })
-                        )
+                        ),
                     })
                 )]
                 case "IntersectionType": return ['intersection', context.option("intersection").consume_and_parse_children_as_type(
@@ -1972,36 +1988,42 @@ export const Type: h.Production<d_out.Type> = ($, abort, $p) => h.create_iterato
                 case "MappedType": return ['mapped', context.option("mapped").consume_and_parse_children_as_type(
                     (context): d_out.Type__Mapped => ({
                         'open brace token': context.prop("open brace token").assert_kind("OpenBraceToken").consume_keyword(),
+                        'readonly modifier': context.prop("readonly modifier").optional_set_if_not(
+                            "OpenBracketToken",
+                            (context) => ({
+                                'modifier': context.prop("modifier").peek_for_optional(
+                                    "MinusToken",
+                                    (context) => context.consume_keyword()
+                                ),
+                                'readonly keyword': context.prop("readonly keyword").assert_kind("ReadonlyKeyword").consume_keyword(),
+                            })
+                        ),
                         'open bracket token': context.prop("open bracket token").assert_kind("OpenBracketToken").consume_keyword(),
                         'type parameter': context.prop("type parameter").assert_kind("TypeParameter").consume_and_parse_children_as_type(
                             (context) => ({
                                 'identifier': context.prop("identifier").assert_kind("Identifier").consume_literal(),
                                 'in keyword': context.prop("in keyword").assert_kind("InKeyword").consume_keyword(),
                                 'constraint': context.prop("constraint").defer_parsing_to_component(Type),
-                                'as': context.prop("as").peek_for_optional(
-                                    "AsKeyword",
-                                    (context) => ({
-                                        'as keyword': context.prop("as keyword").consume_keyword(),
-                                        'type': context.prop("type").defer_parsing_to_component(Type),
-                                    })
-                                )
                             })
                         ),
-                        // 'question token': context.prop("question token").optional(
-                        //     "QuestionToken",
-                        //     ($) => context.consume_keyword(
-                        //         "'question token'",
-                        //         "QuestionToken"
-                        //     )
-                        // ),
-                        // 'readonly keyword': context.prop("readonly keyword").optional(
-                        //     "ReadonlyKeyword",
-                        //     ($) => context.consume_keyword(
-                        //         "'readonly keyword'",
-                        //         "ReadonlyKeyword"      
-                        // )     
-                        // ),
+                        'as': context.prop("as").peek_for_optional(
+                            "AsKeyword",
+                            (context) => ({
+                                'as keyword': context.prop("as keyword").consume_keyword(),
+                                'type': context.prop("type").defer_parsing_to_component(Type),
+                            })
+                        ),
                         'close bracket token': context.prop("close bracket token").assert_kind("CloseBracketToken").consume_keyword(),
+                        'question modifier': context.prop("question modifier").optional_set_if_not(
+                            "ColonToken",
+                            (context) => ({
+                                'modifier': context.prop("modifier").peek_for_optional(
+                                    "MinusToken",
+                                    (context) => context.consume_keyword()
+                                ),
+                                'question token': context.prop("question token").assert_kind("QuestionToken").consume_keyword(),
+                            })
+                        ),
                         'colon token': context.prop("colon token").assert_kind("ColonToken").consume_keyword(),
                         'type': context.prop("type").defer_parsing_to_component(Type),
                         'semicolon': context.prop("semicolon").defer_parsing_to_component(Optional_Semicolon),

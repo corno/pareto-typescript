@@ -89,7 +89,7 @@ export type Class = {
         | ['tbd', null]
     >>
     'class keyword': d_primitives.Keyword
-    'identifier': Identifier
+    'identifier': p_.Optional_Value<Identifier>
     'type parameters': Type_Parameters
     'heritage': Heritage
     'body': Class_Body
@@ -265,6 +265,11 @@ export type Expression =
     }]
     | ['void', {
         'void keyword': d_primitives.Keyword
+    }]
+    | ['yield', {
+        'yield keyword': d_primitives.Keyword
+        'asterisk token': p_.Optional_Value<d_primitives.Keyword>
+        'expression': p_.Optional_Value<Expression>
     }]
     | ['spread element', {
         'dot dot dot token': d_primitives.Keyword
@@ -1185,11 +1190,13 @@ export type Type__Indexed_Access = {
 
 export type Type__Infer = {
     'infer keyword': d_primitives.Keyword
-    'identifier': Identifier
-    'extends': p_.Optional_Value<{
-        'extends keyword': d_primitives.Keyword
-        'type': Type
-    }>
+    'type parameter': {
+        'identifier': Identifier
+        'extends': p_.Optional_Value<{
+            'extends keyword': d_primitives.Keyword
+            'type': Type
+        }>
+    }
 }
 
 export type Type__Intersection = h.Separated_List<Type>
@@ -1231,22 +1238,29 @@ export type Type__Literal = {
 
 export type Type__Mapped = {
     'open brace token': d_primitives.Keyword
-    // 'readonly keyword': p_.Optional_Value<d_primitives.Keyword>
+    'readonly modifier': p_.Optional_Value<{
+        'modifier': p_.Optional_Value<d_primitives.Keyword>
+        'readonly keyword': d_primitives.Keyword
+    }>
     'open bracket token': d_primitives.Keyword
     'type parameter': {
         'identifier': Identifier
         'in keyword': d_primitives.Keyword
-        'constraint': Type  // the 'in X' part, always required in mapped types
-        'as': p_.Optional_Value<{   // the 'as X' remapping clause
-            'as keyword': d_primitives.Keyword
-            'type': Type
-        }>
+        'constraint': Type
     }
+    'as': p_.Optional_Value<{
+        'as keyword': d_primitives.Keyword
+        'type': Type
+    }>
     'close bracket token': d_primitives.Keyword
+    'question modifier': p_.Optional_Value<{
+        'modifier': p_.Optional_Value<d_primitives.Keyword>
+        'question token': d_primitives.Keyword
+    }>
     'colon token': d_primitives.Keyword
     'type': Type
     'semicolon': Optional_Semi_Colon
-    'dummy syntax list': d_primitives.Keyword // I have no idea why there is a SyntaxList. The instance I saw was empty
+    'dummy syntax list': d_primitives.Keyword
     'close brace token': d_primitives.Keyword
 }
 
