@@ -1246,7 +1246,7 @@ export type Type__Optional = {
     'question token': d_primitives.Keyword
 }
 
-export type Type__Parameters__L = {
+export type Type_Parameters__Entries__L = {
     'identifier': Identifier
     'extends': p_.Optional_Value<{
         'extends keyword': d_primitives.Keyword
@@ -1332,7 +1332,7 @@ export type Type_Arguments = p_.Optional_Value<{
 
 export type Type_Parameters = p_.Optional_Value<{
     'less than token': d_primitives.Keyword
-    'entries': h.Separated_List<Type__Parameters__L>
+    'entries': h.Separated_List<Type_Parameters__Entries__L>
     'greater than token': d_primitives.Keyword
 }>
 

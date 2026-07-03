@@ -31,37 +31,6 @@ export const Arguments: h.Production<d_out.Arguments> = ($, abort, $p) => h.crea
     })
 )
 
-export const Optional_Arguments: h.Production<d_out.Optional_Arguments> = (iterator, abort, $p) => h.create_iterator_context(
-    iterator,
-    abort,
-    $p,
-    "Optional_Arguments",
-    (context): d_out.Optional_Arguments => context.peek_for_optional(
-        "OpenParenToken",
-        (context) => ({
-            'question dot token': context.prop("question dot token").peek_for_optional("QuestionDotToken", (context) => context.consume_keyword()),
-            'open parenthesis token': context.prop("open parenthesis token").assert_kind("OpenParenToken").consume_keyword(),
-            'arguments': context.prop("arguments").assert_kind("SyntaxList").consume_and_parse_children_as_separated_list(
-                "CommaToken",
-                (context) => context.peek_for_state(
-                    (kind, abort) => {
-                        switch (kind) {
-                            case "SpreadElement": return ['spread', context.option("spread").consume_and_parse_children_as_type(
-                                (context) => ({
-                                    'dot dot dot token': context.prop("dot dot dot token").assert_kind("DotDotDotToken").consume_keyword(),
-                                    'expression': context.prop("expression").defer_parsing_to_component(Expression)
-                                })
-                            )]
-                            default: return ['expression', context.option("expression").defer_parsing_to_component(Expression)]
-                        }
-                    }
-                )
-            ),
-            'close parenthesis token': context.prop("close parenthesis token").assert_kind("CloseParenToken").consume_keyword(),
-        })
-    )
-)
-
 export const Binding_Pattern: h.Production<d_out.Binding_Pattern> = ($, abort, $p) => h.create_iterator_context(
     $,
     abort,
@@ -994,6 +963,48 @@ export const Object_Type: h.Production<d_out.Object_Type> = (iterator, abort, $p
     })
 )
 
+export const Optional_Arguments: h.Production<d_out.Optional_Arguments> = (iterator, abort, $p) => h.create_iterator_context(
+    iterator,
+    abort,
+    $p,
+    "Optional_Arguments",
+    (context): d_out.Optional_Arguments => context.peek_for_optional(
+        "OpenParenToken",
+        (context) => ({
+            'question dot token': context.prop("question dot token").peek_for_optional("QuestionDotToken", (context) => context.consume_keyword()),
+            'open parenthesis token': context.prop("open parenthesis token").assert_kind("OpenParenToken").consume_keyword(),
+            'arguments': context.prop("arguments").assert_kind("SyntaxList").consume_and_parse_children_as_separated_list(
+                "CommaToken",
+                (context) => context.peek_for_state(
+                    (kind, abort) => {
+                        switch (kind) {
+                            case "SpreadElement": return ['spread', context.option("spread").consume_and_parse_children_as_type(
+                                (context) => ({
+                                    'dot dot dot token': context.prop("dot dot dot token").assert_kind("DotDotDotToken").consume_keyword(),
+                                    'expression': context.prop("expression").defer_parsing_to_component(Expression)
+                                })
+                            )]
+                            default: return ['expression', context.option("expression").defer_parsing_to_component(Expression)]
+                        }
+                    }
+                )
+            ),
+            'close parenthesis token': context.prop("close parenthesis token").assert_kind("CloseParenToken").consume_keyword(),
+        })
+    )
+)
+
+export const Optional_Comma: h.Production<d_out.Optional_Comma> = (iterator, abort, $p) => h.create_iterator_context(
+    iterator,
+    abort,
+    $p,
+    "Comma",
+    (context) => context.peek_for_optional(
+        "CommaToken",
+        (context) => context.prop("comma token").consume_keyword()
+    )
+)
+
 export const Optional_Initializer: h.Production<d_out.Optional_Initializer> = (iterator, abort, $p) => h.create_iterator_context(
     iterator,
     abort,
@@ -1005,6 +1016,17 @@ export const Optional_Initializer: h.Production<d_out.Optional_Initializer> = (i
             'equals token': context.prop("equals token").assert_kind("EqualsToken").consume_keyword(),
             'expression': context.prop("expression").defer_parsing_to_component(Expression)
         })
+    )
+)
+
+export const Optional_Semicolon: h.Production<d_out.Optional_Semi_Colon> = (iterator, abort, $p) => h.create_iterator_context(
+    iterator,
+    abort,
+    $p,
+    "Semi_Colon",
+    (context) => context.peek_for_optional(
+        "SemicolonToken",
+        (context) => context.prop("semicolon token").consume_keyword()
     )
 )
 
@@ -1142,28 +1164,6 @@ export const Return_Type_Annotation: h.Production<d_out.Return_Type_Annotation> 
                 }
             )
         })
-    )
-)
-
-export const Optional_Comma: h.Production<d_out.Optional_Comma> = (iterator, abort, $p) => h.create_iterator_context(
-    iterator,
-    abort,
-    $p,
-    "Comma",
-    (context) => context.peek_for_optional(
-        "CommaToken",
-        (context) => context.prop("comma token").consume_keyword()
-    )
-)
-
-export const Optional_Semicolon: h.Production<d_out.Optional_Semi_Colon> = (iterator, abort, $p) => h.create_iterator_context(
-    iterator,
-    abort,
-    $p,
-    "Semi_Colon",
-    (context) => context.peek_for_optional(
-        "SemicolonToken",
-        (context) => context.prop("semicolon token").consume_keyword()
     )
 )
 
@@ -1778,16 +1778,6 @@ export const Statement: h.Production<d_out.Statement> = ($, abort, $p) => h.crea
     )
 )
 
-export const Statements: h.Refiner<d_out.Statements> = ($, abort, $p) => h.create_node_context(
-    $,
-    abort,
-    $p,
-    "SyntaxList",
-    (context) => context.parse_children_as_list(
-        (context) => context.defer_parsing_to_component(Statement)
-    )
-)
-
 export const Statement_Modifiers: h.Production<d_out.Statement_Modifiers> = (iterator, abort, $p) => h.create_iterator_context(
     iterator,
     abort,
@@ -1814,6 +1804,16 @@ export const Statement_Modifiers: h.Production<d_out.Statement_Modifiers> = (ite
                 }
             ),
         )
+    )
+)
+
+export const Statements: h.Refiner<d_out.Statements> = ($, abort, $p) => h.create_node_context(
+    $,
+    abort,
+    $p,
+    "SyntaxList",
+    (context) => context.parse_children_as_list(
+        (context) => context.defer_parsing_to_component(Statement)
     )
 )
 
@@ -2199,32 +2199,6 @@ export const Type_Arguments: h.Production<d_out.Type_Arguments> = (iterator, abo
     )
 )
 
-export const TypeParameter: h.Refiner<d_out.Type__Parameters__L> = ($, abort, $p) => h.create_node_context(
-    $,
-    abort,
-    $p,
-    "TypeParameter",
-    (context): d_out.Type__Parameters__L => context.parse_children_as_type(
-        (context): d_out.Type__Parameters__L => ({
-            'identifier': context.prop("identifier").assert_kind("Identifier").consume_literal(),
-            'extends': context.prop("extends").peek_for_optional(
-                "ExtendsKeyword",
-                (context) => ({
-                    'extends keyword': context.prop("extends keyword").consume_keyword(),
-                    'type': context.prop("type").defer_parsing_to_component(Type),
-                })
-            ),
-            'default': context.prop("default").peek_for_optional(
-                "EqualsToken",
-                (context) => ({
-                    'equals token': context.prop("equals token").consume_keyword(),
-                    'type': context.prop("type").defer_parsing_to_component(Type),
-                })
-            ),
-        })
-    )
-)
-
 export const Type_Parameters: h.Production<d_out.Type_Parameters> = (iterator, abort, $p) => h.create_iterator_context(
     iterator,
     abort,
@@ -2242,6 +2216,32 @@ export const Type_Parameters: h.Production<d_out.Type_Parameters> = (iterator, a
         })
     )
 
+)
+
+export const TypeParameter: h.Refiner<d_out.Type_Parameters__Entries__L> = ($, abort, $p) => h.create_node_context(
+    $,
+    abort,
+    $p,
+    "TypeParameter",
+    (context): d_out.Type_Parameters__Entries__L => context.parse_children_as_type(
+        (context): d_out.Type_Parameters__Entries__L => ({
+            'identifier': context.prop("identifier").assert_kind("Identifier").consume_literal(),
+            'extends': context.prop("extends").peek_for_optional(
+                "ExtendsKeyword",
+                (context) => ({
+                    'extends keyword': context.prop("extends keyword").consume_keyword(),
+                    'type': context.prop("type").defer_parsing_to_component(Type),
+                })
+            ),
+            'default': context.prop("default").peek_for_optional(
+                "EqualsToken",
+                (context) => ({
+                    'equals token': context.prop("equals token").consume_keyword(),
+                    'type': context.prop("type").defer_parsing_to_component(Type),
+                })
+            ),
+        })
+    )
 )
 
 export const VariableDeclaration: h.Refiner<d_out.Variable_Declaration> = ($, abort, $p) => h.create_node_context(
