@@ -131,7 +131,7 @@ export type Class_Body__Member__Get_Accessor = {
 export type Class_Body__Member__Method = {
     'jsdoc': JSDoc
     'modifiers': Signature_Modifiers
-    // 'asterisk token': p_.Optional_Value<d_primitives.Keyword>
+    'asterisk token': p_.Optional_Value<d_primitives.Keyword>
     'name': Property_Name
     'type parameters': Type_Parameters
     'parameters': Parameters
@@ -404,6 +404,7 @@ export type Expression__Function = {
     'function keyword': d_primitives.Keyword
     'name': p_.Optional_Value<Identifier>
     'parameters': Parameters
+    'return type': Return_Type_Annotation
     'body': Block
 }
 
@@ -838,10 +839,10 @@ export type Statement__For = {
     'jsdoc': JSDoc
     'for keyword': d_primitives.Keyword
     'open parenthesis token': d_primitives.Keyword
-    'initializer':
-    | ['variable declaration list', Variable_Declaration_List]
-    | ['expression', Expression]
-    // | ['empty', d_primitives.Keyword]
+    'initializer': p_.Optional_Value<
+        | ['variable declaration list', Variable_Declaration_List]
+        | ['expression', Expression]
+    >
     'semicolon token': d_primitives.Keyword
     'condition': p_.Optional_Value<Expression>
     'semicolon token 2': d_primitives.Keyword
@@ -1159,6 +1160,7 @@ export type Type__Function_Type = {
 }
 
 export type Type__Import = {
+    'typeof keyword': p_.Optional_Value<d_primitives.Keyword>
     'import keyword': d_primitives.Keyword
     'open parenthesis token': d_primitives.Keyword
     'argument': d_primitives.Literal
@@ -1343,7 +1345,7 @@ export type Variable_Declaration_List = {
     | ['let', d_primitives.Keyword]
     | ['using', d_primitives.Keyword]
     | ['var', d_primitives.Keyword]
-    'declarations': p_.List<Variable_Declaration>
+    'declarations': h.Separated_List<Variable_Declaration>
 }
 
 export type Variable_Declaration_List__Mutability__Await_Using = {

@@ -247,7 +247,10 @@ export const Class_Body: h.Production<d_out.Class_Body> = ($, abort, $p) => h.cr
                             (context): d_out.Class_Body__Member__Method => ({
                                 'jsdoc': context.prop("jsdoc").defer_parsing_to_component(JSDoc),
                                 'modifiers': context.prop("modifiers").defer_parsing_to_component(Signature_Modifiers),
-
+                                'asterisk token': context.prop("asterisk token").peek_for_optional(
+                                    "AsteriskToken",
+                                    (context) => context.consume_keyword()
+                                ),
                                 'name': context.prop("name").defer_parsing_to_component(Property_Name),
                                 'type parameters': context.prop("type parameters").defer_parsing_to_component(Type_Parameters),
                                 'parameters': context.prop("parameters").defer_parsing_to_component(Parameters),
@@ -563,6 +566,7 @@ export const Expression: h.Production<d_out.Expression> = ($, abort, $p) => h.cr
                             (context) => context.consume_literal()
                         ),
                         'parameters': context.prop("parameters").defer_parsing_to_component(Parameters),
+                        'return type': context.prop("return type").defer_parsing_to_component(Return_Type_Annotation),
                         'body': context.prop("body").consume_component(Block)
                     })
                 )]
@@ -1358,13 +1362,16 @@ export const Statement: h.Production<d_out.Statement> = ($, abort, $p) => h.crea
                         'jsdoc': context.prop("jsdoc").defer_parsing_to_component(JSDoc),
                         'for keyword': context.prop("for keyword").assert_kind("ForKeyword").consume_keyword(),
                         'open parenthesis token': context.prop("open parenthesis token").assert_kind("OpenParenToken").consume_keyword(),
-                        'initializer': context.prop("initializer").peek_for_state(
-                            (kind, abort) => {
-                                switch (kind) {
-                                    case "VariableDeclarationList": return ['variable declaration list', context.option("variable declaration list").consume_component(VariableDeclarationList)]
-                                    default: return ['expression', context.option("expression").defer_parsing_to_component(Expression)]
+                        'initializer': context.prop("initializer").optional_set_if_not(
+                            "SemicolonToken",
+                            (context) => context.peek_for_state(
+                                (kind, abort) => {
+                                    switch (kind) {
+                                        case "VariableDeclarationList": return ['variable declaration list', context.option("variable declaration list").consume_component(VariableDeclarationList)]
+                                        default: return ['expression', context.option("expression").defer_parsing_to_component(Expression)]
+                                    }
                                 }
-                            }
+                            )
                         ),
                         'semicolon token': context.prop("semicolon token").assert_kind("SemicolonToken").consume_keyword(),
                         'condition': context.prop("condition").optional_set_if_not(
@@ -1891,6 +1898,10 @@ export const Type: h.Production<d_out.Type> = ($, abort, $p) => h.create_iterato
                 )]
                 case "ImportType": return ['import type', context.option("import type").consume_and_parse_children_as_type(
                     (context): d_out.Type__Import => ({
+                        'typeof keyword': context.prop("typeof keyword").peek_for_optional(
+                            "TypeOfKeyword",
+                            (context) => context.consume_keyword()
+                        ),
                         'import keyword': context.prop("import keyword").assert_kind("ImportKeyword").consume_keyword(),
                         'open parenthesis token': context.prop("open parenthesis token").assert_kind("OpenParenToken").consume_keyword(),
                         'argument': context.prop("argument").assert_kind("LiteralType").consume_and_parse_children_as_type(
@@ -2227,7 +2238,8 @@ export const VariableDeclarationList: h.Refiner<d_out.Variable_Declaration_List>
                     }
                 }
             ),
-            'declarations': context.prop("declarations").assert_kind("SyntaxList").consume_and_parse_children_as_non_separated_list(
+            'declarations': context.prop("declarations").assert_kind("SyntaxList").consume_and_parse_children_as_separated_list(
+                "CommaToken",
                 (context): d_out.Variable_Declaration => context.consume_component(VariableDeclaration)
             )
         })

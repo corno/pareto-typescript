@@ -224,6 +224,10 @@ export const Class_Body: p_i.Transformer<d_in.Class_Body, d_out.Phrase> = ($) =>
                                         case 'method': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                                             JSDoc($['jsdoc']),
                                             Signature_Modifiers($['modifiers']),
+                                            p_.from.optional($['asterisk token']).decide(
+                                                () => sh.ph.literal("*"),
+                                                () => sh.ph.nothing()
+                                            ),
                                             Property_Name($['name']),
                                             Type_Parameters($['type parameters']),
                                             Parameters($['parameters']),
@@ -473,6 +477,7 @@ export const Expression: p_i.Transformer<d_in.Expression, d_out.Phrase> = ($) =>
                     () => sh.ph.nothing()
                 ),
                 Parameters($['parameters']),
+                Return_Type_Annotation($['return type']),
                 Block($['body'])
             ])))
             case 'identifier': return p_.option($, ($) => sh.ph.literal($.text))
@@ -1121,14 +1126,17 @@ export const Statement: p_i.Transformer<d_in.Statement, d_out.Phrase> = ($) => s
                 case 'for': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                     JSDoc($['jsdoc']),
                     sh.ph.literal("for ("),
-                    p_.from.state($['initializer']).decide(
-                        ($) => {
-                            switch ($[0]) {
-                                case 'variable declaration list': return p_.option($, ($) => Variable_Declaration_List($))
-                                case 'expression': return p_.option($, ($) => Expression($))
-                                default: return p_.au($[0])
+                    p_.from.optional($['initializer']).decide(
+                        ($) => p_.from.state($).decide(
+                            ($) => {
+                                switch ($[0]) {
+                                    case 'variable declaration list': return p_.option($, ($) => Variable_Declaration_List($))
+                                    case 'expression': return p_.option($, ($) => Expression($))
+                                    default: return p_.au($[0])
+                                }
                             }
-                        }
+                        ),
+                        () => sh.ph.nothing()
                     ),
                     sh.ph.literal("; "),
                     p_.from.optional($['condition']).decide(
@@ -1522,6 +1530,10 @@ export const Type: p_i.Transformer<d_in.Type, d_out.Phrase> = ($) => p_.from.sta
                 Type($['return type']),
             ])))
             case 'import type': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
+                p_.from.optional($['typeof keyword']).decide(
+                    () => sh.ph.literal("typeof "),
+                    () => sh.ph.nothing()
+                ),
                 sh.ph.literal("import("),
                 sh.ph.literal($['argument'].text),
                 sh.ph.literal(")"),
@@ -1877,6 +1889,14 @@ export const Variable_Declaration_List: p_i.Transformer<d_in.Variable_Declaratio
     ),
     sh.ph.composed(
         p_.from.list($['declarations']).map(
-            ($) => Variable_Declaration($)
+            ($) => p_.from.state($).decide(
+                ($) => {
+                    switch ($[0]) {
+                        case 'separator': return p_.option($, ($) => sh.ph.literal(", "))
+                        case 'entry': return p_.option($, ($) => Variable_Declaration($))
+                        default: return p_.au($[0])
+                    }
+                }
+            )
         ))
 ]))
