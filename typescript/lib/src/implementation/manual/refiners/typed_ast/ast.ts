@@ -1311,6 +1311,35 @@ export const Source_File: h.Root<d_out.Source_File> = ($, abort) => h.create_roo
     )
 )
 
+const parse_module_body: h.Production<d_out.Statement.Module_Declaration.Module_Body> = (iterator, abort, $p) => h.create_iterator_context(
+    iterator, abort, $p, "Module_Body",
+    (context): d_out.Statement.Module_Declaration.Module_Body => context.peek_for_state(
+        (kind, abort): d_out.Statement.Module_Declaration.Module_Body => {
+            switch (kind) {
+                case "ModuleBlock": return ['module block', context.option("module block").consume_and_parse_children_as_type(
+                    (context): d_out.Block => ({
+                        'open brace token': context.prop("open brace token").assert_kind("OpenBraceToken").consume_keyword(),
+                        'statements': context.prop("statements").consume_component(Statements),
+                        'close brace token': context.prop("close brace token").assert_kind("CloseBraceToken").consume_keyword(),
+                    })
+                )]
+                case "DotToken": return ['dotted', context.option("dotted").based_on_first_node(
+                    (context) => ({
+                        'dot token': context.prop("dot token").consume_keyword(),
+                        'module declaration': context.prop("module declaration").assert_kind("ModuleDeclaration").consume_and_parse_children_as_type(
+                            (context) => ({
+                                'name': context.prop("name").defer_parsing_to_component(Identifier),
+                                'block': context.prop("block").defer_parsing_to_component(parse_module_body),
+                            })
+                        ),
+                    })
+                )]
+                default: return ['shorthand', context.prop("shorthand").defer_parsing_to_component(Optional_Semi_Colon)]
+            }
+        }
+    )
+)
+
 export const Statement: h.Production<d_out.Statement> = ($, abort, $p) => h.create_iterator_context(
     $,
     abort,
@@ -1602,60 +1631,124 @@ export const Statement: h.Production<d_out.Statement> = ($, abort, $p) => h.crea
                 case "ImportDeclaration": return ['import', context.option("import").consume_and_parse_children_as_type(
                     (context): d_out.Statement.Import_Declaration => ({
                         'jsdoc': context.prop("jsdoc").defer_parsing_to_component(JSDoc),
+                        'modifiers': context.prop("modifiers").defer_parsing_to_component(Statement_Modifiers),
                         'import keyword': context.prop("import keyword").assert_kind("ImportKeyword").consume_keyword(),
-                        'clause': context.prop("clause").assert_kind("ImportClause").consume_and_parse_children_as_type(
-                            (context): d_out.Statement.Import_Declaration['clause'] => ({
-                                'type keyword': context.prop("type keyword").peek_for_optional(
-                                    "TypeKeyword",
-                                    (context) => context.consume_keyword()
-                                ),
-                                'type': context.prop("type").peek_for_state(
-                                    (kind, abort) => {
-                                        switch (kind) {
-                                            case "Identifier": return ['identifier', context.option("identifier").defer_parsing_to_component(Identifier)]
-                                            case "NamedImports": return ['named imports', context.option("named imports").consume_and_parse_children_as_type(
-                                                (context) => ({
-                                                    'open brace token': context.prop("open brace token").assert_kind("OpenBraceToken").consume_keyword(),
-                                                    'entries': context.prop("entries").assert_kind("SyntaxList").consume_and_parse_children_as_separated_list(
-                                                        "CommaToken",
-                                                        (context) => context.assert_kind("ImportSpecifier").consume_and_parse_children_as_type(
+                        'clause': context.prop("clause").peek_for_optional(
+                            "ImportClause",
+                            (context) => context.consume_and_parse_children_as_type(
+                                (context): d_out.Statement.Import.Clause => ({
+                                    'type keyword': context.prop("type keyword").peek_for_optional(
+                                        "TypeKeyword",
+                                        (context) => context.consume_keyword()
+                                    ),
+                                    'type': context.prop("type").peek_for_state(
+                                        (kind, abort) => {
+                                            switch (kind) {
+                                                case "Identifier": return ['identifier', context.option("identifier").based_on_first_node(
+                                                    (context) => ({
+                                                        'identifier': context.prop("identifier").defer_parsing_to_component(Identifier),
+                                                        'named': context.prop("named").peek_for_optional(
+                                                            "CommaToken",
                                                             (context) => ({
-                                                                'type keyword': context.prop("type keyword").peek_for_optional(
-                                                                    "TypeKeyword",
-                                                                    (context) => context.consume_keyword()
+                                                                'comma token': context.prop("comma token").consume_keyword(),
+                                                                'bindings': context.prop("bindings").peek_for_state(
+                                                                    (kind, abort) => {
+                                                                        switch (kind) {
+                                                                            case "NamedImports": return ['named imports', context.option("named imports").consume_and_parse_children_as_type(
+                                                                                (context) => ({
+                                                                                    'open brace token': context.prop("open brace token").assert_kind("OpenBraceToken").consume_keyword(),
+                                                                                    'entries': context.prop("entries").assert_kind("SyntaxList").consume_and_parse_children_as_separated_list(
+                                                                                        "CommaToken",
+                                                                                        (context) => context.assert_kind("ImportSpecifier").consume_and_parse_children_as_type(
+                                                                                            (context) => ({
+                                                                                                'type keyword': context.prop("type keyword").peek_for_optional(
+                                                                                                    "TypeKeyword",
+                                                                                                    (context) => context.consume_keyword()
+                                                                                                ),
+                                                                                                'identifier': context.prop("identifier").defer_parsing_to_component(Identifier),
+                                                                                                'as': context.prop("as").peek_for_optional(
+                                                                                                    "AsKeyword",
+                                                                                                    (context) => context.defer_parsing_to_component(As_Alias)
+                                                                                                )
+                                                                                            })
+                                                                                        )
+                                                                                    ),
+                                                                                    'close brace token': context.prop("close brace token").assert_kind("CloseBraceToken").consume_keyword()
+                                                                                })
+                                                                            )]
+                                                                            case "NamespaceImport": return ['namespace import', context.option("namespace import").consume_and_parse_children_as_type(
+                                                                                (context) => ({
+                                                                                    'asterisk token': context.prop("asterisk token").assert_kind("AsteriskToken").consume_keyword(),
+                                                                                    'as keyword': context.prop("as keyword").assert_kind("AsKeyword").consume_keyword(),
+                                                                                    'identifier': context.prop("identifier").defer_parsing_to_component(Identifier)
+                                                                                })
+                                                                            )]
+                                                                            default: return abort(null)
+                                                                        }
+                                                                    }
                                                                 ),
-                                                                'identifier': context.prop("identifier").defer_parsing_to_component(Identifier),
-                                                                'as': context.prop("as").peek_for_optional(
-                                                                    "AsKeyword",
-                                                                    (context) => context.defer_parsing_to_component(As_Alias)
-                                                                )
                                                             })
-                                                        )
-                                                    ),
-                                                    'close brace token': context.prop("close brace token").assert_kind("CloseBraceToken").consume_keyword()
-                                                })
-                                            )]
-                                            case "NamespaceImport": return ['namespace import', context.option("namespace import").consume_and_parse_children_as_type(
-                                                (context) => ({
-                                                    'asterisk token': context.prop("asterisk token").assert_kind("AsteriskToken").consume_keyword(),
-                                                    'as keyword': context.prop("as keyword").assert_kind("AsKeyword").consume_keyword(),
-                                                    'identifier': context.prop("identifier").defer_parsing_to_component(Identifier)
-                                                })
-                                            )]
-
-                                            default: return abort(null)
+                                                        ),
+                                                    })
+                                                )]
+                                                case "NamedImports": return ['named imports', context.option("named imports").consume_and_parse_children_as_type(
+                                                    (context) => ({
+                                                        'open brace token': context.prop("open brace token").assert_kind("OpenBraceToken").consume_keyword(),
+                                                        'entries': context.prop("entries").assert_kind("SyntaxList").consume_and_parse_children_as_separated_list(
+                                                            "CommaToken",
+                                                            (context) => context.assert_kind("ImportSpecifier").consume_and_parse_children_as_type(
+                                                                (context) => ({
+                                                                    'type keyword': context.prop("type keyword").peek_for_optional(
+                                                                        "TypeKeyword",
+                                                                        (context) => context.consume_keyword()
+                                                                    ),
+                                                                    'identifier': context.prop("identifier").defer_parsing_to_component(Identifier),
+                                                                    'as': context.prop("as").peek_for_optional(
+                                                                        "AsKeyword",
+                                                                        (context) => context.defer_parsing_to_component(As_Alias)
+                                                                    )
+                                                                })
+                                                            )
+                                                        ),
+                                                        'close brace token': context.prop("close brace token").assert_kind("CloseBraceToken").consume_keyword()
+                                                    })
+                                                )]
+                                                case "NamespaceImport": return ['namespace import', context.option("namespace import").consume_and_parse_children_as_type(
+                                                    (context) => ({
+                                                        'asterisk token': context.prop("asterisk token").assert_kind("AsteriskToken").consume_keyword(),
+                                                        'as keyword': context.prop("as keyword").assert_kind("AsKeyword").consume_keyword(),
+                                                        'identifier': context.prop("identifier").defer_parsing_to_component(Identifier)
+                                                    })
+                                                )]
+                                                case "DeferKeyword": return ['defer', context.option("defer").based_on_first_node(
+                                                    (context) => ({
+                                                        'defer keyword': context.prop("defer keyword").consume_keyword(),
+                                                        'namespace import': context.prop("namespace import").assert_kind("NamespaceImport").consume_and_parse_children_as_type(
+                                                            (context) => ({
+                                                                'asterisk token': context.prop("asterisk token").assert_kind("AsteriskToken").consume_keyword(),
+                                                                'as keyword': context.prop("as keyword").assert_kind("AsKeyword").consume_keyword(),
+                                                                'identifier': context.prop("identifier").defer_parsing_to_component(Identifier)
+                                                            })
+                                                        ),
+                                                    })
+                                                )]
+                                                default: return abort(null)
+                                            }
                                         }
-                                    }
-                                ),
-                            })
+                                    ),
+                                })
+                            )
                         ),
-                        'from keyword': context.prop("from keyword").assert_kind("FromKeyword").consume_keyword(),
+                        'from keyword': context.prop("from keyword").peek_for_optional(
+                            "FromKeyword",
+                            (context) => context.consume_keyword()
+                        ),
                         'string literal': context.prop("string literal").defer_parsing_to_component(String_Literal),
                         'import attributes': context.prop("import attributes").peek_for_optional(
                             "ImportAttributes",
                             (context) => context.consume_and_parse_children_as_type(
                                 (context) => ({
-                                    'with keyword': context.prop("with keyword").assert_kind("WithKeyword").consume_keyword(),
+                                    'with keyword': context.prop("with keyword").consume_keyword(),
                                     'open brace token': context.prop("open brace token").assert_kind("OpenBraceToken").consume_keyword(),
                                     'elements': context.prop("elements").assert_kind("SyntaxList").consume_and_parse_children_as_separated_list(
                                         "CommaToken",
@@ -1729,21 +1822,7 @@ export const Statement: h.Production<d_out.Statement> = ($, abort, $p) => h.crea
                                 }
                             }
                         ),
-                        'block': context.prop("block").assert_kind("ModuleBlock").consume_and_parse_children_as_type(
-                            (context): d_out.Block => ({
-                                // 'jsdoc': context.prop("jsdoc").construct_component(
-                                //     "'jsdoc'",
-                                //     JSDoc
-                                // ),
-                                'open brace token': context.prop("open brace token").assert_kind("OpenBraceToken").consume_keyword(),
-                                'statements': context.prop("statements").consume_component(Statements),
-                                'close brace token': context.prop("close brace token").assert_kind("CloseBraceToken").consume_keyword(),
-                                // 'semicolon': context.prop("semicolon").construct_component(
-                                //     "'semicolon token'",
-                                //     Semi_Colon
-                                // )
-                            })
-                        ),
+                        'block': context.prop("block").defer_parsing_to_component(parse_module_body),
                         'semicolon': context.prop("semicolon").defer_parsing_to_component(Optional_Semi_Colon),
                     })
                 )]
@@ -1878,6 +1957,15 @@ export const Statement: h.Production<d_out.Statement> = ($, abort, $p) => h.crea
                         'semicolon': context.prop("semicolon").defer_parsing_to_component(Optional_Semi_Colon),
                     })
                 )]
+                case "WithStatement": return ['with', context.option("with").consume_and_parse_children_as_type(
+                    (context) => ({
+                        'with keyword': context.prop("with keyword").assert_kind("WithKeyword").consume_keyword(),
+                        'open parenthesis token': context.prop("open parenthesis token").assert_kind("OpenParenToken").consume_keyword(),
+                        'expression': context.prop("expression").defer_parsing_to_component(Expression),
+                        'close parenthesis token': context.prop("close parenthesis token").assert_kind("CloseParenToken").consume_keyword(),
+                        'statement': context.prop("statement").defer_parsing_to_component(Statement),
+                    })
+                )]
                 default: return abort(null)
             }
         }
@@ -1899,7 +1987,13 @@ export const Statement_Modifiers: h.Production<d_out.Statement_Modifiers> = (ite
                         case "AbstractKeyword": return ['abstract', context.option("abstract").consume_keyword()]
                         case "AsyncKeyword": return ['async', context.option("async").consume_keyword()]
                         case "DeclareKeyword": return ['declare', context.option("declare").consume_keyword()]
-                        case "Decorator": return ['decorator', context.option("decorator").consume_keyword()]
+                        case "Decorator": return ['decorator', context.option("decorator").consume_and_parse_children_as_type(
+                            (context) => ({
+                                'at token': context.prop("at token").assert_kind("AtToken").consume_keyword(),
+                                'expression': context.prop("expression").defer_parsing_to_component(Expression),
+                            })
+                        )]
+                        case "PrivateKeyword": return ['private', context.option("private").consume_keyword()]
                         case "DefaultKeyword": return ['default', context.option("default").consume_keyword()]
                         case "ExportKeyword": return ['export', context.option("export").consume_keyword()]
                         case "ProtectedKeyword": return ['protected', context.option("protected").consume_keyword()]
@@ -2108,8 +2202,8 @@ export const Type: h.Production<d_out.Type> = ($, abort, $p) => h.create_iterato
                         'readonly modifier': context.prop("readonly modifier").optional_set_if_not(
                             "OpenBracketToken",
                             (context) => ({
-                                'modifier': context.prop("modifier").peek_for_optional(
-                                    "MinusToken",
+                                'modifier': context.prop("modifier").optional_set_if_not(
+                                    "ReadonlyKeyword",
                                     (context) => context.consume_literal()
                                 ),
                                 'readonly keyword': context.prop("readonly keyword").assert_kind("ReadonlyKeyword").consume_keyword(),

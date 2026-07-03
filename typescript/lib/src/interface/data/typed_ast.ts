@@ -767,6 +767,13 @@ export type Statement =
         'close parenthesis token': d_primitives.Keyword
         'statement': Statement
     }]
+    | ['with', {
+        'with keyword': d_primitives.Keyword
+        'open parenthesis token': d_primitives.Keyword
+        'expression': Expression
+        'close parenthesis token': d_primitives.Keyword
+        'statement': Statement
+    }]
 
 export namespace Statement {
     export type Class_Declaration = {
@@ -920,7 +927,19 @@ export namespace Statement {
             'type':
             | ['named imports', Named_Imports]
             | ['namespace import', Namespace]
-            | ['identifier', Identifier]
+            | ['identifier', {
+                'identifier': Identifier
+                'named': p_.Optional_Value<{
+                    'comma token': d_primitives.Keyword
+                    'bindings':
+                        | ['named imports', Named_Imports]
+                        | ['namespace import', Namespace]
+                }>
+            }]
+            | ['defer', {
+                'defer keyword': d_primitives.Keyword
+                'namespace import': Namespace
+            }]
         }
         export type Named_Imports = {
             'open brace token': d_primitives.Keyword
@@ -939,9 +958,10 @@ export namespace Statement {
     }
     export type Import_Declaration = {
         'jsdoc': JSDoc
+        'modifiers': Statement_Modifiers
         'import keyword': d_primitives.Keyword
-        'clause': Import.Clause
-        'from keyword': d_primitives.Keyword
+        'clause': p_.Optional_Value<Import.Clause>
+        'from keyword': p_.Optional_Value<d_primitives.Keyword>
         'string literal': String_Literal
         'import attributes': p_.Optional_Value<{
             'with keyword': d_primitives.Keyword
@@ -983,7 +1003,7 @@ export namespace Statement {
             'keyword': d_primitives.Keyword
             'name': Identifier
         }]
-        'block': Block
+        'block': Module_Declaration.Module_Body
         'semicolon': Optional_Semi_Colon
     }
     export namespace Module_Declaration {
@@ -991,6 +1011,16 @@ export namespace Statement {
             'keyword': d_primitives.Keyword
             'name': Property_Name
         }
+        export type Module_Body =
+            | ['module block', Block]
+            | ['dotted', {
+                'dot token': d_primitives.Keyword
+                'module declaration': {
+                    'name': Identifier
+                    'block': Module_Body
+                }
+            }]
+            | ['shorthand', Optional_Semi_Colon]
     }
     export type Namespace_Export = {
         'jsdoc': JSDoc
@@ -1074,9 +1104,13 @@ export namespace Statement_Modifiers {
         | ['abstract', d_primitives.Keyword]
         | ['async', d_primitives.Keyword]
         | ['declare', d_primitives.Keyword]
-        | ['decorator', d_primitives.Keyword]
+        | ['decorator', {
+            'at token': d_primitives.Keyword
+            'expression': Expression
+        }]
         | ['default', d_primitives.Keyword]
         | ['export', d_primitives.Keyword]
+        | ['private', d_primitives.Keyword]
         | ['protected', d_primitives.Keyword]
         | ['public', d_primitives.Keyword]
         | ['static', d_primitives.Keyword]
