@@ -30,7 +30,10 @@ export type Binding_Pattern = {
         | ['readonly', d_primitives.Keyword]
         | ['public', d_primitives.Keyword]
         | ['declare', d_primitives.Keyword]
-        | ['decorator', d_primitives.Keyword]
+        | ['decorator', {
+            'at token': d_primitives.Keyword
+            'expression': Expression
+        }]
         | ['export', d_primitives.Keyword]
         | ['override', d_primitives.Keyword]
         | ['private', d_primitives.Keyword]
@@ -87,7 +90,12 @@ export type Block = {
 export type Class = {
     'jsdoc': JSDoc
     'modifiers': p_.Optional_Value<p_.List<
-        | ['tbd', null]
+        | ['abstract', d_primitives.Keyword]
+        | ['declare', d_primitives.Keyword]
+        | ['decorator', {
+            'at token': d_primitives.Keyword
+            'expression': Expression
+        }]
     >>
     'class keyword': d_primitives.Keyword
     'identifier': p_.Optional_Value<Identifier>
@@ -152,7 +160,7 @@ export namespace Class_Body {
         }
         export type Set_Accessor = {
             'jsdoc': JSDoc
-            // 'modifiers': Modifiers
+            'modifiers': Signature_Modifiers
             'set keyword': d_primitives.Keyword
             'name': Property_Name
             'parameters': Parameters
@@ -720,8 +728,14 @@ export type Statement =
     | ['enum', Statement.Enum_Declaration]
     | ['export assignment', {
         'jsdoc': JSDoc
+        'modifiers': Statement_Modifiers
         'export keyword': d_primitives.Keyword
-        'initializer': Initializer
+        'type':
+            | ['default', {
+                'default keyword': d_primitives.Keyword
+                'expression': Expression
+            }]
+            | ['equals', Initializer]
         'semicolon': Optional_Semi_Colon
     }]
     | ['export declaration', Statement.Export_Declaration]
@@ -886,6 +900,7 @@ export namespace Statement {
     }
     export type For_Of = {
         'for keyword': d_primitives.Keyword
+        'await keyword': p_.Optional_Value<d_primitives.Keyword>
         'open parenthesis token': d_primitives.Keyword
         'initializer':
             | ['variable declaration list', Variable_Declaration_List]

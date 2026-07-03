@@ -54,7 +54,10 @@ export const Binding_Pattern: p_i.Transformer<d_in.Binding_Pattern, d_out.Phrase
                     ($) => {
                         switch ($[0]) {
                             case 'declare': return p_.option($, ($) => sh.ph.literal("declare "))
-                            case 'decorator': return p_.option($, ($) => sh.ph.literal("/* TODO: decorator */"))
+                            case 'decorator': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
+                                sh.ph.literal("@"),
+                                Expression($['expression']),
+                            ])))
                             case 'export': return p_.option($, ($) => sh.ph.literal("export "))
                             case 'override': return p_.option($, ($) => sh.ph.literal("override "))
                             case 'private': return p_.option($, ($) => sh.ph.literal("private "))
@@ -258,6 +261,7 @@ export const Class_Body: p_i.Transformer<d_in.Class_Body, d_out.Phrase> = ($) =>
                                         ])))
                                         case 'set accessor': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                                             JSDoc($['jsdoc']),
+                                            Signature_Modifiers($['modifiers']),
                                             sh.ph.literal("set "),
                                             Property_Name($['name']),
                                             Parameters($['parameters']),
@@ -1128,8 +1132,20 @@ export const Statement: p_i.Transformer<d_in.Statement, d_out.Phrase> = ($) => s
                 ])))
                 case 'export assignment': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                     JSDoc($['jsdoc']),
+                    Statement_Modifiers($['modifiers']),
                     sh.ph.literal("export "),
-                    Initializer($['initializer']),
+                    p_.from.state($['type']).decide(
+                        ($) => {
+                            switch ($[0]) {
+                                case 'default': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
+                                    sh.ph.literal("default "),
+                                    Expression($['expression']),
+                                ])))
+                                case 'equals': return p_.option($, ($) => Initializer($))
+                                default: return p_.au($[0])
+                            }
+                        }
+                    ),
                     Optional_Semi_Colon($['semicolon']),
                 ])))
                 case 'export declaration': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
@@ -1242,7 +1258,12 @@ export const Statement: p_i.Transformer<d_in.Statement, d_out.Phrase> = ($) => s
                     Optional_Semi_Colon($['semicolon']),
                 ])))
                 case 'for of': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
-                    sh.ph.literal("for ("),
+                    sh.ph.literal("for "),
+                    p_.from.optional($['await keyword']).decide(
+                        () => sh.ph.literal("await "),
+                        () => sh.ph.nothing()
+                    ),
+                    sh.ph.literal("("),
                     p_.from.state($['initializer']).decide(
                         ($) => {
                             switch ($[0]) {
