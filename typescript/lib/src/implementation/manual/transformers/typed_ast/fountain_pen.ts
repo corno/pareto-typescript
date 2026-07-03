@@ -216,7 +216,15 @@ export const Class_Body: p_i.Transformer<d_in.Class_Body, d_out.Phrase> = ($) =>
                                         case 'constructor': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                                             JSDoc($['jsdoc']),
                                             Signature_Modifiers($['modifiers']),
-                                            sh.ph.literal("constructor"),
+                                            p_.from.state($['constructor keyword']).decide(
+                                                ($) => {
+                                                    switch ($[0]) {
+                                                        case 'constructor keyword': return p_.option($, () => sh.ph.literal("constructor"))
+                                                        case 'constructor keyword as string literal': return p_.option($, () => sh.ph.literal("constructor"))
+                                                        default: return p_.au($[0])
+                                                    }
+                                                }
+                                            ),
                                             Parameters($['parameters']),
                                             p_.from.optional($['body']).decide(
                                                 ($) => Block($),
@@ -291,6 +299,19 @@ export const Class_Body: p_i.Transformer<d_in.Class_Body, d_out.Phrase> = ($) =>
                                             sh.ph.literal("static"),
                                             Block($['body']),
                                         ])))
+                                        case 'index signature': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
+                                            JSDoc($['jsdoc']),
+                                            Signature_Modifiers($.modifiers),
+                                            sh.ph.literal("["),
+                                            sh.ph.literal($.parameter.identifier.text),
+                                            sh.ph.literal(": "),
+                                            Type($.parameter.type),
+                                            sh.ph.literal("]"),
+                                            sh.ph.literal(": "),
+                                            Type($.type),
+                                            Semi_Colon($.semicolon),
+                                        ])))
+                                        case 'semicolon element': return p_.option($, () => sh.ph.literal(";"))
                                         default: return p_.au($[0])
                                     }
                                 }
@@ -409,6 +430,7 @@ export const Expression: p_i.Transformer<d_in.Expression, d_out.Phrase> = ($) =>
                             case '&&=': return p_.option($, ($) => sh.ph.literal(" &&= "))
                             case '&=': return p_.option($, ($) => sh.ph.literal(" &= "))
                             case '%': return p_.option($, ($) => sh.ph.literal(" % "))
+                            case '%=': return p_.option($, ($) => sh.ph.literal(" %= "))
                             case '^': return p_.option($, ($) => sh.ph.literal(" ^ "))
                             case '^=': return p_.option($, ($) => sh.ph.literal(" ^= "))
                             case '+': return p_.option($, ($) => sh.ph.literal(" + "))
@@ -515,7 +537,15 @@ export const Expression: p_i.Transformer<d_in.Expression, d_out.Phrase> = ($) =>
             case 'import keyword': return p_.option($, ($) => sh.ph.literal("import"))
             case 'jsdoc': return p_.option($, ($) => sh.ph.literal("FIX JSDoc"))
             case 'meta property': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
-                sh.ph.literal("new ."),
+                p_.from.state($['new keyword']).decide(
+                    ($) => {
+                        switch ($[0]) {
+                            case 'new keyword': return p_.option($, () => sh.ph.literal("new."))
+                            case 'import keyword': return p_.option($, () => sh.ph.literal("import."))
+                            default: return p_.au($[0])
+                        }
+                    }
+                ),
                 Identifier($['identifier']),
             ])))
             case 'object literal': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
@@ -630,6 +660,7 @@ export const Expression: p_i.Transformer<d_in.Expression, d_out.Phrase> = ($) =>
                     }
                 )
             ])))
+            case 'private identifier': return p_.option($, ($) => sh.ph.literal($.text))
             case 'prefix unary': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                 p_.from.state($['operator token']).decide(
                     ($) => {

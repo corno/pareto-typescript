@@ -3,6 +3,7 @@ import * as p_di from 'pareto-core/dist/interface/data'
 import * as d_primitives from "./primitives"
 
 import * as h from "../../temp_helpers"
+import { e } from 'pareto-core/dist/implementation/query'
 
 export type Arguments = {
     'question dot token': p_.Optional_Value<d_primitives.Keyword>
@@ -116,15 +117,19 @@ export namespace Class_Body {
     export type Member =
         | ['constructor', Member.Constructor]
         | ['get accessor', Member.Get_Accessor]
+        | ['index signature', Object_Type.Signature.Index]
         | ['method', Member.Method]
         | ['property', Member.Property]
+        | ['semicolon element', null]
         | ['set accessor', Member.Set_Accessor]
         | ['static block', Member.Static_Block]
     export namespace Member {
         export type Constructor = {
             'jsdoc': JSDoc
             'modifiers': Signature_Modifiers
-            'constructor keyword': d_primitives.Keyword
+            'constructor keyword':
+            | ['constructor keyword', d_primitives.Keyword]
+            | ['constructor keyword as string literal', d_primitives.Keyword]
             'parameters': Parameters
             'body': p_.Optional_Value<Block>
             'semicolon': Semi_Colon
@@ -212,11 +217,7 @@ export type Expression =
     | ['identifier', Identifier]
     | ['import keyword', d_primitives.Keyword]
     | ['jsdoc', d_primitives.Blob]
-    | ['meta property', {
-        'new keyword': d_primitives.Keyword
-        'dot token': d_primitives.Keyword
-        'identifier': Identifier
-    }]
+    | ['meta property', Expression.Meta_Property]
     | ['new', {
         'new keyword': d_primitives.Keyword
         'expression': Expression
@@ -232,6 +233,7 @@ export type Expression =
     | ['object literal', Expression.Object_Literal]
     | ['omitted expression', null]
     | ['parenthesized', {
+        'jsdoc': JSDoc
         'open parenthesis token': d_primitives.Keyword
         'expression': Expression
         'close parenthesis token': d_primitives.Keyword
@@ -253,6 +255,7 @@ export type Expression =
         | ['~', d_primitives.Keyword]
         'operand': Expression
     }]
+    | ['private identifier', d_primitives.Literal]
     | ['property access', Expression.Property_Access]
     | ['qualified name', Qualified_Name]
     | ['regular expression literal', d_primitives.Literal]
@@ -347,6 +350,7 @@ export namespace Expression {
         | ['&&', d_primitives.Keyword]
         | ['&&=', d_primitives.Keyword]
         | ['%', d_primitives.Keyword]
+        | ['%=', d_primitives.Keyword]
         | ['+', d_primitives.Keyword]
         | ['+=', d_primitives.Keyword]
         | ['<', d_primitives.Keyword]
@@ -403,6 +407,13 @@ export namespace Expression {
         'return type': Return_Type_Annotation
         'body': Block
     }
+    export type Meta_Property = {
+        'new keyword':
+        | ['new keyword', d_primitives.Keyword]
+        | ['import keyword', d_primitives.Keyword]
+        'dot token': d_primitives.Keyword
+        'identifier': Identifier
+    }
     export type Object_Literal = {
         'open brace token': d_primitives.Keyword
         'properties': h.Separated_List<Object_Literal.Property>
@@ -411,40 +422,33 @@ export namespace Expression {
     export namespace Object_Literal {
         export type Property =
             | ['property', Property.Assignment]
-            | ['shorthand property', {
-                'name': Identifier
-                'initializer': p_.Optional_Value<{
-                    'equals token': d_primitives.Keyword
-                    'expression': Expression
-                }>
-            }]
+            | ['shorthand property', Property.Shorthand_Property]
             | ['method', Property.Method]
             | ['spread', {
                 'dot dot dot token': d_primitives.Keyword
                 'expression': Expression
             }]
-            | ['get accessor', {
+            | ['get accessor', Property.Get_Accessor]
+            | ['set accessor', Property.Set_Accessor]
+        export namespace Property {
+            export type Assignment = {
+                'jsdoc': JSDoc
+                'name': Property_Name
+                'question token': p_.Optional_Value<d_primitives.Keyword>
+                'colon token': d_primitives.Keyword
+                'initializer': Expression
+            }
+            export type Get_Accessor = {
+                'jsdoc': JSDoc
+                'modifiers': Signature_Modifiers
                 'get keyword': d_primitives.Keyword
                 'name': Property_Name
                 'parameters': Parameters
                 'return type': Return_Type_Annotation
                 'body': p_.Optional_Value<Block>
-            }]
-            | ['set accessor', {
-                'set keyword': d_primitives.Keyword
-                'name': Property_Name
-                'parameters': Parameters
-                'return type': Return_Type_Annotation
-                'body': p_.Optional_Value<Block>
-            }]
-        export namespace Property {
-            export type Assignment = {
-                'jsdoc': JSDoc
-                'name': Property_Name
-                'colon token': d_primitives.Keyword
-                'initializer': Expression
             }
             export type Method = {
+                'jsdoc': JSDoc
                 'asterisk token': p_.Optional_Value<d_primitives.Keyword>
                 'name': Property_Name
                 'type parameters': Type_Parameters
@@ -452,6 +456,24 @@ export namespace Expression {
                 'return type': Return_Type_Annotation
                 'body': p_.Optional_Value<Block>
                 'semicolon': Semi_Colon
+            }
+            export type Set_Accessor = {
+                'jsdoc': JSDoc
+                // 'modifiers': Signature_Modifiers
+                'set keyword': d_primitives.Keyword
+                'name': Property_Name
+                'parameters': Parameters
+                'return type': Return_Type_Annotation
+                'body': p_.Optional_Value<Block>
+            }
+            export type Shorthand_Property = {
+                'name': Identifier
+                'initializer': p_.Optional_Value<{
+                    'equals token': d_primitives.Keyword
+                    'expression': Expression
+                }>
+                'question token': p_.Optional_Value<d_primitives.Keyword>
+                'exclamation token': p_.Optional_Value<d_primitives.Keyword>
             }
         }
     }
@@ -658,6 +680,9 @@ export namespace Parameters {
 
 export type Property_Name = {
     'jsdoc': JSDoc
+    'modifiers': p_.Optional_Value<p_di.List<
+        | ['async', d_primitives.Keyword]
+    >>
     'type':
     | ['computed', Property_Name.Computed]
     | ['identifier', Identifier]
