@@ -1292,6 +1292,7 @@ export type Type__Tuple = {
 
 export type Type__Tuple__Element = 
 | ['named', {
+    'dot dot dot token': p_.Optional_Value<d_primitives.Keyword>
     'name': Identifier
     'question token': p_.Optional_Value<d_primitives.Keyword>
     'colon token': d_primitives.Keyword

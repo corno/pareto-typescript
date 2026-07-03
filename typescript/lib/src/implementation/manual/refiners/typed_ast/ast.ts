@@ -2062,10 +2062,10 @@ export const Type: h.Production<d_out.Type> = ($, abort, $p) => h.create_iterato
                                     switch (kind) {
                                         case "NamedTupleMember": return ['named', context.option("named tuple member").consume_and_parse_children_as_type(
                                             (context) => ({
-                                                // 'dot dot dot token': context.prop("dot dot dot token").optional(
-                                                //     "DotDotDotToken",
-                                                //     ($) => context.consume_keyword()
-                                                // ),
+                                                'dot dot dot token': context.prop("dot dot dot token").peek_for_optional(
+                                                    "DotDotDotToken",
+                                                    (context) => context.consume_keyword()
+                                                ),
                                                 'name': context.prop("identifier").assert_kind("Identifier").consume_literal(),
                                                 'question token': context.prop("question token").peek_for_optional(
                                                     "QuestionToken",

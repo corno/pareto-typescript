@@ -1729,6 +1729,10 @@ export const Type: p_i.Transformer<d_in.Type, d_out.Phrase> = ($) => p_.from.sta
                                         ($) => {
                                             switch ($[0]) {
                                                 case 'named': return p_.ss($, ($) => sh.ph.composed(p_.literal.list([
+                                                    p_.from.optional($['dot dot dot token']).decide(
+                                                        () => sh.ph.literal("..."),
+                                                        () => sh.ph.nothing()
+                                                    ),
                                                     sh.ph.literal($.name.text),
                                                     p_.from.optional($['question token']).decide(
                                                         () => sh.ph.literal("?"),
