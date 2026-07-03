@@ -613,6 +613,10 @@ export const Expression: h.Production<d_out.Expression> = ($, abort, $p) => h.cr
                                         case "MethodDeclaration": return ['method', context.option("method").consume_and_parse_children_as_type(
                                             (context): d_out.Expression.Object_Literal.Property.Method => ({
                                                 // 'jsdoc': context.prop("jsdoc").defer_parsing_to_component(JSDoc),
+                                                'asterisk token': context.prop("asterisk token").peek_for_optional(
+                                                    "AsteriskToken",
+                                                    (context) => context.consume_keyword()
+                                                ),
                                                 'name': context.prop("name").defer_parsing_to_component(Property_Name),
                                                 'type parameters': context.prop("type parameters").defer_parsing_to_component(Type_Parameters),
                                                 'parameters': context.prop("parameters").defer_parsing_to_component(Parameters),
@@ -633,12 +637,10 @@ export const Expression: h.Production<d_out.Expression> = ($, abort, $p) => h.cr
                                                 'name': context.prop("name").defer_parsing_to_component(Identifier),
                                                 'initializer': context.prop("initializer").peek_for_optional(
                                                     "EqualsToken",
-                                                    (context) => context.consume_and_parse_children_as_type(
-                                                        (context) => ({
-                                                            'equals token': context.prop("equals token").assert_kind("EqualsToken").consume_keyword(),
-                                                            'expression': context.prop("expression").defer_parsing_to_component(Expression),
-                                                        })
-                                                    )
+                                                    (context) => ({
+                                                        'equals token': context.prop("equals token").assert_kind("EqualsToken").consume_keyword(),
+                                                        'expression': context.prop("expression").defer_parsing_to_component(Expression),
+                                                    })
                                                 ),
                                             })
                                         )]
@@ -1910,7 +1912,7 @@ export const Type: h.Production<d_out.Type> = ($, abort, $p) => h.create_iterato
                     (context): d_out.Type.Constructor => ({
                         'modifiers': context.prop("modifiers").defer_parsing_to_component(Signature_Modifiers),
                         'new keyword': context.prop("new keyword").assert_kind("NewKeyword").consume_keyword(),
-                        // 'type parameters': context.prop("type parameters").construct_component(
+                        'type parameters': context.prop("type parameters").defer_parsing_to_component(Type_Parameters),
                         'parameters': context.prop("parameters").defer_parsing_to_component(Parameters),
                         'equals greater than token': context.prop("equals greater than token").assert_kind("EqualsGreaterThanToken").consume_keyword(),
                         'type': context.prop("type").defer_parsing_to_component(Type),
@@ -2170,6 +2172,7 @@ export const Type: h.Production<d_out.Type> = ($, abort, $p) => h.create_iterato
                 )]
                 case "RestType": return ['rest type', context.option("rest type").consume_and_parse_children_as_type(
                     (context): d_out.Type.Rest => ({
+                        'dot dot dot token': context.prop("dot dot dot token").assert_kind("DotDotDotToken").consume_keyword(),
                         'type': context.prop("type").defer_parsing_to_component(Type),
                     })
                 )]
@@ -2252,6 +2255,21 @@ export const Type_Parameters: h.Production<d_out.Type_Parameters> = (iterator, a
                 "CommaToken",
                 (context) => context.assert_kind("TypeParameter").consume_and_parse_children_as_type(
                     (context): d_out.Type_Parameters.Entries => ({
+                        'modifiers': context.prop("modifiers").peek_for_optional(
+                            "SyntaxList",
+                            (context) => context.consume_and_parse_children_as_non_separated_list(
+                                (context) => context.peek_for_state(
+                                    (kind, abort) => {
+                                        switch (kind) {
+                                            case "InKeyword": return ['in', context.option("in").consume_keyword()]
+                                            case "OutKeyword": return ['out', context.option("out").consume_keyword()]
+                                            case "ConstKeyword": return ['const', context.option("const").consume_keyword()]
+                                            default: return abort(null)
+                                        }
+                                    }
+                                )
+                            )
+                        ),
                         'identifier': context.prop("identifier").defer_parsing_to_component(Identifier),
                         'extends': context.prop("extends").peek_for_optional(
                             "ExtendsKeyword",

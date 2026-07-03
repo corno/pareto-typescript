@@ -430,6 +430,7 @@ export namespace Expression {
                 'initializer': Expression
             }
             export type Method = {
+                'asterisk token': p_.Optional_Value<d_primitives.Keyword>
                 'name': Property_Name
                 'type parameters': Type_Parameters
                 'parameters': Parameters
@@ -1127,7 +1128,7 @@ export namespace Type {
     export type Constructor = {
         'modifiers': Signature_Modifiers
         'new keyword': d_primitives.Keyword
-        // 'type parameters': Type_Parameters
+        'type parameters': Type_Parameters
         'parameters': Parameters
         'equals greater than token': d_primitives.Keyword
         'type': Type
@@ -1248,6 +1249,7 @@ export namespace Type {
         }>
     }
     export type Rest = {
+        'dot dot dot token': d_primitives.Keyword
         'type': Type
     }
     export type Tuple = {
@@ -1308,6 +1310,11 @@ export type Type_Parameters = p_.Optional_Value<{
 
 export namespace Type_Parameters {
     export type Entries = {
+        'modifiers': p_.Optional_Value<p_.List<
+            | ['in', d_primitives.Keyword]
+            | ['out', d_primitives.Keyword]
+            | ['const', d_primitives.Keyword]
+        >>
         'identifier': Identifier
         'extends': p_.Optional_Value<{
             'extends keyword': d_primitives.Keyword

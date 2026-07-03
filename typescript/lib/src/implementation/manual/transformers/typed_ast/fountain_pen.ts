@@ -507,6 +507,10 @@ export const Expression: p_i.Transformer<d_in.Expression, d_out.Phrase> = ($) =>
                                         ($) => {
                                             switch ($[0]) {
                                                 case 'method': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
+                                                    p_.from.optional($['asterisk token']).decide(
+                                                        () => sh.ph.literal("*"),
+                                                        () => sh.ph.nothing()
+                                                    ),
                                                     Property_Name($['name']),
                                                     Type_Parameters($['type parameters']),
                                                     Parameters($['parameters']),
@@ -1596,6 +1600,7 @@ export const Type: p_i.Transformer<d_in.Type, d_out.Phrase> = ($) => p_.from.sta
             case 'constructor': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                 Signature_Modifiers($['modifiers']),
                 sh.ph.literal("new "),
+                Type_Parameters($['type parameters']),
                 Parameters($['parameters']),
                 sh.ph.literal(" => "),
                 Type($['type']),
@@ -1898,6 +1903,21 @@ export const Type_Parameters: p_i.Transformer<d_in.Type_Parameters, d_out.Phrase
                     switch ($[0]) {
                         case 'separator': return p_.option($, ($) => sh.ph.literal(", "))
                         case 'entry': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
+                            p_.from.optional($['modifiers']).decide(
+                                ($) => sh.ph.composed(p_.from.list($).map(
+                                    ($) => p_.from.state($).decide(
+                                        ($) => {
+                                            switch ($[0]) {
+                                                case 'in': return p_.option($, ($) => sh.ph.literal("in "))
+                                                case 'out': return p_.option($, ($) => sh.ph.literal("out "))
+                                                case 'const': return p_.option($, ($) => sh.ph.literal("const "))
+                                                default: return p_.au($[0])
+                                            }
+                                        }
+                                    )
+                                )),
+                                () => sh.ph.nothing()
+                            ),
                             sh.ph.literal($.identifier.text),
                             p_.from.optional($['extends']).decide(
                                 ($) => sh.ph.composed(p_.literal.list([
