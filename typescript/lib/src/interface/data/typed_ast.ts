@@ -497,13 +497,15 @@ export type Heritage__Clause = {
 
 export type Identifier = d_primitives.Literal
 
+export type As_Alias = {
+    'as keyword': d_primitives.Keyword
+    'identifier': Identifier
+}
+
 export type Import_Specifier = {
     'type keyword': p_.Optional_Value<d_primitives.Keyword>
     'identifier': Identifier
-    'as': p_.Optional_Value<{
-        'as keyword': d_primitives.Keyword
-        'identifier': Identifier
-    }>
+    'as': p_.Optional_Value<As_Alias>
 }
 
 export type Initializer = {
@@ -806,10 +808,7 @@ export type Statement__Export_Declaration = {
     'type':
     | ['all', {
         'asterisk token': d_primitives.Keyword
-        'as': p_.Optional_Value<{
-            'as keyword': d_primitives.Keyword
-            'identifier': Identifier
-        }>
+        'as': p_.Optional_Value<As_Alias>
     }]
     | ['named', {
         'open brace token': d_primitives.Keyword
@@ -836,10 +835,7 @@ export type Statement__Expression = {
 
 export type Statement__Export_Declaration_Entry = {
     'identifier': Identifier
-    'as': p_.Optional_Value<{
-        'as keyword': d_primitives.Keyword
-        'identifier': Identifier
-    }>
+    'as': p_.Optional_Value<As_Alias>
 }
 
 export type Statement__For = {
@@ -976,19 +972,13 @@ export type Statement__Module_Declaration = {
         'keyword': d_primitives.Keyword
         'name': Identifier
     }]
-    'block': Statement__Module_Declaration__Block
+    'block': Block
     'semicolon': Optional_Semi_Colon
 }
 
 export type Statement__Module_Declaration__Module = {
     'keyword': d_primitives.Keyword
     'name': Property_Name
-}
-
-export type Statement__Module_Declaration__Block = { //FIXME; is this different from 'Block'?
-    'open brace token': d_primitives.Keyword
-    'statements': Statements
-    'close brace token': d_primitives.Keyword
 }
 
 export type Statement__Namespace_Export = {

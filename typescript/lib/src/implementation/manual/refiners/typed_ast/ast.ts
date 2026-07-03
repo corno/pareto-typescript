@@ -1624,7 +1624,7 @@ export const Statement: h.Production<d_out.Statement> = ($, abort, $p) => h.crea
                             }
                         ),
                         'block': context.prop("block").assert_kind("ModuleBlock").consume_and_parse_children_as_type(
-                            (context): d_out.Statement__Module_Declaration__Block => ({
+                            (context): d_out.Block => ({
                                 // 'jsdoc': context.prop("jsdoc").construct_component(
                                 //     "'jsdoc'",
                                 //     JSDoc
