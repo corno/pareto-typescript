@@ -14,6 +14,20 @@ export const Arguments: p_i.Transformer<d_in.Arguments, d_out.Phrase> = ($) => s
         () => sh.ph.nothing()
     ),
     Type_Arguments($['type arguments']),
+    p_.from.optional($['error recovery type args']).decide(
+        ($) => sh.ph.composed(p_.from.list($['entries']).map(
+            ($): d_out.Phrase => p_.from.state($).decide(
+                ($) => {
+                    switch ($[0]) {
+                        case 'separator': return p_.option($, ($) => sh.ph.literal(", "))
+                        case 'entry': return p_.option($, ($) => Type($))
+                        default: return p_.au($[0])
+                    }
+                }
+            )
+        )),
+        () => sh.ph.nothing()
+    ),
     sh.ph.literal("("),
     sh.ph.indent(
         sh.pg.sentences(
@@ -1507,8 +1521,37 @@ export const Statement: p_i.Transformer<d_in.Statement, d_out.Phrase> = ($) => s
                                             sh.ph.literal($['identifier'].text)
                                         ])))
                                         case 'defer': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
-                                            sh.ph.literal("defer * as "),
-                                            sh.ph.literal($['namespace import']['identifier'].text)
+                                            sh.ph.literal("defer "),
+                                            p_.from.state($['import']).decide(
+                                                ($) => {
+                                                    switch ($[0]) {
+                                                        case 'namespace import': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
+                                                            sh.ph.literal("* as "),
+                                                            sh.ph.literal($['identifier'].text)
+                                                        ])))
+                                                        case 'named imports': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
+                                                            sh.ph.literal("{"),
+                                                            sh.ph.composed(p_.from.list($.entries).map(
+                                                                ($): d_out.Phrase => p_.from.state($).decide(
+                                                                    ($) => {
+                                                                        switch ($[0]) {
+                                                                            case 'separator': return p_.option($, ($) => sh.ph.literal(", "))
+                                                                            case 'entry': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
+                                                                                p_.from.optional($['type keyword']).decide(() => sh.ph.literal("type "), () => sh.ph.nothing()),
+                                                                                sh.ph.literal($.identifier.text),
+                                                                                p_.from.optional($['as']).decide(($) => As_Alias($), () => sh.ph.nothing()),
+                                                                            ])))
+                                                                            default: return p_.au($[0])
+                                                                        }
+                                                                    }
+                                                                )
+                                                            )),
+                                                            sh.ph.literal("}"),
+                                                        ])))
+                                                        default: return p_.au($[0])
+                                                    }
+                                                }
+                                            ),
                                         ])))
                                         default: return p_.au($[0])
                                     }
@@ -1561,7 +1604,7 @@ export const Statement: p_i.Transformer<d_in.Statement, d_out.Phrase> = ($) => s
                                                 case 'entry': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                                                     sh.ph.literal($.name.text),
                                                     sh.ph.literal(": "),
-                                                    sh.ph.literal($['value'].text),
+                                                    Expression($['value']),
                                                 ])))
                                                 default: return p_.au($[0])
                                             }
@@ -1874,7 +1917,7 @@ export const Type: p_i.Transformer<d_in.Type, d_out.Phrase> = ($) => p_.from.sta
                                         case 'entry': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                                             Property_Name($['name']),
                                             sh.ph.literal(": "),
-                                            sh.ph.literal($.value.text),
+                                            Expression($.value),
                                         ])))
                                         default: return p_.au($[0])
                                     }
@@ -1894,6 +1937,20 @@ export const Type: p_i.Transformer<d_in.Type, d_out.Phrase> = ($) => p_.from.sta
                     () => sh.ph.nothing()
                 ),
                 Type_Arguments($['type arguments']),
+                p_.from.optional($['error recovery type args']).decide(
+                    ($) => sh.ph.composed(p_.from.list($['entries']).map(
+                        ($): d_out.Phrase => p_.from.state($).decide(
+                            ($) => {
+                                switch ($[0]) {
+                                    case 'separator': return p_.option($, ($) => sh.ph.literal(", "))
+                                    case 'entry': return p_.option($, ($) => Type($))
+                                    default: return p_.au($[0])
+                                }
+                            }
+                        )
+                    )),
+                    () => sh.ph.nothing()
+                ),
             ])))
             case 'indexed access': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                 Type($['object type']),
@@ -2007,8 +2064,13 @@ export const Type: p_i.Transformer<d_in.Type, d_out.Phrase> = ($) => p_.from.sta
                                     ])),
                                     () => sh.ph.nothing()
                                 ),
-                                sh.ph.literal(": "),
-                                Type($['type']),
+                                p_.from.optional($['body']).decide(
+                                    ($) => sh.ph.composed(p_.literal.list([
+                                        sh.ph.literal(": "),
+                                        Type($['type']),
+                                    ])),
+                                    () => sh.ph.nothing()
+                                ),
                             ]),
                         )
                     ]))
@@ -2094,7 +2156,20 @@ export const Type: p_i.Transformer<d_in.Type, d_out.Phrase> = ($) => p_.from.sta
                     () => sh.ph.nothing()
                 ),
                 Type_Arguments($['type arguments']),
-
+                p_.from.optional($['error recovery type args']).decide(
+                    ($) => sh.ph.composed(p_.from.list($['entries']).map(
+                        ($): d_out.Phrase => p_.from.state($).decide(
+                            ($) => {
+                                switch ($[0]) {
+                                    case 'separator': return p_.option($, ($) => sh.ph.literal(", "))
+                                    case 'entry': return p_.option($, ($) => Type($))
+                                    default: return p_.au($[0])
+                                }
+                            }
+                        )
+                    )),
+                    () => sh.ph.nothing()
+                ),
             ])))
             case 'union type': return p_.option($, ($) => sh.ph.composed(
                 p_.from.list($['members']).map(

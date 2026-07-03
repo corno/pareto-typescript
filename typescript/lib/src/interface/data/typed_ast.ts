@@ -8,6 +8,10 @@ import { e } from 'pareto-core/dist/implementation/query'
 export type Arguments = {
     'question dot token': p_.Optional_Value<d_primitives.Keyword>
     'type arguments': Type_Arguments
+    'error recovery type args': p_.Optional_Value<{
+        'entries': Separated_List<Type>
+        'greater than token': p_.Optional_Value<d_primitives.Keyword>
+    }>
     'open parenthesis token': d_primitives.Keyword
     'arguments': Separated_List<Arguments.L>
     'close parenthesis token': d_primitives.Keyword
@@ -540,7 +544,7 @@ export namespace Import_Attributes {
     export type Entry = {
         'name': Property_Name
         'colon token': d_primitives.Keyword
-        'value': String_Literal
+        'value': Expression
     }
 }
 
@@ -657,13 +661,13 @@ export type Optional_Type = p_.Optional_Value<{
     'type': Type
 }>
 
-export namespace Parameter {
-    export type Modifier =
-        | ['private', d_primitives.Keyword]
-        | ['public', d_primitives.Keyword]
-        | ['protected', d_primitives.Keyword]
-        | ['readonly', d_primitives.Keyword]
-}
+// export namespace Parameter {
+//     export type Modifier =
+//         | ['private', d_primitives.Keyword]
+//         | ['public', d_primitives.Keyword]
+//         | ['protected', d_primitives.Keyword]
+//         | ['readonly', d_primitives.Keyword]
+// }
 
 export type Parameters = {
     'jsdoc': JSDoc
@@ -1006,7 +1010,9 @@ export namespace Statement {
             }]
             | ['defer', {
                 'defer keyword': d_primitives.Keyword
-                'namespace import': Namespace
+                'import':
+                | ['namespace import', Namespace]
+                | ['named imports', Named_Imports]
             }]
         }
         export type Named_Imports = {
@@ -1037,7 +1043,7 @@ export namespace Statement {
             'elements': h.Separated_List<{
                 'name': Identifier
                 'colon token': d_primitives.Keyword
-                'value': String_Literal
+                'value': Expression
             }>
             'close brace token': d_primitives.Keyword
         }>
@@ -1272,6 +1278,10 @@ export namespace Type {
             'name': Entity_Name
         }>
         'type arguments': Type_Arguments
+        'error recovery type args': p_.Optional_Value<{
+            'entries': h.Separated_List<Type>
+            'greater than token': p_.Optional_Value<d_primitives.Keyword>
+        }>
     }
     export type Indexed_Access = {
         'object type': Type
@@ -1343,9 +1353,11 @@ export namespace Type {
             'modifier': p_.Optional_Value<d_primitives.Literal>
             'question token': d_primitives.Keyword
         }>
-        'colon token': d_primitives.Keyword
-        'type': Type
-        'semicolon': Semi_Colon
+        'body': p_.Optional_Value<{
+            'colon token': d_primitives.Keyword
+            'type': Type
+            'semicolon': Semi_Colon
+        }>
         'dummy syntax list': p_.List<Object_Type.Signature>
         'close brace token': d_primitives.Keyword
     }
@@ -1404,6 +1416,10 @@ export namespace Type {
         'entity name': Entity_Name
         'dot token': p_.Optional_Value<d_primitives.Keyword>
         'type arguments': Type_Arguments
+        'error recovery type args': p_.Optional_Value<{
+            'entries': h.Separated_List<Type>
+            'greater than token': p_.Optional_Value<d_primitives.Keyword>
+        }>
     }
     export type Union = {
         'members': h.Separated_List<Type>
