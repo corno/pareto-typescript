@@ -133,6 +133,7 @@ export namespace Class_Body {
             'modifiers': Signature_Modifiers
             'asterisk token': p_.Optional_Value<d_primitives.Keyword>
             'name': Property_Name
+            'question token': p_.Optional_Value<d_primitives.Keyword>
             'type parameters': Type_Parameters
             'parameters': Parameters
             'return type': Return_Type_Annotation
@@ -380,7 +381,9 @@ export namespace Expression {
             | ['async', d_primitives.Keyword]
         >>
         'function keyword': d_primitives.Keyword
+        'asterisk token': p_.Optional_Value<d_primitives.Keyword>
         'name': p_.Optional_Value<Identifier>
+        'type parameters': Type_Parameters
         'parameters': Parameters
         'return type': Return_Type_Annotation
         'body': Block
@@ -395,6 +398,10 @@ export namespace Expression {
             | ['property', Property.Assignment]
             | ['shorthand property', {
                 'name': Identifier
+                'initializer': p_.Optional_Value<{
+                    'equals token': d_primitives.Keyword
+                    'expression': Expression
+                }>
             }]
             | ['method', Property.Method]
             | ['spread', {
@@ -403,6 +410,13 @@ export namespace Expression {
             }]
             | ['get accessor', {
                 'get keyword': d_primitives.Keyword
+                'name': Property_Name
+                'parameters': Parameters
+                'return type': Return_Type_Annotation
+                'body': p_.Optional_Value<Block>
+            }]
+            | ['set accessor', {
+                'set keyword': d_primitives.Keyword
                 'name': Property_Name
                 'parameters': Parameters
                 'return type': Return_Type_Annotation
@@ -497,9 +511,11 @@ export namespace Object_Type {
         | ['index', Signature.Index]
         | ['method', Signature.Method]
         | ['property', Signature.Property]
+        | ['set accessor', Signature.Set_Accessor]
     export namespace Signature {
         export type Call = {
             'jsdoc': JSDoc
+            'type parameters': Type_Parameters
             'parameters': Parameters
             'type': Optional_Type
             'semicolon': Optional_Semi_Colon
@@ -515,6 +531,14 @@ export namespace Object_Type {
         export type Get_Accessor = {
             'jsdoc': JSDoc
             'get keyword': d_primitives.Keyword
+            'name': Property_Name
+            'parameters': Parameters
+            'return type': Return_Type_Annotation
+            'semicolon': Optional_Semi_Colon
+        }
+        export type Set_Accessor = {
+            'jsdoc': JSDoc
+            'set keyword': d_primitives.Keyword
             'name': Property_Name
             'parameters': Parameters
             'return type': Return_Type_Annotation
@@ -851,7 +875,8 @@ export namespace Statement {
         'jsdoc': JSDoc
         'modifiers': Statement_Modifiers
         'function keyword': d_primitives.Keyword
-        'identifier': Identifier
+        'asterisk token': p_.Optional_Value<d_primitives.Keyword>
+        'identifier': p_.Optional_Value<Identifier>
         'type parameters': Type_Parameters
         'parameters': Parameters
         'return type annotation': Return_Type_Annotation //FIXME Return Type_Annotation
@@ -859,6 +884,7 @@ export namespace Statement {
         'semicolon': Optional_Semi_Colon
     }
     export type If = {
+        'jsdoc': JSDoc
         'if keyword': d_primitives.Keyword
         'open parenthesis token': d_primitives.Keyword
         'expression': Expression
@@ -1077,6 +1103,7 @@ export type Type =
     | ['type operator', Type.Type_Operator]
     | ['type predicate', Type_Predicate]
     | ['type reference', Type.Type_Reference]
+    | ['rest type', Type.Rest]
     | ['union type', Type.Union]
     | ['undefined', d_primitives.Keyword]
     | ['unknown', d_primitives.Keyword]
@@ -1219,6 +1246,9 @@ export namespace Type {
             | ['middle', d_primitives.Literal]
             | ['tail', d_primitives.Literal]
         }>
+    }
+    export type Rest = {
+        'type': Type
     }
     export type Tuple = {
         readonly 'open bracket token': d_primitives.Keyword
