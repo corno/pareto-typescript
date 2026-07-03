@@ -31,6 +31,17 @@ export const Arguments: h.Production<d_out.Arguments> = ($, abort, $p) => h.crea
     })
 )
 
+export const As_Alias: h.Production<d_out.As_Alias> = (iterator, abort, $p) => h.create_iterator_context(
+    iterator,
+    abort,
+    $p,
+    "As_Alias",
+    (context): d_out.As_Alias => ({
+        'as keyword': context.prop("as keyword").consume_keyword(),
+        'identifier': context.prop("identifier").defer_parsing_to_component(Identifier)
+    })
+)
+
 export const Binding_Pattern: h.Production<d_out.Binding_Pattern> = ($, abort, $p) => h.create_iterator_context(
     $,
     abort,
@@ -62,6 +73,10 @@ export const Binding_Pattern: h.Production<d_out.Binding_Pattern> = ($, abort, $
                     }
                 )
             )
+        ),
+        'dot dot dot token': context.prop("dot dot dot token").peek_for_optional(
+            "DotDotDotToken",
+            (context) => context.consume_keyword()
         ),
         'type': context.prop("type").peek_for_state(
             (kind, abort): d_out.Binding_Pattern['type'] => {
@@ -908,67 +923,6 @@ export const Identifier: h.Production<d_out.Identifier> = (iterator, abort, $p) 
     (context): d_out.Identifier => context.consume_literal()
 )
 
-export const As_Alias: h.Production<d_out.As_Alias> = (iterator, abort, $p) => h.create_iterator_context(
-    iterator,
-    abort,
-    $p,
-    "As_Alias",
-    (context): d_out.As_Alias => ({
-        'as keyword': context.prop("as keyword").consume_keyword(),
-        'identifier': context.prop("identifier").defer_parsing_to_component(Identifier)
-    })
-)
-
-export const Numeric_Literal: h.Production<d_out.Numeric_Literal> = (iterator, abort, $p) => h.create_iterator_context(
-    iterator,
-    abort,
-    $p,
-    "Numeric_Literal",
-    (context): d_out.Numeric_Literal => context.consume_literal()
-)
-
-export const Module_Specifier: h.Production<d_out.Module_Specifier> = (iterator, abort, $p) => h.create_iterator_context(
-    iterator, abort, $p,
-    "Module_Specifier",
-    (context): d_out.Module_Specifier => context.peek_for_state(
-        (kind, abort): d_out.Module_Specifier => {
-            switch (kind) {
-                case "StringLiteral": return ['string literal', context.option("string literal").consume_literal()]
-                case "TemplateExpression": return ['template', context.option("template").consume_and_parse_children_as_type(
-                    (context): d_out.Expression.Template => ({
-                        'head': context.prop("head").assert_kind("TemplateHead").consume_literal(),
-                        'template spans': context.prop("template spans").assert_kind("SyntaxList").consume_and_parse_children_as_non_separated_list(
-                            (context) => context.consume_and_parse_children_as_type(
-                                (context) => ({
-                                    'expression': context.prop("expression").defer_parsing_to_component(Expression),
-                                    'suffix': context.prop("suffix").peek_for_state(
-                                        (kind, abort) => {
-                                            switch (kind) {
-                                                case "TemplateTail": return ['tail', context.option("tail").consume_literal()]
-                                                case "TemplateMiddle": return ['middle', context.option("middle").consume_literal()]
-                                                default: return abort(null)
-                                            }
-                                        }
-                                    )
-                                })
-                            )
-                        )
-                    })
-                )]
-                default: return abort(null)
-            }
-        }
-    )
-)
-
-export const String_Literal: h.Production<d_out.String_Literal> = (iterator, abort, $p) => h.create_iterator_context(
-    iterator,
-    abort,
-    $p,
-    "String_Literal",
-    (context): d_out.String_Literal => context.consume_literal()
-)
-
 export const Import_Attributes: h.Refiner<d_out.Import_Attributes> = ($, abort, $p) => h.create_node_context(
     $,
     abort,
@@ -1014,7 +968,92 @@ export const JSDoc: h.Production<d_out.JSDoc> = (iterator, abort, $p) => h.creat
     )
 )
 
-const parse_object_type_signature: h.Production<d_out.Object_Type.Signature> = (iterator, abort, $p) => h.create_iterator_context(
+export const Module_Body: h.Production<d_out.Module_Body> = (iterator, abort, $p) => h.create_iterator_context(
+    iterator, abort, $p, "Module_Body",
+    (context): d_out.Module_Body => context.peek_for_state(
+        (kind, abort): d_out.Module_Body => {
+            switch (kind) {
+                case "ModuleBlock": return ['module block', context.option("module block").consume_and_parse_children_as_type(
+                    (context): d_out.Block => ({
+                        'open brace token': context.prop("open brace token").assert_kind("OpenBraceToken").consume_keyword(),
+                        'statements': context.prop("statements").consume_component(Statements),
+                        'close brace token': context.prop("close brace token").assert_kind("CloseBraceToken").consume_keyword(),
+                    })
+                )]
+                case "DotToken": return ['dotted', context.option("dotted").based_on_first_node(
+                    (context) => ({
+                        'dot token': context.prop("dot token").consume_keyword(),
+                        'module declaration': context.prop("module declaration").assert_kind("ModuleDeclaration").consume_and_parse_children_as_type(
+                            (context) => ({
+                                'name': context.prop("name").defer_parsing_to_component(Identifier),
+                                'block': context.prop("block").defer_parsing_to_component(Module_Body),
+                            })
+                        ),
+                    })
+                )]
+                default: return ['shorthand', context.prop("shorthand").defer_parsing_to_component(Optional_Semi_Colon)]
+            }
+        }
+    )
+)
+
+export const Module_Specifier: h.Production<d_out.Module_Specifier> = (iterator, abort, $p) => h.create_iterator_context(
+    iterator, abort, $p,
+    "Module_Specifier",
+    (context): d_out.Module_Specifier => context.peek_for_state(
+        (kind, abort): d_out.Module_Specifier => {
+            switch (kind) {
+                case "StringLiteral": return ['string literal', context.option("string literal").consume_literal()]
+                case "TemplateExpression": return ['template', context.option("template").consume_and_parse_children_as_type(
+                    (context): d_out.Expression.Template => ({
+                        'head': context.prop("head").assert_kind("TemplateHead").consume_literal(),
+                        'template spans': context.prop("template spans").assert_kind("SyntaxList").consume_and_parse_children_as_non_separated_list(
+                            (context) => context.consume_and_parse_children_as_type(
+                                (context) => ({
+                                    'expression': context.prop("expression").defer_parsing_to_component(Expression),
+                                    'suffix': context.prop("suffix").peek_for_state(
+                                        (kind, abort) => {
+                                            switch (kind) {
+                                                case "TemplateTail": return ['tail', context.option("tail").consume_literal()]
+                                                case "TemplateMiddle": return ['middle', context.option("middle").consume_literal()]
+                                                default: return abort(null)
+                                            }
+                                        }
+                                    )
+                                })
+                            )
+                        )
+                    })
+                )]
+                default: return abort(null)
+            }
+        }
+    )
+)
+
+export const Numeric_Literal: h.Production<d_out.Numeric_Literal> = (iterator, abort, $p) => h.create_iterator_context(
+    iterator,
+    abort,
+    $p,
+    "Numeric_Literal",
+    (context): d_out.Numeric_Literal => context.consume_literal()
+)
+
+export const Object_Type: h.Production<d_out.Object_Type> = (iterator, abort, $p) => h.create_iterator_context(
+    iterator,
+    abort,
+    $p,
+    "Object_Type",
+    (context): d_out.Object_Type => ({
+        'open brace token': context.prop("open brace token").assert_kind("OpenBraceToken").consume_keyword(),
+        'signatures': context.prop("signatures").assert_kind("SyntaxList").consume_and_parse_children_as_non_separated_list(
+            (context): d_out.Object_Type.Signature => context.defer_parsing_to_component(Object_Type_Signature),
+        ),
+        'close brace token': context.prop("close brace token").assert_kind("CloseBraceToken").consume_keyword(),
+    })
+)
+
+const Object_Type_Signature: h.Production<d_out.Object_Type.Signature> = (iterator, abort, $p) => h.create_iterator_context(
     iterator,
     abort,
     $p,
@@ -1120,20 +1159,6 @@ const parse_object_type_signature: h.Production<d_out.Object_Type.Signature> = (
             }
         }
     )
-)
-
-export const Object_Type: h.Production<d_out.Object_Type> = (iterator, abort, $p) => h.create_iterator_context(
-    iterator,
-    abort,
-    $p,
-    "Object_Type",
-    (context): d_out.Object_Type => ({
-        'open brace token': context.prop("open brace token").assert_kind("OpenBraceToken").consume_keyword(),
-        'signatures': context.prop("signatures").assert_kind("SyntaxList").consume_and_parse_children_as_non_separated_list(
-            (context): d_out.Object_Type.Signature => context.defer_parsing_to_component(parse_object_type_signature),
-        ),
-        'close brace token': context.prop("close brace token").assert_kind("CloseBraceToken").consume_keyword(),
-    })
 )
 
 export const Optional_Initializer: h.Production<d_out.Optional_Initializer> = (iterator, abort, $p) => h.create_iterator_context(
@@ -1253,39 +1278,6 @@ export const Qualified_Name: h.Refiner<d_out.Qualified_Name> = ($, abort, $p) =>
     )
 )
 
-export const Type_Predicate: h.Refiner<d_out.Type_Predicate> = ($, abort, $p) => h.create_node_context(
-    $,
-    abort,
-    $p,
-    "TypePredicate",
-    (context): d_out.Type_Predicate => context.parse_children_as_type(
-        (context): d_out.Type_Predicate => ({
-            'asserts keyword': context.prop("asserts keyword").peek_for_optional(
-                "AssertsKeyword",
-                (context) => context.consume_keyword()
-            ),
-            'parameter name': context.prop("parameter name").peek_for_state(
-                (kind, abort) => {
-                    switch (kind) {
-                        case "Identifier": return ['identifier', context.option("identifier").defer_parsing_to_component(Identifier)]
-                        case "ThisType": return ['this', context.option("this").consume_and_parse_children_as_type(
-                            (context) => context.assert_kind("ThisKeyword").consume_keyword()
-                        )]
-                        default: return abort(null)
-                    }
-                }
-            ),
-            'is predicate': context.prop("is predicate").peek_for_optional(
-                "IsKeyword",
-                (context) => ({
-                    'is keyword': context.prop("is keyword").consume_keyword(),
-                    'type': context.prop("type").defer_parsing_to_component(Type),
-                })
-            ),
-        })
-    )
-)
-
 export const Return_Type_Annotation: h.Production<d_out.Return_Type_Annotation> = (iterator, abort, $p) => h.create_iterator_context(
     iterator,
     abort,
@@ -1357,35 +1349,6 @@ export const Source_File: h.Root<d_out.Source_File> = ($, abort) => h.create_roo
                             'jsdoc': context.prop("jsdoc").defer_parsing_to_component(JSDoc),
                         })
                     ),
-            }
-        }
-    )
-)
-
-export const Module_Body: h.Production<d_out.Module_Body> = (iterator, abort, $p) => h.create_iterator_context(
-    iterator, abort, $p, "Module_Body",
-    (context): d_out.Module_Body => context.peek_for_state(
-        (kind, abort): d_out.Module_Body => {
-            switch (kind) {
-                case "ModuleBlock": return ['module block', context.option("module block").consume_and_parse_children_as_type(
-                    (context): d_out.Block => ({
-                        'open brace token': context.prop("open brace token").assert_kind("OpenBraceToken").consume_keyword(),
-                        'statements': context.prop("statements").consume_component(Statements),
-                        'close brace token': context.prop("close brace token").assert_kind("CloseBraceToken").consume_keyword(),
-                    })
-                )]
-                case "DotToken": return ['dotted', context.option("dotted").based_on_first_node(
-                    (context) => ({
-                        'dot token': context.prop("dot token").consume_keyword(),
-                        'module declaration': context.prop("module declaration").assert_kind("ModuleDeclaration").consume_and_parse_children_as_type(
-                            (context) => ({
-                                'name': context.prop("name").defer_parsing_to_component(Identifier),
-                                'block': context.prop("block").defer_parsing_to_component(Module_Body),
-                            })
-                        ),
-                    })
-                )]
-                default: return ['shorthand', context.prop("shorthand").defer_parsing_to_component(Optional_Semi_Colon)]
             }
         }
     )
@@ -2085,6 +2048,14 @@ export const Statements: h.Refiner<d_out.Statements> = ($, abort, $p) => h.creat
     )
 )
 
+export const String_Literal: h.Production<d_out.String_Literal> = (iterator, abort, $p) => h.create_iterator_context(
+    iterator,
+    abort,
+    $p,
+    "String_Literal",
+    (context): d_out.String_Literal => context.consume_literal()
+)
+
 export const Type: h.Production<d_out.Type> = ($, abort, $p) => h.create_iterator_context(
     $,
     abort,
@@ -2307,7 +2278,7 @@ export const Type: h.Production<d_out.Type> = ($, abort, $p) => h.create_iterato
                         'type': context.prop("type").defer_parsing_to_component(Type),
                         'semicolon': context.prop("semicolon").defer_parsing_to_component(Optional_Semi_Colon),
                         'dummy syntax list': context.prop("dummy syntax list").assert_kind("SyntaxList").consume_and_parse_children_as_non_separated_list(
-                            (context): d_out.Object_Type.Signature => context.defer_parsing_to_component(parse_object_type_signature),
+                            (context): d_out.Object_Type.Signature => context.defer_parsing_to_component(Object_Type_Signature),
                         ),
                         'close brace token': context.prop("close brace token").assert_kind("CloseBraceToken").consume_keyword(),
                     })
@@ -2514,6 +2485,39 @@ export const Type_Parameters: h.Production<d_out.Type_Parameters> = (iterator, a
         })
     )
 
+)
+
+export const Type_Predicate: h.Refiner<d_out.Type_Predicate> = ($, abort, $p) => h.create_node_context(
+    $,
+    abort,
+    $p,
+    "TypePredicate",
+    (context): d_out.Type_Predicate => context.parse_children_as_type(
+        (context): d_out.Type_Predicate => ({
+            'asserts keyword': context.prop("asserts keyword").peek_for_optional(
+                "AssertsKeyword",
+                (context) => context.consume_keyword()
+            ),
+            'parameter name': context.prop("parameter name").peek_for_state(
+                (kind, abort) => {
+                    switch (kind) {
+                        case "Identifier": return ['identifier', context.option("identifier").defer_parsing_to_component(Identifier)]
+                        case "ThisType": return ['this', context.option("this").consume_and_parse_children_as_type(
+                            (context) => context.assert_kind("ThisKeyword").consume_keyword()
+                        )]
+                        default: return abort(null)
+                    }
+                }
+            ),
+            'is predicate': context.prop("is predicate").peek_for_optional(
+                "IsKeyword",
+                (context) => ({
+                    'is keyword': context.prop("is keyword").consume_keyword(),
+                    'type': context.prop("type").defer_parsing_to_component(Type),
+                })
+            ),
+        })
+    )
 )
 
 export const Variable_Declaration: h.Refiner<d_out.Variable_Declaration> = ($, abort, $p) => h.create_node_context(

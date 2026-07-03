@@ -40,6 +40,7 @@ export type Binding_Pattern = {
         | ['protected', d_primitives.Keyword]
         | ['static', d_primitives.Keyword]
     >>
+    'dot dot dot token': p_.Optional_Value<d_primitives.Keyword>
     'type':
     | ['array binding pattern', Binding_Pattern.Array]
     | ['identifier', Identifier]
