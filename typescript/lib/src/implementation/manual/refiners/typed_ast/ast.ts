@@ -334,23 +334,25 @@ export const Class_Body: h.Production<d_out.Class_Body> = ($, abort, $p) => h.cr
                                 'jsdoc': context.prop("jsdoc").defer_parsing_to_component(JSDoc),
                                 'modifiers': context.prop("modifiers").defer_parsing_to_component(Signature_Modifiers),
                                 'open bracket token': context.prop("open bracket token").assert_kind("OpenBracketToken").consume_keyword(),
-                                'parameter': context.prop("parameter").assert_kind("SyntaxList").consume_and_parse_children_as_type(
+                                'parameter': context.prop("parameter").assert_kind("SyntaxList").consume_and_parse_children_as_separated_list(
+                                    "CommaToken",
                                     (context) => context.assert_kind("Parameter").consume_and_parse_children_as_type(
                                         (context) => ({
+                                            'jsdoc': context.prop("jsdoc").defer_parsing_to_component(JSDoc),
                                             'modifiers': context.prop("modifiers").defer_parsing_to_component(Signature_Modifiers),
                                             'identifier': context.prop("identifier").defer_parsing_to_component(Identifier),
-                                            'colon token': context.prop("colon token").assert_kind("ColonToken").consume_keyword(),
-                                            'type': context.prop("type").defer_parsing_to_component(Type),
-                                            'initializer': context.prop("initializer").peek_for_optional("EqualsToken", (context) => ({
-                                                'equals token': context.prop("equals token").consume_keyword(),
-                                                'expression': context.prop("expression").defer_parsing_to_component(Expression),
+                                            'annotation': context.prop("annotation").peek_for_optional("ColonToken", (context) => ({
+                                                'colon token': context.prop("colon token").consume_keyword(),
+                                                'type': context.prop("type").defer_parsing_to_component(Type),
                                             })),
+                                            'initializer': context.prop("initializer").defer_parsing_to_component(Optional_Initializer),
                                         })
                                     )
                                 ),
                                 'close bracket token': context.prop("close bracket token").assert_kind("CloseBracketToken").consume_keyword(),
                                 'return type': context.prop("return type").defer_parsing_to_component(Return_Type_Annotation),
                                 'semicolon': context.prop("semicolon").defer_parsing_to_component(Semi_Colon),
+                                'comma': context.prop("comma").peek_for_optional("CommaToken", (context) => context.consume_keyword()),
                             })
                         )]
                         case "SemicolonClassElement": return ['semicolon element', context.option("semicolon element").consume_and_parse_children_as_type(
@@ -1179,6 +1181,7 @@ const Object_Type_Signature: h.Production<d_out.Object_Type.Signature> = (iterat
                         'parameters': context.prop("parameters").defer_parsing_to_component(Parameters),
                         'type': context.prop("type").defer_parsing_to_component(Optional_Type),
                         'semicolon': context.prop("semicolon").defer_parsing_to_component(Semi_Colon),
+                        'comma': context.prop("comma").peek_for_optional("CommaToken", (context) => context.consume_keyword()),
                     })
                 )]
                 case "ConstructSignature": return ['construct', context.option("construct").consume_and_parse_children_as_type(
@@ -1196,23 +1199,25 @@ const Object_Type_Signature: h.Production<d_out.Object_Type.Signature> = (iterat
                         'jsdoc': context.prop("jsdoc").defer_parsing_to_component(JSDoc),
                         'modifiers': context.prop("modifiers").defer_parsing_to_component(Signature_Modifiers),
                         'open bracket token': context.prop("open bracket token").assert_kind("OpenBracketToken").consume_keyword(),
-                        'parameter': context.prop("parameter").assert_kind("SyntaxList").consume_and_parse_children_as_type(
+                        'parameter': context.prop("parameter").assert_kind("SyntaxList").consume_and_parse_children_as_separated_list(
+                            "CommaToken",
                             (context) => context.assert_kind("Parameter").consume_and_parse_children_as_type(
                                 (context) => ({
+                                    'jsdoc': context.prop("jsdoc").defer_parsing_to_component(JSDoc),
                                     'modifiers': context.prop("modifiers").defer_parsing_to_component(Signature_Modifiers),
                                     'identifier': context.prop("identifier").defer_parsing_to_component(Identifier),
-                                    'colon token': context.prop("colon token").assert_kind("ColonToken").consume_keyword(),
-                                    'type': context.prop("type").defer_parsing_to_component(Type),
-                                    'initializer': context.prop("initializer").peek_for_optional("EqualsToken", (context) => ({
-                                        'equals token': context.prop("equals token").consume_keyword(),
-                                        'expression': context.prop("expression").defer_parsing_to_component(Expression),
+                                    'annotation': context.prop("annotation").peek_for_optional("ColonToken", (context) => ({
+                                        'colon token': context.prop("colon token").consume_keyword(),
+                                        'type': context.prop("type").defer_parsing_to_component(Type),
                                     })),
+                                    'initializer': context.prop("initializer").defer_parsing_to_component(Optional_Initializer),
                                 })
                             )
                         ),
                         'close bracket token': context.prop("close bracket token").assert_kind("CloseBracketToken").consume_keyword(),
                         'return type': context.prop("return type").defer_parsing_to_component(Return_Type_Annotation),
                         'semicolon': context.prop("semicolon").defer_parsing_to_component(Semi_Colon),
+                        'comma': context.prop("comma").peek_for_optional("CommaToken", (context) => context.consume_keyword()),
                     })
                 )]
                 case "MethodSignature": return ['method', context.option("method").consume_and_parse_children_as_type(
@@ -1240,6 +1245,7 @@ const Object_Type_Signature: h.Production<d_out.Object_Type.Signature> = (iterat
                             (context) => context.consume_keyword()
                         ),
                         'type annotation': context.prop("type annotation").defer_parsing_to_component(Optional_Type),
+                        'initializer': context.prop("initializer").defer_parsing_to_component(Optional_Initializer),
                         'comma token': context.prop("comma token").peek_for_optional(
                             "CommaToken",
                             (context) => context.consume_keyword()
@@ -1257,7 +1263,9 @@ const Object_Type_Signature: h.Production<d_out.Object_Type.Signature> = (iterat
                         'name': context.prop("name").defer_parsing_to_component(Property_Name),
                         'parameters': context.prop("parameters").defer_parsing_to_component(Parameters),
                         'return type': context.prop("return type").defer_parsing_to_component(Return_Type_Annotation),
+                        'body': context.prop("body").peek_for_optional("Block", (context) => context.consume_component(Block)),
                         'semicolon': context.prop("semicolon").defer_parsing_to_component(Semi_Colon),
+                        'comma': context.prop("comma").peek_for_optional("CommaToken", (context) => context.consume_keyword()),
                     })
                 )]
                 case "SetAccessor": return ['set accessor', context.option("set accessor").consume_and_parse_children_as_type(
@@ -1267,7 +1275,9 @@ const Object_Type_Signature: h.Production<d_out.Object_Type.Signature> = (iterat
                         'name': context.prop("name").defer_parsing_to_component(Property_Name),
                         'parameters': context.prop("parameters").defer_parsing_to_component(Parameters),
                         'return type': context.prop("return type").defer_parsing_to_component(Return_Type_Annotation),
+                        'body': context.prop("body").peek_for_optional("Block", (context) => context.consume_component(Block)),
                         'semicolon': context.prop("semicolon").defer_parsing_to_component(Semi_Colon),
+                        'comma': context.prop("comma").peek_for_optional("CommaToken", (context) => context.consume_keyword()),
                     })
                 )]
                 default: return abort(null)

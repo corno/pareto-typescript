@@ -5,7 +5,7 @@ import * as p_ri from 'pareto-core/dist/interface/refiner'
 import * as p_di from 'pareto-core/dist/interface/data'
 import p_iterate from 'pareto-core/dist/implementation/refiner/specials/iterate'
 import P_unreachable_code_path from 'pareto-core/dist/implementation/transformer/specials/unreachable_code_path'
-import p_debug_message from 'pareto-core-dev/dist/log_debug_message'
+import * as h_i from './temp_helper_types'
 
 //data types
 import * as d_in from "./modules/typescript_parser_api/interface/data/dynamic_ast"
@@ -55,11 +55,6 @@ export type Production<T extends p_di.Value> = p_pi.Production_With_Parameter<
     d_in.Node,
     null,
     Production_Parameters
->
-
-export type Separated_List<T extends p_di.Value> = p_di.List<
-    | ['separator', null]
-    | ['entry', T]
 >
 
 export type Node_Context = {
@@ -209,7 +204,7 @@ export type Iterator_Context = {
         callback: (
             context: Iterator_Context
         ) => T
-    ) => Separated_List<T>
+    ) => h_i.Separated_List<T>
 
     /**
      * consumes the next node and processes its children with the given callback.

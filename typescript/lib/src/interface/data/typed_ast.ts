@@ -1,8 +1,9 @@
 import * as p_ from 'pareto-core/dist/interface/data'
 import * as p_di from 'pareto-core/dist/interface/data'
+
 import * as d_primitives from "./primitives"
 
-import * as h from "../../temp_helpers"
+import * as h from "../../temp_helper_types"
 
 export type Arguments = {
     'question dot token': p_.Optional_Value<d_primitives.Keyword>
@@ -596,6 +597,7 @@ export namespace Object_Type {
             'parameters': Parameters
             'type': Optional_Type
             'semicolon': Semi_Colon
+            'comma': p_.Optional_Value<d_primitives.Keyword>
         }
         export type Construct = {
             'jsdoc': JSDoc
@@ -611,7 +613,9 @@ export namespace Object_Type {
             'name': Property_Name
             'parameters': Parameters
             'return type': Return_Type_Annotation
+            'body': p_.Optional_Value<Block>
             'semicolon': Semi_Colon
+            'comma': p_.Optional_Value<d_primitives.Keyword>
         }
         export type Set_Accessor = {
             'jsdoc': JSDoc
@@ -619,25 +623,28 @@ export namespace Object_Type {
             'name': Property_Name
             'parameters': Parameters
             'return type': Return_Type_Annotation
+            'body': p_.Optional_Value<Block>
             'semicolon': Semi_Colon
+            'comma': p_.Optional_Value<d_primitives.Keyword>
         }
         export type Index = {
             'jsdoc': JSDoc
             'modifiers': Signature_Modifiers
             'open bracket token': d_primitives.Keyword
-            'parameter': {
+            'parameter': h.Separated_List<{
+                'jsdoc': JSDoc
                 'modifiers': Signature_Modifiers
                 'identifier': Identifier
-                'colon token': d_primitives.Keyword
-                'type': Type //this is too broad, only certain types are allowed; string, number, symbol, template literal, union of those (not fully sure if there's more)
-                'initializer': p_.Optional_Value<{
-                    'equals token': d_primitives.Keyword
-                    'expression': Expression
+                'annotation': p_.Optional_Value<{
+                    'colon token': d_primitives.Keyword
+                    'type': Type
                 }>
-            }
+                'initializer': Optional_Initializer
+            }>
             'close bracket token': d_primitives.Keyword
             'return type': Return_Type_Annotation
             'semicolon': Semi_Colon
+            'comma': p_.Optional_Value<d_primitives.Keyword>
         }
         export type Method = {
             'jsdoc': JSDoc
@@ -655,6 +662,7 @@ export namespace Object_Type {
             'id': Property_Name
             'question token': p_.Optional_Value<d_primitives.Keyword>
             'type annotation': Optional_Type
+            'initializer': Optional_Initializer
             'comma token': p_.Optional_Value<d_primitives.Keyword>
             'semicolon token': Semi_Colon
         }
