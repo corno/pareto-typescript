@@ -1899,15 +1899,16 @@ export const Statement_Modifiers: p_i.Transformer<d_in.Statement_Modifiers, d_ou
                         case 'abstract': return p_.option($, ($) => sh.ph.literal("abstract "))
                         case 'accessor': return p_.option($, ($) => sh.ph.literal("accessor "))
                         case 'async': return p_.option($, ($) => sh.ph.literal("async "))
+                        case 'const': return p_.option($, ($) => sh.ph.literal("const "))
                         case 'declare': return p_.option($, ($) => sh.ph.literal("declare "))
                         case 'decorator': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                             sh.ph.literal("@"),
                             Expression($['expression']),
                             sh.ph.literal(" "),
                         ])))
-                        case 'private': return p_.option($, ($) => sh.ph.literal("private "))
                         case 'default': return p_.option($, ($) => sh.ph.literal("default "))
                         case 'export': return p_.option($, ($) => sh.ph.literal("export "))
+                        case 'private': return p_.option($, ($) => sh.ph.literal("private "))
                         case 'protected': return p_.option($, ($) => sh.ph.literal("protected "))
                         case 'public': return p_.option($, ($) => sh.ph.literal("public "))
                         case 'static': return p_.option($, ($) => sh.ph.literal("static "))

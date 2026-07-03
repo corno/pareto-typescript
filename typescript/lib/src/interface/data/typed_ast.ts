@@ -1193,6 +1193,7 @@ export namespace Statement_Modifiers {
         | ['abstract', d_primitives.Keyword]
         | ['accessor', d_primitives.Keyword]
         | ['async', d_primitives.Keyword]
+        | ['const', d_primitives.Keyword]
         | ['declare', d_primitives.Keyword]
         | ['decorator', {
             'at token': d_primitives.Keyword

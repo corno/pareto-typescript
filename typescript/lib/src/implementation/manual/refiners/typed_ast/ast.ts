@@ -2204,6 +2204,7 @@ export const Statement_Modifiers: h.Production<d_out.Statement_Modifiers> = (ite
                         case "AbstractKeyword": return ['abstract', context.option("abstract").consume_keyword()]
                         case "AccessorKeyword": return ['accessor', context.option("accessor").consume_keyword()]
                         case "AsyncKeyword": return ['async', context.option("async").consume_keyword()]
+                        case "ConstKeyword": return ['const', context.option("const").consume_keyword()]
                         case "DeclareKeyword": return ['declare', context.option("declare").consume_keyword()]
                         case "Decorator": return ['decorator', context.option("decorator").consume_and_parse_children_as_type(
                             (context) => ({
