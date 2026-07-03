@@ -7,10 +7,7 @@ import * as h from "../../temp_helpers"
 export type Arguments = {
     'question dot token': p_.Optional_Value<d_primitives.Keyword>
     'type arguments': Type_Arguments
-    'error recovery type args': p_.Optional_Value<{
-        'entries': Separated_List<Type>
-        'greater than token': p_.Optional_Value<d_primitives.Keyword>
-    }>
+    'error recovery': Error_Recovery
     'open parenthesis token': d_primitives.Keyword
     'arguments': Separated_List<Arguments.L>
     'close parenthesis token': d_primitives.Keyword
@@ -27,15 +24,15 @@ export namespace Arguments {
 
 export type As_Alias = {
     'as keyword': d_primitives.Keyword
-    'identifier': Identifier
+    'identifier':
+    | ['identifier', Identifier]
+    | ['string literal', String_Literal]
 }
 
 export type Binding_Pattern = {
     'jsdoc': JSDoc
-    'modifiers': p_.Optional_Value<p_.List<
+    'modifiers': p_.Optional_Value<p_.List< //seems very similar to the signature modifiers, but not exactly the same I guess
         | ['async', d_primitives.Keyword]
-        | ['readonly', d_primitives.Keyword]
-        | ['public', d_primitives.Keyword]
         | ['declare', d_primitives.Keyword]
         | ['decorator', {
             'at token': d_primitives.Keyword
@@ -45,6 +42,8 @@ export type Binding_Pattern = {
         | ['override', d_primitives.Keyword]
         | ['private', d_primitives.Keyword]
         | ['protected', d_primitives.Keyword]
+        | ['public', d_primitives.Keyword]
+        | ['readonly', d_primitives.Keyword]
         | ['static', d_primitives.Keyword]
     >>
     'dot dot dot token': p_.Optional_Value<d_primitives.Keyword>
@@ -90,6 +89,7 @@ export namespace Binding_Pattern {
 }
 
 export type Block = {
+    'jsdoc': JSDoc
     'open brace token': d_primitives.Keyword
     'statements': Statements
     'close brace token': d_primitives.Keyword
@@ -170,7 +170,7 @@ export namespace Class_Body {
             'question token': p_.Optional_Value<d_primitives.Keyword>
             'exclamation token': p_.Optional_Value<d_primitives.Keyword>
             'type': Optional_Type
-            'optional initializer': Optional_Initializer
+            'initializer': Optional_Initializer
             'semicolon': Semi_Colon
         }
         export type Set_Accessor = {
@@ -194,6 +194,11 @@ export namespace Class_Body {
 export type Entity_Name =
     | ['identifier', Identifier]
     | ['qualified name', Qualified_Name]
+
+export type Error_Recovery = p_.Optional_Value<{
+    'entries': Separated_List<Type>
+    'greater than token': p_.Optional_Value<d_primitives.Keyword>
+}>
 
 export type Expression =
     | ['array literal', Expression.Array_Literal]
@@ -663,14 +668,6 @@ export type Optional_Type = p_.Optional_Value<{
     'type': Type
 }>
 
-// export namespace Parameter {
-//     export type Modifier =
-//         | ['private', d_primitives.Keyword]
-//         | ['public', d_primitives.Keyword]
-//         | ['protected', d_primitives.Keyword]
-//         | ['readonly', d_primitives.Keyword]
-// }
-
 export type Parameters = {
     'jsdoc': JSDoc
     'open parenthesis token': d_primitives.Keyword
@@ -736,23 +733,22 @@ export type Signature_Modifiers = p_.Optional_Value<p_.List<Signature_Modifiers.
 
 export namespace Signature_Modifiers {
     export type L =
-
+        | ['abstract', d_primitives.Keyword]
         | ['accessor', d_primitives.Keyword]
         | ['async', d_primitives.Keyword]
         | ['const', d_primitives.Keyword]
         | ['declare', d_primitives.Keyword]
-        | ['export', d_primitives.Keyword]
-        | ['override', d_primitives.Keyword]
-        | ['protected', d_primitives.Keyword]
-        | ['static', d_primitives.Keyword]
-        | ['abstract', d_primitives.Keyword]
         | ['decorator', {
             'at token': d_primitives.Keyword
             'expression': Expression
         }]
+        | ['export', d_primitives.Keyword]
+        | ['override', d_primitives.Keyword]
         | ['private', d_primitives.Keyword]
+        | ['protected', d_primitives.Keyword]
         | ['public', d_primitives.Keyword]
         | ['readonly', d_primitives.Keyword]
+        | ['static', d_primitives.Keyword]
 }
 
 export type Source_File = {
@@ -835,6 +831,7 @@ export type Statement =
     | ['type alias', Statement.Type_Alias_Declaration]
     | ['variable', Statement.Variable]
     | ['while', {
+        'jsdoc': JSDoc
         'while keyword': d_primitives.Keyword
         'open parenthesis token': d_primitives.Keyword
         'expression': Expression
@@ -842,6 +839,7 @@ export type Statement =
         'statement': Statement
     }]
     | ['with', {
+        'jsdoc': JSDoc
         'with keyword': d_primitives.Keyword
         'open parenthesis token': d_primitives.Keyword
         'expression': Expression
@@ -867,18 +865,12 @@ export namespace Statement {
         'semicolon': Semi_Colon
     }
     export type Empty = {
+        'jsdoc': JSDoc
         'semicolon token': d_primitives.Keyword
     }
     export type Enum_Declaration = {
         'jsdoc': JSDoc
-        'modifiers': p_.Optional_Value<p_.List<
-            | ['async', d_primitives.Keyword]
-            | ['decorator', d_primitives.Keyword]
-            | ['const', d_primitives.Keyword]
-            | ['declare', d_primitives.Keyword]
-            | ['default', d_primitives.Keyword]
-            | ['export', d_primitives.Keyword]
-        >>
+        'modifiers': Statement_Modifiers
         'enum keyword': d_primitives.Keyword
         'identifier': Identifier
         'open brace token': d_primitives.Keyword
@@ -896,6 +888,7 @@ export namespace Statement {
     }
     export type Export_Declaration = {
         'jsdoc': JSDoc
+        'modifiers': Statement_Modifiers
         'export keyword': d_primitives.Keyword
         'type keyword': p_.Optional_Value<d_primitives.Keyword>
         'type':
@@ -917,10 +910,21 @@ export namespace Statement {
             'from keyword': d_primitives.Keyword
             'module specifier': Module_Specifier
         }>
+        'import attributes': p_.Optional_Value<{
+            'with keyword': d_primitives.Keyword
+            'open brace token': d_primitives.Keyword
+            'elements': h.Separated_List<{
+                'name': Identifier
+                'colon token': d_primitives.Keyword
+                'value': Expression
+            }>
+            'close brace token': d_primitives.Keyword
+        }>
         'semicolon': Semi_Colon
     }
     export namespace Export_Declaration {
         export type Entry = {
+            'type keyword': p_.Optional_Value<d_primitives.Keyword>
             'identifier': Identifier
             'as': p_.Optional_Value<As_Alias>
         }
@@ -947,6 +951,7 @@ export namespace Statement {
         'semicolon': Semi_Colon
     }
     export type For_In = {
+        'jsdoc': JSDoc
         'for keyword': d_primitives.Keyword
         'open parenthesis token': d_primitives.Keyword
         'initializer':
@@ -959,6 +964,7 @@ export namespace Statement {
         'semicolon': Semi_Colon
     }
     export type For_Of = {
+        'jsdoc': JSDoc
         'for keyword': d_primitives.Keyword
         'await keyword': p_.Optional_Value<d_primitives.Keyword>
         'open parenthesis token': d_primitives.Keyword
@@ -1014,6 +1020,7 @@ export namespace Statement {
             | ['defer', {
                 'defer keyword': d_primitives.Keyword
                 'import':
+                | ['identifier', Identifier]
                 | ['namespace import', Namespace]
                 | ['named imports', Named_Imports]
             }]
@@ -1169,6 +1176,7 @@ export type Statement_Modifiers = p_.Optional_Value<p_.List<Statement_Modifiers.
 export namespace Statement_Modifiers {
     export type L =
         | ['abstract', d_primitives.Keyword]
+        | ['accessor', d_primitives.Keyword]
         | ['async', d_primitives.Keyword]
         | ['declare', d_primitives.Keyword]
         | ['decorator', {
@@ -1282,10 +1290,7 @@ export namespace Type {
             'name': Entity_Name
         }>
         'type arguments': Type_Arguments
-        'error recovery type args': p_.Optional_Value<{
-            'entries': h.Separated_List<Type>
-            'greater than token': p_.Optional_Value<d_primitives.Keyword>
-        }>
+        'error recovery': Error_Recovery
     }
     export type Indexed_Access = {
         'object type': Type
@@ -1420,10 +1425,7 @@ export namespace Type {
         'entity name': Entity_Name
         'dot token': p_.Optional_Value<d_primitives.Keyword>
         'type arguments': Type_Arguments
-        'error recovery type args': p_.Optional_Value<{
-            'entries': h.Separated_List<Type>
-            'greater than token': p_.Optional_Value<d_primitives.Keyword>
-        }>
+        'error recovery': Error_Recovery
     }
     export type Union = {
         'members': h.Separated_List<Type>
