@@ -742,6 +742,10 @@ export const Expression: h.Production<d_out.Expression> = ($, abort, $p) => h.cr
                                                     "QuestionToken",
                                                     (context) => context.consume_keyword()
                                                 ),
+                                                'exclamation token': context.prop("exclamation token").peek_for_optional(
+                                                    "ExclamationToken",
+                                                    (context) => context.consume_keyword()
+                                                ),
                                                 'type parameters': context.prop("type parameters").defer_parsing_to_component(Type_Parameters),
                                                 'parameters': context.prop("parameters").defer_parsing_to_component(Parameters),
                                                 'return type': context.prop("return type").defer_parsing_to_component(Return_Type_Annotation),
@@ -1378,9 +1382,12 @@ export const Property_Name: h.Production<d_out.Property_Name> = ($, abort, $p) =
                 (context) => context.peek_for_state(
                     (kind, abort) => {
                         switch (kind) {
+                            case "AbstractKeyword": return ['abstract', context.option("abstract").consume_keyword()]
                             case "AsyncKeyword": return ['async', context.option("async").consume_keyword()]
                             case "ExportKeyword": return ['export', context.option("export").consume_keyword()]
                             case "OverrideKeyword": return ['override', context.option("override").consume_keyword()]
+                            case "PrivateKeyword": return ['private', context.option("private").consume_keyword()]
+                            case "ProtectedKeyword": return ['protected', context.option("protected").consume_keyword()]
                             case "PublicKeyword": return ['public', context.option("public").consume_keyword()]
                             default: return abort(null)
                         }

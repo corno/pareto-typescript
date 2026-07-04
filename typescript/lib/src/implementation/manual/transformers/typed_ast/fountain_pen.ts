@@ -626,6 +626,10 @@ export const Expression: p_i.Transformer<d_in.Expression, d_out.Phrase> = ($) =>
                                                         () => sh.ph.literal("?"),
                                                         () => sh.ph.nothing()
                                                     ),
+                                                    p_.from.optional($['exclamation token']).decide(
+                                                        () => sh.ph.literal("!"),
+                                                        () => sh.ph.nothing()
+                                                    ),
                                                     Type_Parameters($['type parameters']),
                                                     Parameters($['parameters']),
                                                     Return_Type_Annotation($['return type']),

@@ -470,6 +470,7 @@ export namespace Expression {
                 'asterisk token': p_.Optional_Value<d_primitives.Keyword>
                 'name': Property_Name
                 'question token': p_.Optional_Value<d_primitives.Keyword>
+                'exclamation token': p_.Optional_Value<d_primitives.Keyword>
                 'type parameters': Type_Parameters
                 'parameters': Parameters
                 'return type': Return_Type_Annotation
@@ -709,9 +710,12 @@ export namespace Parameters {
 export type Property_Name = {
     'jsdoc': JSDoc
     'modifiers': p_.Optional_Value<p_di.List<
+        | ['abstract', d_primitives.Keyword]
         | ['async', d_primitives.Keyword]
         | ['export', d_primitives.Keyword]
         | ['override', d_primitives.Keyword]
+        | ['private', d_primitives.Keyword]
+        | ['protected', d_primitives.Keyword]
         | ['public', d_primitives.Keyword]
     >>
     'type':
