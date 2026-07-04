@@ -8,7 +8,7 @@ import p_query_result from 'pareto-core/dist/implementation/query/__internal/que
 import * as resources from "lib/dist/modules/typescript_parser_api/interface/queries"
 
 
-import * as d_ast from "lib/dist/modules/typescript_parser_api/interface/data/dynamic_ast"
+import * as d_ast from "lib/dist/modules/typescript_parser_api/interface/data/untyped_syntax_tree"
 
 import * as ts from "typescript"
 
@@ -236,7 +236,7 @@ export const $$: resources.queries.parse_file = p_query(
 
                 on_value(
                     {
-                        'ast': {
+                        'untyped syntax tree': {
                             'root': new My_Node_Implementation(sourceFile),
                             'trailing comments': p_.literal.list(trailingCommentsArray)
                         }

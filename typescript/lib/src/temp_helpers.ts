@@ -8,8 +8,8 @@ import P_unreachable_code_path from 'pareto-core/dist/implementation/transformer
 import * as h_i from './temp_helper_types'
 
 //data types
-import * as d_in from "./modules/typescript_parser_api/interface/data/dynamic_ast"
-import * as d_function from "./interface/data/typed_ast_from_ast"
+import * as d_in from "./modules/typescript_parser_api/interface/data/untyped_syntax_tree"
+import * as d_function from "./interface/data/concrete_syntax_tree_from_ast"
 import * as d_primitives from "./interface/data/primitives"
 import { Abort } from 'pareto-core/dist/interface/__internal/Abort'
 

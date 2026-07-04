@@ -12,11 +12,8 @@ import * as d_fp from "pareto-fountain-pen/dist/interface/generated/liana/schema
 
 //dependencies
 import * as t_prose_to_loc from "pareto-fountain-pen/dist/implementation/manual/transformers/prose/list_of_characters"
-import * as t_ast_to_prose from "../transformers/ast/fountain_pen"
-import * as r_typed_ast_from_ast from "../refiners/typed_ast/temp_wrapper"
-import * as t_typed_ast_from_ast_to_prose from "../transformers/typed_ast_from_ast_refiner/fountain_pen"
-import * as t_typed_ast_to_prose from "../transformers/typed_ast/fountain_pen"
-import * as t_path_to_string from "pareto-resources/dist/implementation/manual/transformers/unrestricted_path/text"
+import * as r_typed_ast_from_ast from "../refiners/concrete_syntax_tree/temp_wrapper"
+import * as t_typed_ast_from_ast_to_prose from "../transformers/concrete_syntax_tree_from_untyped_syntax_tree_refiner/prose"
 
 //shorthands
 import * as sh from "pareto-fountain-pen/dist/shorthands/prose/deprecated"
@@ -52,7 +49,7 @@ export const $$: interface_.functions.analyze_typescript_file = p_.query_functio
     )).refine(
         ($, abort): d_fp.Paragraph => {
             const typed = r_typed_ast_from_ast.Source_File(
-                $.ast.root,
+                $['untyped syntax tree'].root,
                 ($) => abort(
                     t_typed_ast_from_ast_to_prose.Error(
                         $

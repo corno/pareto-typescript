@@ -4,11 +4,11 @@ import p_variables from 'pareto-core/dist/implementation/transformer/specials/va
 
 //data types
 import * as d_out from "pareto-fountain-pen/dist/interface/generated/liana/schemas/prose/data"
-import * as d_in from "../../../../interface/data/typed_ast_from_ast"
+import * as d_in from "../../../../interface/data/concrete_syntax_tree_from_ast"
 
 //dependencies
 import * as t_path_to_text from "pareto-resources/dist/implementation/manual/transformers/unrestricted_path/text"
-import * as t_ast_to_fp from "../ast/fountain_pen"
+import * as t_ast_to_fp from "../untyped_syntax_tree/prose"
 
 
 //shorthands

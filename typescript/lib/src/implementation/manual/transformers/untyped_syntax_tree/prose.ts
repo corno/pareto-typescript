@@ -3,7 +3,7 @@ import * as p_i from 'pareto-core/dist/interface/transformer'
 
 //data types
 import * as d_out from "pareto-fountain-pen/dist/interface/generated/liana/schemas/prose/data"
-import * as d_in from "../../../../modules/typescript_parser_api/interface/data/dynamic_ast"
+import * as d_in from "../../../../modules/typescript_parser_api/interface/data/untyped_syntax_tree"
 
 //shorthands
 import * as sh from "pareto-fountain-pen/dist/shorthands/prose/deprecated"

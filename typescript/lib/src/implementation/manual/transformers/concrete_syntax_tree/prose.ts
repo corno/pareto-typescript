@@ -3,7 +3,7 @@ import * as p_i from 'pareto-core/dist/interface/transformer'
 
 //data types
 import * as d_out from "pareto-fountain-pen/dist/interface/generated/liana/schemas/prose/data"
-import * as d_in from "../../../../interface/data/typed_ast"
+import * as d_in from "../../../../interface/data/concrete_syntax_tree"
 
 //shorthands
 import * as sh from "pareto-fountain-pen/dist/shorthands/prose/target"

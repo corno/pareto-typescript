@@ -1,7 +1,7 @@
 import * as h from "../../../../temp_helpers"
 
 //data types
-import * as d_out from "../../../../interface/data/typed_ast"
+import * as d_out from "../../../../interface/data/concrete_syntax_tree"
 
 export const Arguments: h.Production<d_out.Arguments> = ($, abort, $p) => h.create_iterator_context(
     $,

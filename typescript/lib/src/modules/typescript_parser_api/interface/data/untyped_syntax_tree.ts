@@ -1,6 +1,6 @@
 import * as p_i from 'pareto-core/dist/interface/data'
 
-export type AST = {
+export type Untyped_Syntax_Tree = {
     'root': Node
     'trailing comments': Comments
 }

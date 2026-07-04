@@ -1,7 +1,7 @@
 import * as p_di from 'pareto-core/dist/interface/data'
 
 //data types
-import * as d_ast from "./dynamic_ast"
+import * as d_ust from "./untyped_syntax_tree"
 
 export type Parameters = {
     'data': string
@@ -13,5 +13,5 @@ export type Error =
 }]
 
 export type Result = {
-    'ast': d_ast.AST
+    'untyped syntax tree': d_ust.Untyped_Syntax_Tree
 }

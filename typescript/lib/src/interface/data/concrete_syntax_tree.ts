@@ -788,39 +788,14 @@ export type Source_File = {
 
 export type Statement =
     | ['block', Block]
-    | ['break', {
-        'jsdoc': JSDoc
-        'break keyword': d_primitives.Keyword
-        'identifier': p_.Optional_Value<Identifier>
-        'semicolon': Semi_Colon
-    }]
+    | ['break', Statement.Break]
     | ['class', Statement.Class_Declaration]
-    | ['continue', {
-        'jsdoc': JSDoc
-        'continue keyword': d_primitives.Keyword
-        'label': p_.Optional_Value<Identifier>
-        'semicolon': Semi_Colon
-    }]
-    | ['debugger', {
-        'jsdoc': JSDoc
-        'debugger keyword': d_primitives.Keyword
-        'semicolon': Semi_Colon
-    }]
+    | ['continue', Statement.Continue]
+    | ['debugger', Statement.Debugger]
     | ['do', Statement.Do]
     | ['empty', Statement.Empty]
     | ['enum', Statement.Enum_Declaration]
-    | ['export assignment', {
-        'jsdoc': JSDoc
-        'modifiers': Statement_Modifiers
-        'export keyword': d_primitives.Keyword
-        'type':
-        | ['default', {
-            'default keyword': d_primitives.Keyword
-            'expression': Expression
-        }]
-        | ['equals', Initializer]
-        'semicolon': Semi_Colon
-    }]
+    | ['export assignment', Statement.Export_Assignment]
     | ['export declaration', Statement.Export_Declaration]
     | ['expression', Statement.Expr]
     | ['for', Statement.For]
@@ -829,57 +804,42 @@ export type Statement =
     | ['function', Statement.Function_Declaration]
     | ['if', Statement.If]
     | ['import', Statement.Import_Declaration]
-    | ['import equals', {
-        'jsdoc': JSDoc
-        'modifiers': Statement_Modifiers
-        'import keyword': d_primitives.Keyword
-        'type keyword': p_.Optional_Value<d_primitives.Keyword>
-        'identifier': Identifier
-        'initializer': Initializer
-        'semicolon': Semi_Colon
-    }]
+    | ['import equals', Statement.Import_Equals]
     | ['interface', Statement.Interface]
     | ['labeled', Statement.Labeled]
     | ['module', Statement.Module_Declaration]
     | ['namespace export', Statement.Namespace_Export]
-    | ['return', {
-        'jsdoc': JSDoc
-        'return keyword': d_primitives.Keyword
-        'expression': p_.Optional_Value<Expression>
-        'semicolon': Semi_Colon
-    }]
+    | ['return', Statement.Return]
     | ['switch', Statement.Switch]
-    | ['throw', {
-        'jsdoc': JSDoc
-        'throw keyword': d_primitives.Keyword
-        'expression': Expression
-        'semicolon': Semi_Colon
-    }]
+    | ['throw', Statement.Throw]
     | ['try', Statement.Try]
     | ['type alias', Statement.Type_Alias_Declaration]
     | ['variable', Statement.Variable]
-    | ['while', {
-        'jsdoc': JSDoc
-        'while keyword': d_primitives.Keyword
-        'open parenthesis token': d_primitives.Keyword
-        'expression': Expression
-        'close parenthesis token': d_primitives.Keyword
-        'statement': Statement
-    }]
-    | ['with', {
-        'jsdoc': JSDoc
-        'with keyword': d_primitives.Keyword
-        'open parenthesis token': d_primitives.Keyword
-        'expression': Expression
-        'close parenthesis token': d_primitives.Keyword
-        'statement': Statement
-    }]
+    | ['while', Statement.While]
+    | ['with', Statement.With]
 
 export namespace Statement {
+    export type Break = {
+        'jsdoc': JSDoc
+        'break keyword': d_primitives.Keyword
+        'identifier': p_.Optional_Value<Identifier>
+        'semicolon': Semi_Colon
+    }
+    export type Continue = {
+        'jsdoc': JSDoc
+        'continue keyword': d_primitives.Keyword
+        'label': p_.Optional_Value<Identifier>
+        'semicolon': Semi_Colon
+    }
     export type Class_Declaration = {
         'jsdoc': JSDoc
         'modifiers': Statement_Modifiers
         'class': Class
+        'semicolon': Semi_Colon
+    }
+    export type Debugger = {
+        'jsdoc': JSDoc
+        'debugger keyword': d_primitives.Keyword
         'semicolon': Semi_Colon
     }
     export type Do = {
@@ -904,6 +864,18 @@ export namespace Statement {
         'open brace token': d_primitives.Keyword
         'members': h.Separated_List<Enum_Declaration.Member>
         'close brace token': d_primitives.Keyword
+        'semicolon': Semi_Colon
+    }
+    export type Export_Assignment = {
+        'jsdoc': JSDoc
+        'modifiers': Statement_Modifiers
+        'export keyword': d_primitives.Keyword
+        'type':
+        | ['default', {
+            'default keyword': d_primitives.Keyword
+            'expression': Expression
+        }]
+        | ['equals', Initializer]
         'semicolon': Semi_Colon
     }
     export namespace Enum_Declaration {
@@ -1087,6 +1059,15 @@ export namespace Statement {
         }>
         'semicolon': Semi_Colon
     }
+    export type Import_Equals = {
+        'jsdoc': JSDoc
+        'modifiers': Statement_Modifiers
+        'import keyword': d_primitives.Keyword
+        'type keyword': p_.Optional_Value<d_primitives.Keyword>
+        'identifier': Identifier
+        'initializer': Initializer
+        'semicolon': Semi_Colon
+    }
     export type Interface = {
         'jsdoc': JSDoc
         'modifiers': Statement_Modifiers
@@ -1130,6 +1111,18 @@ export namespace Statement {
         'as keyword': d_primitives.Keyword
         'namespace keyword': d_primitives.Keyword
         'identifier': Identifier
+        'semicolon': Semi_Colon
+    }
+    export type Return = {
+        'jsdoc': JSDoc
+        'return keyword': d_primitives.Keyword
+        'expression': p_.Optional_Value<Expression>
+        'semicolon': Semi_Colon
+    }
+    export type Throw = {
+        'jsdoc': JSDoc
+        'throw keyword': d_primitives.Keyword
+        'expression': Expression
         'semicolon': Semi_Colon
     }
     export type Switch = {
@@ -1196,6 +1189,22 @@ export namespace Statement {
         'modifiers': Statement_Modifiers
         'variable declaration list': Variable_Declaration_List
         'semicolon': Semi_Colon
+    }
+    export type While = {
+        'jsdoc': JSDoc
+        'while keyword': d_primitives.Keyword
+        'open parenthesis token': d_primitives.Keyword
+        'expression': Expression
+        'close parenthesis token': d_primitives.Keyword
+        'statement': Statement
+    }
+    export type With = {
+        'jsdoc': JSDoc
+        'with keyword': d_primitives.Keyword
+        'open parenthesis token': d_primitives.Keyword
+        'expression': Expression
+        'close parenthesis token': d_primitives.Keyword
+        'statement': Statement
     }
 }
 
