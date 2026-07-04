@@ -251,6 +251,7 @@ export const Class_Body: p_i.Transformer<d_in.Class_Body, d_out.Phrase> = ($) =>
                                             Signature_Modifiers($['modifiers']),
                                             sh.ph.literal("get "),
                                             Property_Name($['name']),
+                                            Type_Parameters($['type parameters']),
                                             Parameters($['parameters']),
                                             Return_Type_Annotation($['return type']),
                                             p_.from.optional($['body']).decide(
@@ -301,6 +302,7 @@ export const Class_Body: p_i.Transformer<d_in.Class_Body, d_out.Phrase> = ($) =>
                                             Signature_Modifiers($['modifiers']),
                                             sh.ph.literal("set "),
                                             Property_Name($['name']),
+                                            Type_Parameters($['type parameters']),
                                             Parameters($['parameters']),
                                             Return_Type_Annotation($['return type']),
                                             p_.from.optional($['body']).decide(
@@ -325,7 +327,9 @@ export const Class_Body: p_i.Transformer<d_in.Class_Body, d_out.Phrase> = ($) =>
                                                             case 'separator': return p_.option($, ($) => sh.ph.literal(", "))
                                                             case 'entry': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                                                                 Signature_Modifiers($.modifiers),
+                                                                p_.from.optional($['dot dot dot token']).decide(() => sh.ph.literal("..."), () => sh.ph.nothing()),
                                                                 sh.ph.literal($.identifier.text),
+                                                                p_.from.optional($['question token']).decide(() => sh.ph.literal("?"), () => sh.ph.nothing()),
                                                                 p_.from.optional($.annotation).decide(
                                                                     ($) => sh.ph.composed(p_.literal.list([
                                                                         sh.ph.literal(": "),
@@ -410,6 +414,7 @@ export const Expression: p_i.Transformer<d_in.Expression, d_out.Phrase> = ($) =>
                 sh.ph.literal("]"),
             ])))
             case 'arrow function': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
+                JSDoc($['jsdoc']),
                 p_.from.state($['parameters']).decide(
                     ($) => {
                         switch ($[0]) {
@@ -945,6 +950,7 @@ export const Object_Type: p_i.Transformer<d_in.Object_Type, d_out.Phrase> = ($) 
                                         Parameters($.parameters),
                                         Optional_Type($.type),
                                         Semi_Colon($.semicolon),
+                                        p_.from.optional($['comma']).decide(() => sh.ph.literal(","), () => sh.ph.nothing()),
                                     ])))
 
                                     case 'get accessor': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
@@ -979,7 +985,9 @@ export const Object_Type: p_i.Transformer<d_in.Object_Type, d_out.Phrase> = ($) 
                                                             case 'separator': return p_.option($, ($) => sh.ph.literal(", "))
                                                             case 'entry': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                                                                 Signature_Modifiers($.modifiers),
+                                                                p_.from.optional($['dot dot dot token']).decide(() => sh.ph.literal("..."), () => sh.ph.nothing()),
                                                                 sh.ph.literal($.identifier.text),
+                                                                p_.from.optional($['question token']).decide(() => sh.ph.literal("?"), () => sh.ph.nothing()),
                                                                 p_.from.optional($.annotation).decide(
                                                                     ($) => sh.ph.composed(p_.literal.list([
                                                                         sh.ph.literal(": "),
@@ -1911,6 +1919,7 @@ export const Statement_Modifiers: p_i.Transformer<d_in.Statement_Modifiers, d_ou
                         case 'private': return p_.option($, ($) => sh.ph.literal("private "))
                         case 'protected': return p_.option($, ($) => sh.ph.literal("protected "))
                         case 'public': return p_.option($, ($) => sh.ph.literal("public "))
+                        case 'readonly': return p_.option($, ($) => sh.ph.literal("readonly "))
                         case 'static': return p_.option($, ($) => sh.ph.literal("static "))
                         default: return p_.au($[0])
                     }
@@ -2124,16 +2133,9 @@ export const Type: p_i.Transformer<d_in.Type, d_out.Phrase> = ($) => p_.from.sta
                                     () => sh.ph.nothing()
                                 ),
                                 sh.ph.literal("]"),
-                                p_.from.optional($['question modifier']).decide(
-                                    ($) => sh.ph.composed(p_.literal.list([
-                                        p_.from.optional($['modifier']).decide(
-                                            ($) => sh.ph.literal($.text),
-                                            () => sh.ph.nothing()
-                                        ),
-                                        sh.ph.literal("?"),
-                                    ])),
-                                    () => sh.ph.nothing()
-                                ),
+                                p_.from.optional($['question modifier minus']).decide(() => sh.ph.literal("-"), () => sh.ph.nothing()),
+                                p_.from.optional($['question modifier plus']).decide(() => sh.ph.literal("+"), () => sh.ph.nothing()),
+                                p_.from.optional($['question modifier question']).decide(() => sh.ph.literal("?"), () => sh.ph.nothing()),
                                 p_.from.optional($['body']).decide(
                                     ($) => sh.ph.composed(p_.literal.list([
                                         sh.ph.literal(": "),

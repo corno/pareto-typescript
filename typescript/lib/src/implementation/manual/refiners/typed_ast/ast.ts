@@ -256,6 +256,7 @@ export const Class_Body: h.Production<d_out.Class_Body> = ($, abort, $p) => h.cr
                                 'modifiers': context.prop("modifiers").defer_parsing_to_component(Signature_Modifiers),
                                 'get keyword': context.prop("get keyword").assert_kind("GetKeyword").consume_keyword(),
                                 'name': context.prop("name").defer_parsing_to_component(Property_Name),
+                                'type parameters': context.prop("type parameters").defer_parsing_to_component(Type_Parameters),
                                 'parameters': context.prop("parameters").defer_parsing_to_component(Parameters),
                                 'return type': context.prop("return type").defer_parsing_to_component(Return_Type_Annotation),
                                 'body': context.prop("body").peek_for_optional(
@@ -313,6 +314,7 @@ export const Class_Body: h.Production<d_out.Class_Body> = ($, abort, $p) => h.cr
                                 'modifiers': context.prop("modifiers").defer_parsing_to_component(Signature_Modifiers),
                                 'set keyword': context.prop("set keyword").assert_kind("SetKeyword").consume_keyword(),
                                 'name': context.prop("name").defer_parsing_to_component(Property_Name),
+                                'type parameters': context.prop("type parameters").defer_parsing_to_component(Type_Parameters),
                                 'parameters': context.prop("parameters").defer_parsing_to_component(Parameters),
                                 'return type': context.prop("return type").defer_parsing_to_component(Return_Type_Annotation),
                                 'body': context.prop("body").peek_for_optional(
@@ -340,7 +342,9 @@ export const Class_Body: h.Production<d_out.Class_Body> = ($, abort, $p) => h.cr
                                         (context) => ({
                                             'jsdoc': context.prop("jsdoc").defer_parsing_to_component(JSDoc),
                                             'modifiers': context.prop("modifiers").defer_parsing_to_component(Signature_Modifiers),
+                                            'dot dot dot token': context.prop("dot dot dot token").peek_for_optional("DotDotDotToken", (context) => context.consume_keyword()),
                                             'identifier': context.prop("identifier").defer_parsing_to_component(Identifier),
+                                            'question token': context.prop("question token").peek_for_optional("QuestionToken", (context) => context.consume_keyword()),
                                             'annotation': context.prop("annotation").peek_for_optional("ColonToken", (context) => ({
                                                 'colon token': context.prop("colon token").consume_keyword(),
                                                 'type': context.prop("type").defer_parsing_to_component(Type),
@@ -420,6 +424,7 @@ export const Expression: h.Production<d_out.Expression> = ($, abort, $p) => h.cr
                 )]
                 case "ArrowFunction": return ['arrow function', context.option("arrow function").consume_and_parse_children_as_type(
                     (context): d_out.Expression.Arrow_Function => ({
+                        'jsdoc': context.prop("jsdoc").defer_parsing_to_component(JSDoc),
                         'parameters': context.prop("parameters").peek_for_state(
                             (kind, abort): d_out.Expression.Arrow_Function_Parameters => {
                                 switch (kind) {
@@ -1199,6 +1204,7 @@ const Object_Type_Signature: h.Production<d_out.Object_Type.Signature> = (iterat
                         'parameters': context.prop("parameters").defer_parsing_to_component(Parameters),
                         'type': context.prop("type").defer_parsing_to_component(Optional_Type),
                         'semicolon': context.prop("semicolon").defer_parsing_to_component(Semi_Colon),
+                        'comma': context.prop("comma").peek_for_optional("CommaToken", (context) => context.consume_keyword()),
                     })
                 )]
                 case "IndexSignature": return ['index', context.option("index").consume_and_parse_children_as_type(
@@ -1212,7 +1218,9 @@ const Object_Type_Signature: h.Production<d_out.Object_Type.Signature> = (iterat
                                 (context) => ({
                                     'jsdoc': context.prop("jsdoc").defer_parsing_to_component(JSDoc),
                                     'modifiers': context.prop("modifiers").defer_parsing_to_component(Signature_Modifiers),
+                                    'dot dot dot token': context.prop("dot dot dot token").peek_for_optional("DotDotDotToken", (context) => context.consume_keyword()),
                                     'identifier': context.prop("identifier").defer_parsing_to_component(Identifier),
+                                    'question token': context.prop("question token").peek_for_optional("QuestionToken", (context) => context.consume_keyword()),
                                     'annotation': context.prop("annotation").peek_for_optional("ColonToken", (context) => ({
                                         'colon token': context.prop("colon token").consume_keyword(),
                                         'type': context.prop("type").defer_parsing_to_component(Type),
@@ -1371,6 +1379,9 @@ export const Property_Name: h.Production<d_out.Property_Name> = ($, abort, $p) =
                     (kind, abort) => {
                         switch (kind) {
                             case "AsyncKeyword": return ['async', context.option("async").consume_keyword()]
+                            case "ExportKeyword": return ['export', context.option("export").consume_keyword()]
+                            case "OverrideKeyword": return ['override', context.option("override").consume_keyword()]
+                            case "PublicKeyword": return ['public', context.option("public").consume_keyword()]
                             default: return abort(null)
                         }
                     }
@@ -2200,7 +2211,7 @@ export const Statement_Modifiers: h.Production<d_out.Statement_Modifiers> = (ite
             (context): d_out.Statement_Modifiers.L => context.peek_for_state(
                 (kind, abort): d_out.Statement_Modifiers.L => {
                     switch (kind) {
-                        // case "ReadonlyKeyword": return ['readonly', context.option("readonly").consume_keyword()]
+                        case "ReadonlyKeyword": return ['readonly', context.option("readonly").consume_keyword()]
                         case "AbstractKeyword": return ['abstract', context.option("abstract").consume_keyword()]
                         case "AccessorKeyword": return ['accessor', context.option("accessor").consume_keyword()]
                         case "AsyncKeyword": return ['async', context.option("async").consume_keyword()]
@@ -2456,16 +2467,9 @@ export const Type: h.Production<d_out.Type> = ($, abort, $p) => h.create_iterato
                             })
                         ),
                         'close bracket token': context.prop("close bracket token").assert_kind("CloseBracketToken").consume_keyword(),
-                        'question modifier': context.prop("question modifier").peek_for_optional(
-                            "QuestionToken",
-                            (context) => ({
-                                'modifier': context.prop("modifier").optional_set_if_not(
-                                    "QuestionToken",
-                                    (context) => context.consume_literal()
-                                ),
-                                'question token': context.prop("question token").assert_kind("QuestionToken").consume_keyword(),
-                            })
-                        ),
+                        'question modifier minus': context.prop("question modifier minus").peek_for_optional("MinusToken", (context) => context.consume_keyword()),
+                        'question modifier plus': context.prop("question modifier plus").peek_for_optional("PlusToken", (context) => context.consume_keyword()),
+                        'question modifier question': context.prop("question modifier question").peek_for_optional("QuestionToken", (context) => context.consume_keyword()),
                         'body': context.prop("body").peek_for_optional(
                             "ColonToken",
                             (context) => ({

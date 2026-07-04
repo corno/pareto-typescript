@@ -147,6 +147,7 @@ export namespace Class_Body {
             'modifiers': Signature_Modifiers
             'get keyword': d_primitives.Keyword
             'name': Property_Name
+            'type parameters': Type_Parameters
             'parameters': Parameters
             'return type': Return_Type_Annotation
             'body': p_.Optional_Value<Block>
@@ -179,6 +180,7 @@ export namespace Class_Body {
             'modifiers': Signature_Modifiers
             'set keyword': d_primitives.Keyword
             'name': Property_Name
+            'type parameters': Type_Parameters
             'parameters': Parameters
             'return type': Return_Type_Annotation
             'body': p_.Optional_Value<Block>
@@ -305,6 +307,7 @@ export namespace Expression {
         'close bracket token': d_primitives.Keyword
     }
     export type Arrow_Function = {
+        'jsdoc': JSDoc
         'parameters': Arrow_Function_Parameters
         'type': Return_Type_Annotation
         'equals greater than token': d_primitives.Keyword
@@ -610,6 +613,7 @@ export namespace Object_Type {
             'parameters': Parameters
             'type': Optional_Type
             'semicolon': Semi_Colon
+            'comma': p_.Optional_Value<d_primitives.Keyword>
         }
         export type Get_Accessor = {
             'jsdoc': JSDoc
@@ -638,7 +642,9 @@ export namespace Object_Type {
             'parameter': h.Separated_List<{
                 'jsdoc': JSDoc
                 'modifiers': Signature_Modifiers
+                'dot dot dot token': p_.Optional_Value<d_primitives.Keyword>
                 'identifier': Identifier
+                'question token': p_.Optional_Value<d_primitives.Keyword>
                 'annotation': p_.Optional_Value<{
                     'colon token': d_primitives.Keyword
                     'type': Type
@@ -704,6 +710,9 @@ export type Property_Name = {
     'jsdoc': JSDoc
     'modifiers': p_.Optional_Value<p_di.List<
         | ['async', d_primitives.Keyword]
+        | ['export', d_primitives.Keyword]
+        | ['override', d_primitives.Keyword]
+        | ['public', d_primitives.Keyword]
     >>
     'type':
     | ['big int literal', d_primitives.Literal]
@@ -1204,6 +1213,7 @@ export namespace Statement_Modifiers {
         | ['private', d_primitives.Keyword]
         | ['protected', d_primitives.Keyword]
         | ['public', d_primitives.Keyword]
+        | ['readonly', d_primitives.Keyword]
         | ['static', d_primitives.Keyword]
 }
 
@@ -1374,10 +1384,9 @@ export namespace Type {
             'type': Type
         }>
         'close bracket token': d_primitives.Keyword
-        'question modifier': p_.Optional_Value<{
-            'modifier': p_.Optional_Value<d_primitives.Literal>
-            'question token': d_primitives.Keyword
-        }>
+        'question modifier minus': p_.Optional_Value<d_primitives.Keyword>
+        'question modifier plus': p_.Optional_Value<d_primitives.Keyword>
+        'question modifier question': p_.Optional_Value<d_primitives.Keyword>
         'body': p_.Optional_Value<{
             'colon token': d_primitives.Keyword
             'type': Type
