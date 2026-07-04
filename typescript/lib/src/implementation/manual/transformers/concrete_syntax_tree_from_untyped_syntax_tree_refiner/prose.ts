@@ -8,7 +8,7 @@ import * as d_in from "../../../../interface/data/concrete_syntax_tree_from_ast"
 
 //dependencies
 import * as t_path_to_text from "pareto-resources/dist/implementation/manual/transformers/unrestricted_path/text"
-import * as t_ast_to_fp from "../untyped_syntax_tree/prose"
+import * as t_ast_to_prose from "../untyped_syntax_tree/prose"
 
 
 //shorthands
@@ -99,7 +99,7 @@ export const Error: p_i.Transformer<d_in.Error, d_out.Phrase> = ($) => sh.ph.com
             sh.ph.literal("snippet:"),
         ]),
         sh.sentence([
-            t_ast_to_fp.Node(
+            t_ast_to_prose.Node(
                 $.inner['context node'],
                 {
                     'depth': 3,
