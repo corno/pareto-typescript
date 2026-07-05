@@ -308,7 +308,12 @@ export namespace Expression {
     }
     export type Arrow_Function = {
         'jsdoc': JSDoc
-        'parameters': Arrow_Function_Parameters
+        'parameters':
+        | ['with parentheses', {
+            'type parameters': Type_Parameters
+            'parameters': Parameters
+        }]
+        | ['without parentheses', Arrow_Function.Without_Parentheses]
         'type': Return_Type_Annotation
         'equals greater than token': d_primitives.Keyword
         'body':
@@ -324,12 +329,6 @@ export namespace Expression {
             }
         }
     }
-    export type Arrow_Function_Parameters =
-        | ['with parentheses', {
-            'type parameters': Type_Parameters
-            'parameters': Parameters
-        }]
-        | ['without parentheses', Arrow_Function.Without_Parentheses]
     export type As = {
         'expression': Expression
         'as keyword': d_primitives.Keyword

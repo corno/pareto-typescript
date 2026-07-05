@@ -426,16 +426,34 @@ export const Expression: h.Production<d_out.Expression> = ($, abort, $p) => h.cr
                     (context): d_out.Expression.Arrow_Function => ({
                         'jsdoc': context.prop("jsdoc").defer_parsing_to_component(JSDoc),
                         'parameters': context.prop("parameters").peek_for_state(
-                            (kind, abort): d_out.Expression.Arrow_Function_Parameters => {
+                            (kind, abort) => {
                                 switch (kind) {
                                     case "SyntaxList": {
-                                        type Phase1 = ['async', null] | ['without parentheses', d_out.Expression.Arrow_Function.Without_Parentheses]
-                                        const phase1 = context.consume_and_parse_children_as_type((inner): Phase1 =>
-                                            inner.peek_for_state((innerKind, innerAbort) => {
-                                                switch (innerKind) {
+                                        return context.consume_and_parse_children_as_type((inner) =>
+                                            inner.peek_for_state((kind, abort) => {
+                                                switch (kind) {
                                                     case "AsyncKeyword":
-                                                        inner.prop("async").consume_keyword()
-                                                        return ['async', null] as Phase1
+                                                        inner.prop("async").consume_keyword() //THIS IS NOT IMPLEMENTED RIGHT, NEESDS TO BE FIXED
+
+                                                        return context.peek_for_state((kind, abort) => {
+                                                            switch (kind) {
+                                                                case "SyntaxList": return ['without parentheses', context.consume_and_parse_children_as_type(
+                                                                    (inner): d_out.Expression.Arrow_Function.Without_Parentheses => ({
+                                                                        'parameter': inner.prop("parameter").assert_kind("Parameter").consume_and_parse_children_as_type(
+                                                                            (ctx) => ({
+                                                                                'jsdoc': ctx.prop("jsdoc").defer_parsing_to_component(JSDoc),
+                                                                                'name': ctx.prop("name").defer_parsing_to_component(Binding_Pattern),
+                                                                                'type': ctx.prop("type").defer_parsing_to_component(Optional_Type),
+                                                                            })
+                                                                        )
+                                                                    })
+                                                                )]
+                                                                default: return ['with parentheses', {
+                                                                    'type parameters': context.prop("type parameters").defer_parsing_to_component(Type_Parameters),
+                                                                    'parameters': context.prop("parameters").defer_parsing_to_component(Parameters),
+                                                                }]
+                                                            }
+                                                        })
                                                     case "Parameter":
                                                         return ['without parentheses', {
                                                             'parameter': inner.prop("parameter").assert_kind("Parameter").consume_and_parse_children_as_type(
@@ -445,34 +463,11 @@ export const Expression: h.Production<d_out.Expression> = ($, abort, $p) => h.cr
                                                                     'type': ctx.prop("type").defer_parsing_to_component(Optional_Type),
                                                                 })
                                                             )
-                                                        }] as Phase1
-                                                    default: return innerAbort(null)
+                                                        }]
+                                                    default: return abort(null)
                                                 }
                                             })
                                         )
-                                        if (phase1[0] === 'async') {
-                                            return context.peek_for_state((nextKind, nextAbort): d_out.Expression.Arrow_Function_Parameters => {
-                                                switch (nextKind) {
-                                                    case "SyntaxList": return ['without parentheses', context.consume_and_parse_children_as_type(
-                                                        (inner): d_out.Expression.Arrow_Function.Without_Parentheses => ({
-                                                            'parameter': inner.prop("parameter").assert_kind("Parameter").consume_and_parse_children_as_type(
-                                                                (ctx) => ({
-                                                                    'jsdoc': ctx.prop("jsdoc").defer_parsing_to_component(JSDoc),
-                                                                    'name': ctx.prop("name").defer_parsing_to_component(Binding_Pattern),
-                                                                    'type': ctx.prop("type").defer_parsing_to_component(Optional_Type),
-                                                                })
-                                                            )
-                                                        })
-                                                    )]
-                                                    default: return ['with parentheses', {
-                                                        'type parameters': context.prop("type parameters").defer_parsing_to_component(Type_Parameters),
-                                                        'parameters': context.prop("parameters").defer_parsing_to_component(Parameters),
-                                                    }]
-                                                }
-                                            })
-                                        } else {
-                                            return phase1
-                                        }
                                     }
                                     default: return ['with parentheses', {
                                         'type parameters': context.prop("type parameters").defer_parsing_to_component(Type_Parameters),

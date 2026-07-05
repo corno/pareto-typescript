@@ -1,20 +1,25 @@
 import * as p_ from 'pareto-core/dist/implementation/transformer'
 import * as p_i from 'pareto-core/dist/interface/transformer'
-import p_variables from 'pareto-core/dist/implementation/transformer/specials/variables'
 
 //data types
 import * as d_out from "pareto-fountain-pen/dist/interface/generated/liana/schemas/prose/data"
 import * as d_in from "../../../../interface/data/concrete_syntax_tree_from_ast"
 
+export namespace interface_ {
+    export type Error = p_i.Transformer<
+        d_in.Error,
+        d_out.Phrase
+    >
+}
+
 //dependencies
 import * as t_path_to_text from "pareto-resources/dist/implementation/manual/transformers/unrestricted_path/text"
 import * as t_ast_to_prose from "../untyped_syntax_tree/prose"
 
-
 //shorthands
 import * as sh from "pareto-fountain-pen/dist/shorthands/prose/deprecated"
 
-export const Error: p_i.Transformer<d_in.Error, d_out.Phrase> = ($) => sh.ph.composed([
+export const Error: interface_.Error = ($) => sh.ph.composed([
     sh.ph.literal($.inner.path),
     sh.ph.literal(": "),
     p_.from.state($.inner.type).decide(
