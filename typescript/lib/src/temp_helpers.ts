@@ -15,9 +15,8 @@ import { Abort } from 'pareto-core/dist/interface/__internal/Abort'
 
 /*
 
-Some pointers on how to use this API:
--have a look at the typed_ast/ast.ts file to see how the AST is refined into a typed AST. The functions there are the ones that you will be calling from your own code.
--use the same parameter names as the ones specified in this file, like 'context', 'abort', 'kind'
+A pointer on how to use this API:
+-have a look at the concrete_syntax_tree/untyped_syntax_tree.ts file to see how the AST is refined into a typed AST.
 
 */
 
