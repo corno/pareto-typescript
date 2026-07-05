@@ -4,7 +4,7 @@ import * as p_pi from 'pareto-core/dist/interface/production'
 import * as p_ri from 'pareto-core/dist/interface/refiner'
 import * as p_di from 'pareto-core/dist/interface/data'
 import p_iterate from 'pareto-core/dist/implementation/refiner/specials/iterate'
-import P_unreachable_code_path from 'pareto-core/dist/implementation/transformer/specials/unreachable_code_path'
+import p_unreachable_code_path from 'pareto-core/dist/implementation/transformer/specials/unreachable_code_path'
 import * as h_i from './temp_helper_types'
 
 //data types
@@ -243,7 +243,7 @@ const internal_create_node_context = (
                         path
                     )
                 ),
-                on_dangling_item: ($) => P_unreachable_code_path("build_list processes all items"),
+                on_dangling_item: ($) => p_unreachable_code_path("build_list processes all items"),
             })
         },
         parse_children_as_list: (
@@ -256,7 +256,7 @@ const internal_create_node_context = (
                 assign: (iterator) => iterator.build_list({
                     has_more_items: ($) => true,
                     handle: () => iterator.peek(
-                        ($) => P_unreachable_code_path("this callback is only called if there are more items"),
+                        ($) => p_unreachable_code_path("this callback is only called if there are more items"),
                         ($) => {
                             return callback(internal_create_iterator_context(
                                 iterator,
@@ -266,9 +266,9 @@ const internal_create_node_context = (
                             ))
                         },
                     ),
-                    on_no_progression: () => P_unreachable_code_path("'handle' is expected to consume at least one item"),
+                    on_no_progression: () => p_unreachable_code_path("'handle' is expected to consume at least one item"),
                 }),
-                on_dangling_item: ($) => P_unreachable_code_path("build_list processes all items"),
+                on_dangling_item: ($) => p_unreachable_code_path("build_list processes all items"),
             })
         }
     }
@@ -552,7 +552,7 @@ const internal_create_iterator_context = (
                         )
                     )
                 },
-                on_no_progression: () => P_unreachable_code_path("'handle' is expected to consume at least one item"),
+                on_no_progression: () => p_unreachable_code_path("'handle' is expected to consume at least one item"),
             })
         },
         consume_and_parse_children_as_type: (
@@ -593,11 +593,11 @@ const internal_create_iterator_context = (
                     handle: () => {
 
                         return iterator.peek(
-                            ($) => P_unreachable_code_path("this callback is only called if there are more items"),
+                            ($) => p_unreachable_code_path("this callback is only called if there are more items"),
                             ($) => {
                                 if ($.kind === separator_kind) {
                                     iterator.consume(
-                                        ($) => P_unreachable_code_path("this callback is only called if there are more items"),
+                                        ($) => p_unreachable_code_path("this callback is only called if there are more items"),
                                         ($) => null
                                     )
                                     return ['separator', null]
@@ -612,9 +612,9 @@ const internal_create_iterator_context = (
                             },
                         )
                     },
-                    on_no_progression: () => P_unreachable_code_path("'handle' is expected to consume at least one item"),
+                    on_no_progression: () => p_unreachable_code_path("'handle' is expected to consume at least one item"),
                 }),
-                on_dangling_item: ($) => P_unreachable_code_path("build_list processes all items"),
+                on_dangling_item: ($) => p_unreachable_code_path("build_list processes all items"),
             })
         },
         consume_and_parse_children_as_non_separated_list: (
@@ -630,7 +630,7 @@ const internal_create_iterator_context = (
                     handle: () => {
 
                         return iterator.peek(
-                            ($) => P_unreachable_code_path("this callback is only called if there are more items"),
+                            ($) => p_unreachable_code_path("this callback is only called if there are more items"),
                             ($) => callback(
                                 internal_create_iterator_context(
                                     iterator,
@@ -640,9 +640,9 @@ const internal_create_iterator_context = (
                                 )),
                         )
                     },
-                    on_no_progression: () => P_unreachable_code_path("'handle' is expected to consume at least one item"),
+                    on_no_progression: () => p_unreachable_code_path("'handle' is expected to consume at least one item"),
                 }),
-                on_dangling_item: ($) => P_unreachable_code_path("build_list processes all items"),
+                on_dangling_item: ($) => p_unreachable_code_path("build_list processes all items"),
             })
         },
     }
