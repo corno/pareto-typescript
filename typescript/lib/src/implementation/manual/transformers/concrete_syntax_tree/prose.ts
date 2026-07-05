@@ -1,9 +1,9 @@
-import * as p_ from 'pareto-core/dist/implementation/transformer'
-import * as p_i from 'pareto-core/dist/interface/transformer'
+import * as p_ from 'pareto-core/implementation/transformer'
+import * as p_i from 'pareto-core/interface/transformer'
 
 //data types
-import * as d_out from "pareto-fountain-pen/dist/interface/generated/liana/schemas/prose/data"
-import * as d_in from "../../../../interface/data/concrete_syntax_tree"
+import * as d_in from "../../../../interface/data/concrete_syntax_tree.js"
+import * as d_out from "pareto-fountain-pen/interface/generated/liana/schemas/prose/data"
 
 export namespace interface_ {
     export type Arguments = p_i.Transformer<d_in.Arguments, d_out.Phrase>
@@ -45,7 +45,7 @@ export namespace interface_ {
 }
 
 //shorthands
-import * as sh from "pareto-fountain-pen/dist/shorthands/prose/target"
+import * as sh from "pareto-fountain-pen/shorthands/prose/target"
 
 export const Arguments: interface_.Arguments = ($) => sh.ph.composed(p_.literal.list([
     p_.from.optional($['question dot token']).decide(

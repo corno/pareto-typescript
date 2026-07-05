@@ -1,10 +1,10 @@
 #!/usr/bin/env -S node --enable-source-maps
 
-import * as p_h from 'pareto-host-nodejs'
+import * as p_h from 'pareto-host-nodejs/index'
 
-import { $$ as c_command } from "lib/dist/implementation/manual/commands/analyze_file"
+import { $$ as c_command } from "lib/implementation/manual/commands/analyze_file"
 
-import { $$ as q_parse_file } from "../temp/queries/parse_file"
+import { $$ as q_parse_file } from "../temp/queries/parse_file.js"
 
 
 p_h.run_main_command(

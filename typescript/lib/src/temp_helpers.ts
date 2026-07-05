@@ -1,17 +1,17 @@
-import * as p_ from 'pareto-core/dist/implementation/refiner'
-import * as p_t from 'pareto-core/dist/implementation/transformer'
-import * as p_pi from 'pareto-core/dist/interface/production'
-import * as p_ri from 'pareto-core/dist/interface/refiner'
-import * as p_di from 'pareto-core/dist/interface/data'
-import p_iterate from 'pareto-core/dist/implementation/refiner/specials/iterate'
-import p_unreachable_code_path from 'pareto-core/dist/implementation/transformer/specials/unreachable_code_path'
-import * as h_i from './temp_helper_types'
+import * as p_ from 'pareto-core/implementation/refiner'
+import * as p_t from 'pareto-core/implementation/transformer'
+import * as p_pi from 'pareto-core/interface/production'
+import * as p_ri from 'pareto-core/interface/refiner'
+import * as p_di from 'pareto-core/interface/data'
+import p_iterate from 'pareto-core/implementation/refiner/specials/iterate'
+import p_unreachable_code_path from 'pareto-core/implementation/transformer/specials/unreachable_code_path'
+import * as h_i from './temp_helper_types.js'
 
 //data types
-import * as d_in from "./modules/typescript_parser_api/interface/data/untyped_syntax_tree"
-import * as d_function from "./interface/data/concrete_syntax_tree_from_ast"
-import * as d_primitives from "./interface/data/primitives"
-import { Abort } from 'pareto-core/dist/interface/__internal/Abort'
+import * as d_in from "./modules/typescript_parser_api/interface/data/untyped_syntax_tree.js"
+import * as d_function from "./interface/data/concrete_syntax_tree_from_ast.js"
+import * as d_primitives from "./interface/data/primitives.js"
+import { type Abort } from 'pareto-core/interface/__internal/Abort'
 
 /*
 

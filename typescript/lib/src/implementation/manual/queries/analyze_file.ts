@@ -1,22 +1,22 @@
-import * as p_ from 'pareto-core/dist/implementation/query'
-import * as p_temp from 'pareto-core/dist/implementation/transformer'
-import p_super_query_result from 'pareto-core/dist/implementation/query/super_query_result'
-import p_text_from_list from 'pareto-core/dist/implementation/transformer/specials/text_from_list'
+import * as p_ from 'pareto-core/implementation/query'
+import * as p_temp from 'pareto-core/implementation/transformer'
+import p_super_query_result from 'pareto-core/implementation/query/super_query_result'
+import p_text_from_list from 'pareto-core/implementation/transformer/specials/text_from_list'
 
-import * as interface_ from "../../../interface/queries"
+import * as interface_ from "../../../interface/queries.js"
 
 //data  types
-import * as d_process_file_data from "pareto-common/dist/interface/data/process_file_data"
-import * as d_parse_typescript_file from "../../../modules/typescript_parser_api/interface/data/parse_file"
-import * as d_prose from "pareto-fountain-pen/dist/interface/generated/liana/schemas/prose/data"
+import * as d_process_file_data from "pareto-common/interface/data/process_file_data"
+import * as d_parse_typescript_file from "../../../modules/typescript_parser_api/interface/data/parse_file.js"
+import * as d_prose from "pareto-fountain-pen/interface/generated/liana/schemas/prose/data"
 
 //dependencies
-import * as t_prose_to_loc from "pareto-fountain-pen/dist/implementation/manual/transformers/prose/list_of_characters"
-import * as r_typed_ast_from_ast from "../refiners/concrete_syntax_tree/temp_wrapper"
-import * as t_typed_ast_from_ast_to_prose from "../transformers/concrete_syntax_tree_from_untyped_syntax_tree_refiner/prose"
+import * as t_prose_to_loc from "pareto-fountain-pen/implementation/manual/transformers/prose/list_of_characters"
+import * as r_typed_ast_from_ast from "../refiners/concrete_syntax_tree/temp_wrapper.js"
+import * as t_typed_ast_from_ast_to_prose from "../transformers/concrete_syntax_tree_from_untyped_syntax_tree_refiner/prose.js"
 
 //shorthands
-import * as sh from "pareto-fountain-pen/dist/shorthands/prose/deprecated"
+import * as sh from "pareto-fountain-pen/shorthands/prose/deprecated"
 
 export const $$: interface_.functions.analyze_typescript_file = p_.query_function(
     ($d, $s, $q) => p_super_query_result<d_parse_typescript_file.Result, d_process_file_data.Error>($q['parse file'](

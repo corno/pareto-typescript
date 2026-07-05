@@ -1,4 +1,4 @@
-import * as d_ast from "../../modules/typescript_parser_api/interface/data/untyped_syntax_tree"
+import * as d_ast from "../../modules/typescript_parser_api/interface/data/untyped_syntax_tree.js"
 
 export type Keyword = null
 

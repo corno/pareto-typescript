@@ -1,7 +1,7 @@
-import * as p_ from 'pareto-core/dist/interface/query'
+import * as p_ from 'pareto-core/interface/query'
 
-import * as queries_common from "pareto-common/dist/interface/queries"
-import * as queries_typescript_parser from "../modules/typescript_parser_api/interface/queries"
+import * as queries_common from "pareto-common/interface/queries"
+import * as queries_typescript_parser from "../modules/typescript_parser_api/interface/queries.js"
 
 export namespace functions {
 

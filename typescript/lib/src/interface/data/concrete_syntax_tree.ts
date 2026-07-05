@@ -1,9 +1,9 @@
-import * as p_ from 'pareto-core/dist/interface/data'
-import * as p_di from 'pareto-core/dist/interface/data'
+import * as p_ from 'pareto-core/interface/data'
+import * as p_di from 'pareto-core/interface/data'
 
-import * as d_primitives from "./primitives"
+import * as d_primitives from "./primitives.js"
 
-import * as h from "../../temp_helper_types"
+import * as h from "../../temp_helper_types.js"
 
 export type Arguments = {
     'question dot token': p_.Optional_Value<d_primitives.Keyword>

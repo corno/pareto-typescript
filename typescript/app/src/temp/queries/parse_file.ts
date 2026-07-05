@@ -1,14 +1,14 @@
-import * as p_ from 'pareto-core/dist/implementation/query'
-import * as p_i from 'pareto-core/dist/interface/data'
+import * as p_ from 'pareto-core/implementation/query'
+import * as p_i from 'pareto-core/interface/data'
 
-import p_query from 'pareto-core/dist/implementation/query/__internal/query'
-import p_query_result from 'pareto-core/dist/implementation/query/__internal/query_result'
+import p_query from 'pareto-core/implementation/query/__internal/query'
+import p_query_result from 'pareto-core/implementation/query/__internal/query_result'
 
 //interface
-import * as resources from "lib/dist/modules/typescript_parser_api/interface/queries"
+import * as resources from "lib/modules/typescript_parser_api/interface/queries"
 
 
-import * as d_ast from "lib/dist/modules/typescript_parser_api/interface/data/untyped_syntax_tree"
+import * as d_ast from "lib/modules/typescript_parser_api/interface/data/untyped_syntax_tree"
 
 import * as ts from "typescript"
 
