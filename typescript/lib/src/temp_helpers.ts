@@ -254,8 +254,8 @@ const internal_create_node_context = (
                 list: context_node.children,
                 end_info: null,
                 assign: (iterator) => iterator.build_list({
-                    'has_more_items': ($) => true,
-                    'handle': () => iterator.peek(
+                    has_more_items: ($) => true,
+                    handle: () => iterator.peek(
                         ($) => P_unreachable_code_path("this callback is only called if there are more items"),
                         ($) => {
                             return callback(internal_create_iterator_context(
@@ -265,7 +265,8 @@ const internal_create_node_context = (
                                 path
                             ))
                         },
-                    )
+                    ),
+                    on_no_progression: () => P_unreachable_code_path("'handle' is expected to consume at least one item"),
                 }),
                 on_dangling_item: ($) => P_unreachable_code_path("build_list processes all items"),
             })
@@ -540,8 +541,8 @@ const internal_create_iterator_context = (
             callback
         ) => {
             return iterator.build_list({
-                'has_more_items': ($) => has_more_items($.kind),
-                'handle': () => {
+                has_more_items: ($) => has_more_items($.kind),
+                handle: () => {
                     return callback(
                         internal_create_iterator_context(
                             iterator,
@@ -550,7 +551,8 @@ const internal_create_iterator_context = (
                             path
                         )
                     )
-                }
+                },
+                on_no_progression: () => P_unreachable_code_path("'handle' is expected to consume at least one item"),
             })
         },
         consume_and_parse_children_as_type: (
@@ -587,8 +589,8 @@ const internal_create_iterator_context = (
                 list: child.children,
                 end_info: null,
                 assign: (iterator) => iterator.build_list({
-                    'has_more_items': ($) => true,
-                    'handle': () => {
+                    has_more_items: ($) => true,
+                    handle: () => {
 
                         return iterator.peek(
                             ($) => P_unreachable_code_path("this callback is only called if there are more items"),
@@ -609,7 +611,8 @@ const internal_create_iterator_context = (
                                 }
                             },
                         )
-                    }
+                    },
+                    on_no_progression: () => P_unreachable_code_path("'handle' is expected to consume at least one item"),
                 }),
                 on_dangling_item: ($) => P_unreachable_code_path("build_list processes all items"),
             })
@@ -623,8 +626,8 @@ const internal_create_iterator_context = (
                 list: child.children,
                 end_info: null,
                 assign: (iterator) => iterator.build_list({
-                    'has_more_items': ($) => true,
-                    'handle': () => {
+                    has_more_items: ($) => true,
+                    handle: () => {
 
                         return iterator.peek(
                             ($) => P_unreachable_code_path("this callback is only called if there are more items"),
@@ -636,7 +639,8 @@ const internal_create_iterator_context = (
                                     path
                                 )),
                         )
-                    }
+                    },
+                    on_no_progression: () => P_unreachable_code_path("'handle' is expected to consume at least one item"),
                 }),
                 on_dangling_item: ($) => P_unreachable_code_path("build_list processes all items"),
             })

@@ -1,6 +1,6 @@
 {
   "name": "pareto-typescript",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "author": "Corno",
   "license": "Apache-2.0",
   "description": "library to parse Typescript, implemented in Pareto",
@@ -29,7 +29,7 @@
   "dependencies": {
     "pareto-common": "^0.1.0",
     "pareto-core": "^0.1.0",
-    "pareto-core-dev": "^0.12.18",
+    "pareto-core-dev": "^0.12.0",
     "pareto-fountain-pen": "^0.4.0",
     "pareto-resources": "^0.2.0",
     "pareto-stream": "^0.1.0"
