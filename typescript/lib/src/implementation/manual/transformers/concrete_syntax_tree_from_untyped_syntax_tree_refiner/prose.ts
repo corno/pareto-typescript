@@ -14,7 +14,7 @@ export namespace interface_ {
 
 //dependencies
 import * as t_path_to_text from "pareto-resources/implementation/manual/transformers/unrestricted_path/text"
-import * as t_ast_to_prose from "../untyped_syntax_tree/prose.js"
+import * as t_ast_to_prose from "../../../../modules/typescript_parser_api/implementation/manual/transformers/untyped_syntax_tree/prose.js"
 
 //shorthands
 import * as sh from "pareto-fountain-pen/shorthands/prose/deprecated"
@@ -72,26 +72,6 @@ export const Error: interface_.Error = ($) => sh.ph.composed([
             }
         }
     ),
-    // sh.ph.literal($.inner['module name']),
-    // sh.ph.literal(">"),
-    // sh.ph.literal($.inner['internal path description']),
-    // sh.ph.literal(" : "),
-    // p_.from.state($.inner.problem).decide(
-    //     ($) => {
-    //         switch ($[0]) {
-    //             case 'end of node list': return p_.option($, ($) => sh.ph.literal("expected more nodes"))
-    //             case 'unexpected node': return p_.option($, ($) => sh.ph.composed([
-    //                 sh.ph.literal("unexpected node '"),
-    //                 sh.ph.literal($.kind),
-    //                 sh.ph.literal("'"),
-    //             ]))
-    //             default: return p_.au($[0])
-    //         }
-    //     }
-    // ),
-    // sh.ph.literal(" @"),
-    // sh.ph.literal($.inner['external location description']),
-    // sh.ph.literal(" "),
     sh.ph.literal(" @ "),
     sh.ph.literal(t_path_to_text.Node_Path($.path)),
     sh.ph.literal(`:${$.inner['context node'].location.line}:${$.inner['context node'].location.column}`),
