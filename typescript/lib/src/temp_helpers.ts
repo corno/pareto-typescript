@@ -1,11 +1,11 @@
 import * as p_ from 'pareto-core/implementation/refiner'
 import * as p_t from 'pareto-core/implementation/transformer'
-import * as p_pi from 'pareto-core/interface/production'
 import * as p_ri from 'pareto-core/interface/refiner'
 import * as p_di from 'pareto-core/interface/data'
 import p_iterate from 'pareto-core/implementation/refiner/specials/iterate'
 import p_unreachable_code_path from 'pareto-core/implementation/transformer/specials/unreachable_code_path'
 import * as h_i from './temp_helper_types.js'
+import { type Iterator } from 'pareto-core/interface/__internal/refiner/Iterator'
 
 //data types
 import * as d_in from "./modules/typescript_parser_api/interface/data/untyped_syntax_tree.js"
@@ -48,7 +48,7 @@ export type Refiner<T extends p_di.Value> = p_ri.Refiner_With_Parameter<
     Refiner_Parameters
 >
 
-export type Production<T extends p_di.Value> = p_pi.Production_With_Parameter<
+export type Production<T extends p_di.Value> = p_ri.Production_With_Parameter<
     T,
     d_function.Error_Inner,
     d_in.Node,
@@ -326,7 +326,7 @@ export const create_root_node_context = <T>(
 }
 
 const internal_create_iterator_context = (
-    iterator: p_pi.Iterator<d_in.Node, null>,
+    iterator: Iterator<d_in.Node, null>,
     abort: Abort<d_function.Error_Inner>,
     parent: d_in.Node,
     path: string,
@@ -648,7 +648,7 @@ const internal_create_iterator_context = (
 }
 
 export const create_iterator_context = <T extends p_di.Value>(
-    iterator: p_pi.Iterator<d_in.Node, null>,
+    iterator: Iterator<d_in.Node, null>,
     abort: Abort<d_function.Error_Inner>,
     $p: Production_Parameters,
     name: string,
