@@ -4,7 +4,7 @@ import * as p_ from 'pareto-core/interface/command'
 import * as d_main from "pareto-resources/interface/data/temp_main"
 
 import * as queries_typescript_parser from "pareto-untyped-syntax-tree-api/interface/queries"
-import * as commands_stream from "pareto-stream/interface/commands"
+import * as commands_stream from "pareto-stream-api/interface/commands"
 import * as commands_resources from "pareto-resources/interface/resources"
 
 export namespace commands {
