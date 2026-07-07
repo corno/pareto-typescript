@@ -2,7 +2,7 @@
 import * as p_i from "pareto-core/interface/refiner"
 
 //data types
-import * as d_in from "../../../../modules/typescript_parser_api/interface/data/untyped_syntax_tree.js"
+import * as d_in from "pareto-untyped-syntax-tree-api/interface/data/untyped_syntax_tree"
 import * as d_out from "../../../../interface/data/concrete_syntax_tree.js"
 import * as d_path from "pareto-resources/interface/generated/liana/schemas/fs_unrestricted_path/data"
 import * as d_function from "../../../../interface/data/concrete_syntax_tree_from_ast.js"

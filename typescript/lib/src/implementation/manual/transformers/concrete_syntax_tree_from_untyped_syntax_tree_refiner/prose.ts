@@ -14,7 +14,7 @@ export namespace interface_ {
 
 //dependencies
 import * as t_path_to_text from "pareto-resources/implementation/manual/transformers/unrestricted_path/text"
-import * as t_ast_to_prose from "../../../../modules/typescript_parser_api/implementation/manual/transformers/untyped_syntax_tree/prose.js"
+import * as t_ast_to_prose from "pareto-untyped-syntax-tree-api/implementation/manual/transformers/untyped_syntax_tree/prose"
 
 //shorthands
 import * as sh from "pareto-fountain-pen/shorthands/prose/deprecated"

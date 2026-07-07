@@ -7,7 +7,7 @@ import * as interface_ from "../../../interface/queries.js"
 
 //data  types
 import * as d_process_file_data from "pareto-common/interface/data/process_file_data"
-import * as d_parse_typescript_file from "../../../modules/typescript_parser_api/interface/data/parse_file.js"
+import * as d_parse_typescript_file from "pareto-untyped-syntax-tree-api/interface/data/parse_file"
 import * as d_prose from "pareto-fountain-pen/interface/generated/liana/schemas/prose/data"
 
 //dependencies
