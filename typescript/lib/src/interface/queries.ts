@@ -5,7 +5,7 @@ import * as queries_typescript_parser from "pareto-untyped-syntax-tree-api/inter
 
 export namespace functions {
 
-    export type analyze_typescript_file = p_.Query_Function<
+    export type analyze_typescript_file = p_.Query<
         query_actions_pareto_common.process_file_data,
         null,
         {

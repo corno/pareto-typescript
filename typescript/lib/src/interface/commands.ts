@@ -6,7 +6,7 @@ import * as command_actions_pareto_stream_api from "pareto-stream-api/interface/
 import * as query_actions_filesystem_unrestricted_api from "pareto-filesystem-unrestricted-api/interface/query_actions"
 import * as command_actions from "./command_actions.js"
 
-export type analyse_file = p_.Command_Procedure<
+export type analyse_file = p_.Command<
     command_actions.analyse_file,
     null,
     {
