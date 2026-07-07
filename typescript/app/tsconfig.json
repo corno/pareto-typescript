@@ -10,6 +10,7 @@
         "noFallthroughCasesInSwitch": true,
         "noImplicitOverride": true,
         "noImplicitReturns": true,
+        "noLib": true,
         "noPropertyAccessFromIndexSignature": true,
         "noUncheckedIndexedAccess": true,
         "noUncheckedSideEffectImports": true,
