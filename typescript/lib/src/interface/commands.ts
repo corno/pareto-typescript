@@ -1,31 +1,20 @@
 import * as p_ from 'pareto-core/interface/command'
 
-//data types
-import * as d_main from "pareto-application-api/interface/data/main"
 
 import * as queries_typescript_parser from "pareto-untyped-syntax-tree-api/interface/queries"
-import * as commands_stream from "pareto-stream-api/interface/commands"
-import * as commands_resources from "pareto-resources/interface/resources"
+import * as command_actions_pareto_stream_api from "pareto-stream-api/interface/command_actions"
+import * as query_actions_filesystem_unrestricted_api from "pareto-filesystem-unrestricted-api/interface/query_actions"
+import * as command_actions from "./command_actions.js"
 
-export namespace commands {
-
-    export type analyse_file = p_.Command<d_main.Error, d_main.Parameters>
-
-}
-
-export namespace procedures {
-
-    export type analyse_file = p_.Command_Procedure<
-        commands.analyse_file,
-        null,
-        {
-            'parse file': queries_typescript_parser.queries.parse_file
-            'read file': commands_resources.filesystem_unrestricted.queries.read_file
-        },
-        {
-            'write to stdout': commands_stream.commands.write_to_stdout
-            'log error': commands_stream.commands.log_error
-        }
-    >
-
-}
+export type analyse_file = p_.Command_Procedure<
+    command_actions.analyse_file,
+    null,
+    {
+        'parse file': queries_typescript_parser.queries.parse_file
+        'read file': query_actions_filesystem_unrestricted_api.read_file
+    },
+    {
+        'write to stdout': command_actions_pareto_stream_api.write_to_stdout
+        'log error': command_actions_pareto_stream_api.log_error
+    }
+>

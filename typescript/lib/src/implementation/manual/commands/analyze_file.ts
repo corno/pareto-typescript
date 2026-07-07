@@ -15,7 +15,7 @@ import * as q_analyze_typescript_file from "../queries/analyze_file.js"
 //     | ['parse file', d_parse_file.Error]
 //     | ['write to stdout', null]
 
-export const $$: interface_.procedures.analyse_file = p_.command_procedure(
+export const $$: interface_.analyse_file = p_.command(
     ($d, $s, $q, $c) => [
 
         c_file_to_file.$$(

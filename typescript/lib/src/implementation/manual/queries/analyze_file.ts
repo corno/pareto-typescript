@@ -18,7 +18,7 @@ import * as t_typed_ast_from_ast_to_prose from "../transformers/concrete_syntax_
 //shorthands
 import * as sh from "pareto-fountain-pen/shorthands/prose/deprecated"
 
-export const $$: interface_.functions.analyze_typescript_file = p_.query_function(
+export const $$: interface_.functions.analyze_typescript_file = p_.query(
     ($d, $s, $q) => p_super_query_result<d_parse_typescript_file.Result, d_process_file_data.Error>($q['parse file'](
         {
             'data': p_text_from_list(
