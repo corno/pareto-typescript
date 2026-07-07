@@ -2,21 +2,23 @@
 
 import * as p_h from 'pareto-host-nodejs/index'
 
-import { $$ as c_command } from "lib/implementation/manual/commands/analyze_file"
+import * as rs_filesystem_unrestricted from "pareto-host-nodejs/file_system_unrestricted/index"
+import * as rs_stream from "pareto-host-nodejs/stream/index"
+import * as rs_typescript_parser from "pareto-resource-typescript-parser/index"
 
-import { $$ as q_parse_file } from "pareto-resource-typescript-parser/parse_file"
+import { $$ as c_command } from "lib/implementation/manual/commands/analyze_file"
 
 
 p_h.run_main_command(
-    ($r) => c_command(
+    () => c_command(
         null,
         {
-            'parse file': q_parse_file,
-            'read file': $r['filesystem unrestricted'].queries['read file'],
+            'parse file': rs_typescript_parser.$.queries['parse file'],
+            'read file': rs_filesystem_unrestricted.$.queries['read file'],
         },
         {
-            'write to stdout': $r.stream.commands['write to stdout'],
-            'log error': $r.stream.commands['log error'],
+            'write to stdout': rs_stream.$.commands['write to stdout'],
+            'log error': rs_stream.$.commands['log error'],
         },
     ),
 )
