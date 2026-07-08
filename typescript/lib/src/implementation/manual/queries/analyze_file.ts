@@ -42,7 +42,7 @@ export const $$: interface_.functions.analyze_typescript_file = p_.query(
                             )
                         ]),
                     ])))
-                    default: return p_temp.au($[0])
+                    default: return p_temp.exhaustive($[0])
                 }
             }
         )

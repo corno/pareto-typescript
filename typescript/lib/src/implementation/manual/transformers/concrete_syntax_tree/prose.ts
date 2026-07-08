@@ -71,12 +71,12 @@ export const Arguments: interface_.Arguments = ($) => sh.ph.composed(p_.literal.
                                                 sh.ph.literal("..."),
                                                 Expression($['expression']),
                                             ])))
-                                            default: return p_.au($[0])
+                                            default: return p_.exhaustive($[0])
                                         }
                                     }
                                 ))
                                 case 'separator': return p_.option($, ($) => sh.ph.literal(", "))
-                                default: return p_.au($[0])
+                                default: return p_.exhaustive($[0])
                             }
                         }
                     ),
@@ -94,7 +94,7 @@ export const As_Alias: interface_.As_Alias = ($) => sh.ph.composed(p_.literal.li
             switch ($[0]) {
                 case 'identifier': return p_.ss($, ($) => Identifier($))
                 case 'string literal': return p_.ss($, ($) => String_Literal($))
-                default: return p_.au($[0])
+                default: return p_.exhaustive($[0])
             }
         }
     ),
@@ -121,7 +121,7 @@ export const Binding_Pattern: interface_.Binding_Pattern = ($) => sh.ph.composed
                             case 'static': return p_.option($, ($) => sh.ph.literal("static "))
                             case 'public': return p_.option($, ($) => sh.ph.literal("public "))
                             case 'readonly': return p_.option($, ($) => sh.ph.literal("readonly "))
-                            default: return p_.au($[0])
+                            default: return p_.exhaustive($[0])
                         }
                     }
                 ),
@@ -163,11 +163,11 @@ export const Binding_Pattern: interface_.Binding_Pattern = ($) => sh.ph.composed
                                                     ])))
                                                     case 'omitted expression': return p_.option($, ($) => sh.ph.nothing())
 
-                                                    default: return p_.au($[0])
+                                                    default: return p_.exhaustive($[0])
                                                 }
                                             }
                                         ))
-                                        default: return p_.au($[0])
+                                        default: return p_.exhaustive($[0])
                                     }
                                 }
                             )
@@ -199,7 +199,7 @@ export const Binding_Pattern: interface_.Binding_Pattern = ($) => sh.ph.composed
                                             ),
                                             Optional_Initializer($['initializer']),
                                         ])))
-                                        default: return p_.au($[0])
+                                        default: return p_.exhaustive($[0])
                                     }
                                 }
                             )
@@ -208,7 +208,7 @@ export const Binding_Pattern: interface_.Binding_Pattern = ($) => sh.ph.composed
                     sh.ph.literal("}"),
                 ])))
                 case 'string keyword': return p_.option($, ($) => sh.ph.literal("string"))
-                default: return p_.au($[0])
+                default: return p_.exhaustive($[0])
             }
         }
     )
@@ -236,7 +236,7 @@ export const Class: interface_.Class = ($) => sh.ph.composed(p_.literal.list([
                             sh.ph.literal("@"),
                             Expression($['expression']),
                         ])))
-                        default: return p_.au($[0])
+                        default: return p_.exhaustive($[0])
                     }
                 }
             )
@@ -272,7 +272,7 @@ export const Class_Body: interface_.Class_Body = ($) => sh.ph.composed(p_.litera
                                                     switch ($[0]) {
                                                         case 'constructor keyword': return p_.option($, () => sh.ph.literal("constructor"))
                                                         case 'constructor keyword as string literal': return p_.option($, () => sh.ph.literal("constructor"))
-                                                        default: return p_.au($[0])
+                                                        default: return p_.exhaustive($[0])
                                                     }
                                                 }
                                             ),
@@ -381,7 +381,7 @@ export const Class_Body: interface_.Class_Body = ($) => sh.ph.composed(p_.litera
                                                                     () => sh.ph.nothing()
                                                                 ),
                                                             ])))
-                                                            default: return p_.au($[0])
+                                                            default: return p_.exhaustive($[0])
                                                         }
                                                     }
                                                 )
@@ -391,7 +391,7 @@ export const Class_Body: interface_.Class_Body = ($) => sh.ph.composed(p_.litera
                                             Semi_Colon($.semicolon),
                                         ])))
                                         case 'semicolon element': return p_.option($, ($) => sh.ph.composed(p_.literal.list([JSDoc($['jsdoc']), sh.ph.literal(";")])))
-                                        default: return p_.au($[0])
+                                        default: return p_.exhaustive($[0])
                                     }
                                 }
                             )
@@ -410,7 +410,7 @@ export const Entity_Name: interface_.Entity_Name = ($) => p_.from.state($).decid
         switch ($[0]) {
             case 'identifier': return p_.option($, ($) => sh.ph.literal($.text))
             case 'qualified name': return p_.option($, ($) => Qualified_Name($))
-            default: return p_.au($[0])
+            default: return p_.exhaustive($[0])
         }
     }
 )
@@ -422,7 +422,7 @@ export const Error_Recovery: interface_.Error_Recovery = ($) => p_.from.optional
                 switch ($[0]) {
                     case 'separator': return p_.option($, ($) => sh.ph.literal(", "))
                     case 'entry': return p_.option($, ($) => Type($))
-                    default: return p_.au($[0])
+                    default: return p_.exhaustive($[0])
                 }
             }
         )
@@ -443,7 +443,7 @@ export const Expression: interface_.Expression = ($) => p_.from.state($).decide(
                                     switch ($[0]) {
                                         case 'separator': return p_.option($, ($) => sh.ph.literal(", "))
                                         case 'entry': return p_.option($, ($) => Expression($))
-                                        default: return p_.au($[0])
+                                        default: return p_.exhaustive($[0])
                                     }
                                 }
                             ),
@@ -466,7 +466,7 @@ export const Expression: interface_.Expression = ($) => p_.from.state($).decide(
                                 Binding_Pattern($.parameter.name),
                                 Optional_Type($.parameter.type)
                             ])))
-                            default: return p_.au($[0])
+                            default: return p_.exhaustive($[0])
                         }
                     }
                 ),
@@ -477,7 +477,7 @@ export const Expression: interface_.Expression = ($) => p_.from.state($).decide(
                         switch ($[0]) {
                             case 'block': return p_.option($, ($) => Block($))
                             case 'expression': return p_.option($, ($) => Expression($))
-                            default: return p_.au($[0])
+                            default: return p_.exhaustive($[0])
                         }
                     }
                 ),
@@ -550,7 +550,7 @@ export const Expression: interface_.Expression = ($) => p_.from.state($).decide(
                             case 'in': return p_.option($, ($) => sh.ph.literal(" in "))
                             case 'instanceof': return p_.option($, ($) => sh.ph.literal(" instanceof "))
                             case ',': return p_.option($, ($) => sh.ph.literal(", "))
-                            default: return p_.au($[0])
+                            default: return p_.exhaustive($[0])
                         }
                     }
                 ),
@@ -563,7 +563,7 @@ export const Expression: interface_.Expression = ($) => p_.from.state($).decide(
                             case 'import': return p_.option($, ($) => sh.ph.literal("import"))
                             case 'expression': return p_.option($, ($) => Expression($))
                             case 'super': return p_.option($, ($) => sh.ph.literal("super"))
-                            default: return p_.au($[0])
+                            default: return p_.exhaustive($[0])
                         }
                     }
                 ),
@@ -606,7 +606,7 @@ export const Expression: interface_.Expression = ($) => p_.from.state($).decide(
                             ($) => {
                                 switch ($[0]) {
                                     case 'async': return p_.option($, ($) => sh.ph.literal("async "))
-                                    default: return p_.au($[0])
+                                    default: return p_.exhaustive($[0])
                                 }
                             }
                         )
@@ -637,7 +637,7 @@ export const Expression: interface_.Expression = ($) => p_.from.state($).decide(
                         switch ($[0]) {
                             case 'new keyword': return p_.option($, () => sh.ph.literal("new."))
                             case 'import keyword': return p_.option($, () => sh.ph.literal("import."))
-                            default: return p_.au($[0])
+                            default: return p_.exhaustive($[0])
                         }
                     }
                 ),
@@ -722,11 +722,11 @@ export const Expression: interface_.Expression = ($) => p_.from.state($).decide(
                                                         () => sh.ph.nothing()
                                                     ),
                                                 ])))
-                                                default: return p_.au($[0])
+                                                default: return p_.exhaustive($[0])
                                             }
                                         }
                                     ))
-                                    default: return p_.au($[0])
+                                    default: return p_.exhaustive($[0])
                                 }
                             }
                         )
@@ -760,7 +760,7 @@ export const Expression: interface_.Expression = ($) => p_.from.state($).decide(
                         switch ($[0]) {
                             case '--': return p_.option($, ($) => sh.ph.literal("-"))
                             case '++': return p_.option($, ($) => sh.ph.literal("+"))
-                            default: return p_.au($[0])
+                            default: return p_.exhaustive($[0])
                         }
                     }
                 )
@@ -776,7 +776,7 @@ export const Expression: interface_.Expression = ($) => p_.from.state($).decide(
                             case '+': return p_.option($, ($) => sh.ph.literal("+"))
                             case '++': return p_.option($, ($) => sh.ph.literal("++"))
                             case '~': return p_.option($, ($) => sh.ph.literal("~"))
-                            default: return p_.au($[0])
+                            default: return p_.exhaustive($[0])
                         }
                     }
                 ),
@@ -790,7 +790,7 @@ export const Expression: interface_.Expression = ($) => p_.from.state($).decide(
                         switch ($[0]) {
                             case '.': return p_.option($, ($) => sh.ph.literal("."))
                             case '?.': return p_.option($, ($) => sh.ph.literal("?."))
-                            default: return p_.au($[0])
+                            default: return p_.exhaustive($[0])
                         }
                     }
                 ),
@@ -799,7 +799,7 @@ export const Expression: interface_.Expression = ($) => p_.from.state($).decide(
                         switch ($[0]) {
                             case 'named': return p_.option($, ($) => sh.ph.literal($.text))
                             case 'private': return p_.option($, ($) => sh.ph.literal($.text))
-                            default: return p_.au($[0])
+                            default: return p_.exhaustive($[0])
                         }
                     }
                 )
@@ -825,7 +825,7 @@ export const Expression: interface_.Expression = ($) => p_.from.state($).decide(
                                                     switch ($[0]) {
                                                         case 'middle': return p_.option($, ($) => sh.ph.literal($.text))
                                                         case 'tail': return p_.option($, ($) => sh.ph.literal($.text))
-                                                        default: return p_.au($[0])
+                                                        default: return p_.exhaustive($[0])
                                                     }
                                                 }
                                             )
@@ -833,7 +833,7 @@ export const Expression: interface_.Expression = ($) => p_.from.state($).decide(
                                     )
                                 )
                             ])))
-                            default: return p_.au($[0])
+                            default: return p_.exhaustive($[0])
                         }
                     }
                 ),
@@ -849,7 +849,7 @@ export const Expression: interface_.Expression = ($) => p_.from.state($).decide(
                                     switch ($[0]) {
                                         case 'middle': return p_.option($, ($) => sh.ph.literal($.text))
                                         case 'tail': return p_.option($, ($) => sh.ph.literal($.text))
-                                        default: return p_.au($[0])
+                                        default: return p_.exhaustive($[0])
                                     }
                                 }
                             )
@@ -884,7 +884,7 @@ export const Expression: interface_.Expression = ($) => p_.from.state($).decide(
                 Expression($['expression']),
                 Type_Arguments($['type arguments'])
             ])))
-            default: return p_.au($[0])
+            default: return p_.exhaustive($[0])
         }
     }
 )
@@ -903,7 +903,7 @@ export const Heritage: interface_.Heritage = ($) => p_.from.optional($).decide(
                         switch ($[0]) {
                             case 'extends': return p_.option($, ($) => sh.ph.literal("extends "))
                             case 'implements': return p_.option($, ($) => sh.ph.literal("implements "))
-                            default: return p_.au($[0])
+                            default: return p_.exhaustive($[0])
                         }
                     }
                 ),
@@ -913,7 +913,7 @@ export const Heritage: interface_.Heritage = ($) => p_.from.optional($).decide(
                             switch ($[0]) {
                                 case 'separator': return p_.option($, ($) => sh.ph.literal(", "))
                                 case 'entry': return p_.option($, ($) => Expression_With_Type_Arguments($))
-                                default: return p_.au($[0])
+                                default: return p_.exhaustive($[0])
                             }
                         }
                     )
@@ -962,7 +962,7 @@ export const Module_Body: interface_.Module_Body = ($) => p_.from.state($).decid
                 Module_Body($['module declaration']['block']),
             ])))
             case 'shorthand': return p_.option($, ($) => Semi_Colon($))
-            default: return p_.au($[0])
+            default: return p_.exhaustive($[0])
         }
     }
 )
@@ -1038,7 +1038,7 @@ export const Object_Type: interface_.Object_Type = ($) => sh.ph.composed(p_.lite
                                                                 () => sh.ph.nothing()
                                                             ),
                                                         ])))
-                                                        default: return p_.au($[0])
+                                                        default: return p_.exhaustive($[0])
                                                     }
                                                 }
                                             )
@@ -1081,7 +1081,7 @@ export const Object_Type: interface_.Object_Type = ($) => sh.ph.composed(p_.lite
                                         ),
                                         Semi_Colon($['semicolon token']),
                                     ])))
-                                    default: return p_.au($[0])
+                                    default: return p_.exhaustive($[0])
                                 }
                             }
                         ),
@@ -1131,7 +1131,7 @@ export const Parameters: interface_.Parameters = ($) => sh.ph.composed(p_.litera
                             Optional_Type($.type),
                             Optional_Initializer($.initializer),
                         ])))
-                        default: return p_.au($[0])
+                        default: return p_.exhaustive($[0])
                     }
                 }
             )
@@ -1153,7 +1153,7 @@ export const Property_Name: interface_.Property_Name = ($) => p_.from.state($.ty
             case 'big int literal': return p_.option($, ($) => sh.ph.literal($.text))
             case 'private identifier': return p_.option($, ($) => sh.ph.literal($.text))
             case 'string literal': return p_.option($, ($) => sh.ph.literal($.text))
-            default: return p_.au($[0])
+            default: return p_.exhaustive($[0])
         }
     }
 )
@@ -1172,7 +1172,7 @@ export const Return_Type_Annotation: interface_.Return_Type_Annotation = ($) => 
                 switch ($[0]) {
                     case 'type': return p_.option($, ($) => Type($))
                     case 'type predicate': return p_.option($, ($) => Type_Predicate($))
-                    default: return p_.au($[0])
+                    default: return p_.exhaustive($[0])
                 }
             }
         )
@@ -1210,7 +1210,7 @@ export const Signature_Modifiers: interface_.Signature_Modifiers = ($) => p_.fro
                         case 'public': return p_.option($, ($) => sh.ph.literal("public "))
                         case 'readonly': return p_.option($, ($) => sh.ph.literal("readonly "))
                         case 'static': return p_.option($, ($) => sh.ph.literal("static "))
-                        default: return p_.au($[0])
+                        default: return p_.exhaustive($[0])
                     }
                 }
             )
@@ -1303,7 +1303,7 @@ export const Statement: interface_.Statement = ($) => sh.ph.composed(p_.literal.
                                                         // ),
 
                                                     ])))
-                                                    default: return p_.au($[0])
+                                                    default: return p_.exhaustive($[0])
                                                 }
                                             }
                                         ),
@@ -1327,7 +1327,7 @@ export const Statement: interface_.Statement = ($) => sh.ph.composed(p_.literal.
                                     Expression($['expression']),
                                 ])))
                                 case 'equals': return p_.option($, ($) => Initializer($))
-                                default: return p_.au($[0])
+                                default: return p_.exhaustive($[0])
                             }
                         }
                     ),
@@ -1367,7 +1367,7 @@ export const Statement: interface_.Statement = ($) => sh.ph.composed(p_.literal.
                                                                 () => sh.ph.nothing()
                                                             )
                                                         ])))
-                                                        default: return p_.au($[0])
+                                                        default: return p_.exhaustive($[0])
                                                     }
                                                 }
                                             )
@@ -1380,7 +1380,7 @@ export const Statement: interface_.Statement = ($) => sh.ph.composed(p_.literal.
                                     sh.ph.literal(" as "),
                                     sh.ph.literal($['identifier'].text),
                                 ])))
-                                default: return p_.au($[0])
+                                default: return p_.exhaustive($[0])
                             }
                         }
                     ),
@@ -1403,7 +1403,7 @@ export const Statement: interface_.Statement = ($) => sh.ph.composed(p_.literal.
                                                                 switch ($[0]) {
                                                                     case 'middle': return p_.option($, ($) => sh.ph.literal($.text))
                                                                     case 'tail': return p_.option($, ($) => sh.ph.literal($.text))
-                                                                    default: return p_.au($[0])
+                                                                    default: return p_.exhaustive($[0])
                                                                 }
                                                             }
                                                         )
@@ -1411,7 +1411,7 @@ export const Statement: interface_.Statement = ($) => sh.ph.composed(p_.literal.
                                                 )
                                             )
                                         ])))
-                                        default: return p_.au($[0])
+                                        default: return p_.exhaustive($[0])
                                     }
                                 }
                             ),
@@ -1431,7 +1431,7 @@ export const Statement: interface_.Statement = ($) => sh.ph.composed(p_.literal.
                                                 sh.ph.literal(": "),
                                                 Expression($['value']),
                                             ])))
-                                            default: return p_.au($[0])
+                                            default: return p_.exhaustive($[0])
                                         }
                                     }
                                 )
@@ -1456,7 +1456,7 @@ export const Statement: interface_.Statement = ($) => sh.ph.composed(p_.literal.
                                 switch ($[0]) {
                                     case 'variable declaration list': return p_.option($, ($) => Variable_Declaration_List($))
                                     case 'expression': return p_.option($, ($) => Expression($))
-                                    default: return p_.au($[0])
+                                    default: return p_.exhaustive($[0])
                                 }
                             }
                         ),
@@ -1484,7 +1484,7 @@ export const Statement: interface_.Statement = ($) => sh.ph.composed(p_.literal.
                             switch ($[0]) {
                                 case 'variable declaration list': return p_.option($, ($) => Variable_Declaration_List($))
                                 case 'expression': return p_.option($, ($) => Expression($))
-                                default: return p_.au($[0])
+                                default: return p_.exhaustive($[0])
                             }
                         }
                     ),
@@ -1507,7 +1507,7 @@ export const Statement: interface_.Statement = ($) => sh.ph.composed(p_.literal.
                             switch ($[0]) {
                                 case 'variable declaration list': return p_.option($, ($) => Variable_Declaration_List($))
                                 case 'expression': return p_.option($, ($) => Expression($))
-                                default: return p_.au($[0])
+                                default: return p_.exhaustive($[0])
                             }
                         }
                     ),
@@ -1595,7 +1595,7 @@ export const Statement: interface_.Statement = ($) => sh.ph.composed(p_.literal.
                                                                                                 () => sh.ph.nothing()
                                                                                             )
                                                                                         ])))
-                                                                                        default: return p_.au($[0])
+                                                                                        default: return p_.exhaustive($[0])
                                                                                     }
                                                                                 }
                                                                             )
@@ -1607,7 +1607,7 @@ export const Statement: interface_.Statement = ($) => sh.ph.composed(p_.literal.
                                                                     sh.ph.literal("* as "),
                                                                     sh.ph.literal($['identifier'].text)
                                                                 ])))
-                                                                default: return p_.au($[0])
+                                                                default: return p_.exhaustive($[0])
                                                             }
                                                         }
                                                     ),
@@ -1634,7 +1634,7 @@ export const Statement: interface_.Statement = ($) => sh.ph.composed(p_.literal.
                                                                         () => sh.ph.nothing()
                                                                     )
                                                                 ])))
-                                                                default: return p_.au($[0])
+                                                                default: return p_.exhaustive($[0])
                                                             }
                                                         }
                                                     )
@@ -1668,19 +1668,19 @@ export const Statement: interface_.Statement = ($) => sh.ph.composed(p_.literal.
                                                                                 sh.ph.literal($.identifier.text),
                                                                                 p_.from.optional($['as']).decide(($) => As_Alias($), () => sh.ph.nothing()),
                                                                             ])))
-                                                                            default: return p_.au($[0])
+                                                                            default: return p_.exhaustive($[0])
                                                                         }
                                                                     }
                                                                 )
                                                             )),
                                                             sh.ph.literal("}"),
                                                         ])))
-                                                        default: return p_.au($[0])
+                                                        default: return p_.exhaustive($[0])
                                                     }
                                                 }
                                             ),
                                         ])))
-                                        default: return p_.au($[0])
+                                        default: return p_.exhaustive($[0])
                                     }
                                 }
                             ),
@@ -1708,7 +1708,7 @@ export const Statement: interface_.Statement = ($) => sh.ph.composed(p_.literal.
                                                         switch ($[0]) {
                                                             case 'middle': return p_.option($, ($) => sh.ph.literal($.text))
                                                             case 'tail': return p_.option($, ($) => sh.ph.literal($.text))
-                                                            default: return p_.au($[0])
+                                                            default: return p_.exhaustive($[0])
                                                         }
                                                     }
                                                 )
@@ -1716,7 +1716,7 @@ export const Statement: interface_.Statement = ($) => sh.ph.composed(p_.literal.
                                         )
                                     )
                                 ])))
-                                default: return p_.au($[0])
+                                default: return p_.exhaustive($[0])
                             }
                         }
                     ),
@@ -1734,7 +1734,7 @@ export const Statement: interface_.Statement = ($) => sh.ph.composed(p_.literal.
                                                     sh.ph.literal(": "),
                                                     Expression($['value']),
                                                 ])))
-                                                default: return p_.au($[0])
+                                                default: return p_.exhaustive($[0])
                                             }
                                         }
                                     )
@@ -1791,7 +1791,7 @@ export const Statement: interface_.Statement = ($) => sh.ph.composed(p_.literal.
                                         Identifier($['name']),
                                     ]))
                                 )
-                                default: return p_.au($[0])
+                                default: return p_.exhaustive($[0])
                             }
                         }
                     ),
@@ -1841,7 +1841,7 @@ export const Statement: interface_.Statement = ($) => sh.ph.composed(p_.literal.
                                                         Statements($['statements'])
                                                     )
                                                 ])))
-                                                default: return p_.au($[0])
+                                                default: return p_.exhaustive($[0])
                                             }
                                         }
                                     )
@@ -1919,7 +1919,7 @@ export const Statement: interface_.Statement = ($) => sh.ph.composed(p_.literal.
                     sh.ph.literal(") "),
                     Statement($['statement']),
                 ])))
-                default: return p_.au($[0])
+                default: return p_.exhaustive($[0])
             }
         }
     ),
@@ -1963,7 +1963,7 @@ export const Statement_Modifiers: interface_.Statement_Modifiers = ($) => p_.fro
                         case 'public': return p_.option($, ($) => sh.ph.literal("public "))
                         case 'readonly': return p_.option($, ($) => sh.ph.literal("readonly "))
                         case 'static': return p_.option($, ($) => sh.ph.literal("static "))
-                        default: return p_.au($[0])
+                        default: return p_.exhaustive($[0])
                     }
                 }
             )
@@ -1985,7 +1985,7 @@ export const Type_Predicate: interface_.Type_Predicate = ($) => sh.ph.composed(p
             switch ($[0]) {
                 case 'identifier': return p_.option($, ($) => Identifier($))
                 case 'this': return p_.option($, ($) => sh.ph.literal("this"))
-                default: return p_.au($[0])
+                default: return p_.exhaustive($[0])
             }
         }
     ),
@@ -2053,7 +2053,7 @@ export const Type: interface_.Type = ($) => p_.from.state($).decide(
                                             sh.ph.literal(": "),
                                             Expression($.value),
                                         ])))
-                                        default: return p_.au($[0])
+                                        default: return p_.exhaustive($[0])
                                     }
                                 }
                             )
@@ -2097,7 +2097,7 @@ export const Type: interface_.Type = ($) => p_.from.state($).decide(
                             switch ($[0]) {
                                 case 'separator': return p_.option($, ($) => sh.ph.literal(" & "))
                                 case 'entry': return p_.option($, ($) => Type($))
-                                default: return p_.au($[0])
+                                default: return p_.exhaustive($[0])
                             }
                         }
                     )
@@ -2143,7 +2143,7 @@ export const Type: interface_.Type = ($) => p_.from.state($).decide(
                         case 'numeric literal': return p_.option($, ($) => Numeric_Literal($))
                         case 'string literal': return p_.option($, ($) => sh.ph.literal($.text))
                         case 'true keyword': return p_.option($, ($) => sh.ph.literal("true"))
-                        default: return p_.au($[0])
+                        default: return p_.exhaustive($[0])
                     }
                 }
             ))
@@ -2232,11 +2232,11 @@ export const Type: interface_.Type = ($) => p_.from.state($).decide(
                                                     Type($['type']),
                                                 ])))
                                                 case 'regular': return p_.ss($, ($) => Type($))
-                                                default: return p_.au($[0])
+                                                default: return p_.exhaustive($[0])
                                             }
                                         }
                                     ))
-                                    default: return p_.au($[0])
+                                    default: return p_.exhaustive($[0])
                                 }
                             }
                         )
@@ -2256,7 +2256,7 @@ export const Type: interface_.Type = ($) => p_.from.state($).decide(
                             case 'key of': return p_.option($, ($) => sh.ph.literal("keyof "))
                             case 'unique': return p_.option($, ($) => sh.ph.literal("unique "))
                             case 'readonly': return p_.option($, ($) => sh.ph.literal("readonly "))
-                            default: return p_.au($[0])
+                            default: return p_.exhaustive($[0])
                         }
                     }
                 ),
@@ -2281,7 +2281,7 @@ export const Type: interface_.Type = ($) => p_.from.state($).decide(
                                     Type($),
                                 ])))
                                 case 'separator': return p_.option($, ($) => sh.ph.literal(" | "))
-                                default: return p_.au($[0])
+                                default: return p_.exhaustive($[0])
                             }
                         }
                     )
@@ -2306,7 +2306,7 @@ export const Type: interface_.Type = ($) => p_.from.state($).decide(
                                     switch ($[0]) {
                                         case 'middle': return p_.option($, ($) => sh.ph.literal($.text))
                                         case 'tail': return p_.option($, ($) => sh.ph.literal($.text))
-                                        default: return p_.au($[0])
+                                        default: return p_.exhaustive($[0])
                                     }
                                 }
                             )
@@ -2314,7 +2314,7 @@ export const Type: interface_.Type = ($) => p_.from.state($).decide(
                     )
                 )
             ])))
-            default: return p_.au($[0])
+            default: return p_.exhaustive($[0])
         }
     }
 )
@@ -2329,7 +2329,7 @@ export const Type_Arguments: interface_.Type_Arguments = ($) => p_.from.optional
                         switch ($[0]) {
                             case 'separator': return p_.option($, ($) => sh.ph.literal(", "))
                             case 'entry': return p_.option($, ($) => Type($))
-                            default: return p_.au($[0])
+                            default: return p_.exhaustive($[0])
                         }
                     }
                 )
@@ -2357,7 +2357,7 @@ export const Type_Parameters: interface_.Type_Parameters = ($) => p_.from.option
                                                 case 'in': return p_.option($, ($) => sh.ph.literal("in "))
                                                 case 'out': return p_.option($, ($) => sh.ph.literal("out "))
                                                 case 'public': return p_.option($, ($) => sh.ph.literal("public "))
-                                                default: return p_.au($[0])
+                                                default: return p_.exhaustive($[0])
                                             }
                                         }
                                     )
@@ -2380,7 +2380,7 @@ export const Type_Parameters: interface_.Type_Parameters = ($) => p_.from.option
                                 () => sh.ph.nothing()
                             ),
                         ])))
-                        default: return p_.au($[0])
+                        default: return p_.exhaustive($[0])
                     }
                 }
             )
@@ -2420,7 +2420,7 @@ export const Variable_Declaration_List: interface_.Variable_Declaration_List = (
                     case 'let': return sh.ph.literal("let ")
                     case 'using': return sh.ph.literal("using ")
                     case 'var': return sh.ph.literal("var ")
-                    default: return p_.au($[0])
+                    default: return p_.exhaustive($[0])
                 }
             }
         ),
@@ -2431,7 +2431,7 @@ export const Variable_Declaration_List: interface_.Variable_Declaration_List = (
                         switch ($[0]) {
                             case 'separator': return p_.option($, ($) => sh.ph.literal(", "))
                             case 'entry': return p_.option($, ($) => Variable_Declaration($))
-                            default: return p_.au($[0])
+                            default: return p_.exhaustive($[0])
                         }
                     }
                 )

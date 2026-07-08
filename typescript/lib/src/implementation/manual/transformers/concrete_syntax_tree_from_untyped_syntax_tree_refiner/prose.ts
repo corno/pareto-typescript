@@ -68,7 +68,7 @@ export const Error: interface_.Error = ($) => sh.ph.composed([
                     sh.ph.literal("'")
                 ]))
                 case 'wrong root': return p_.option($, ($) => sh.ph.literal("wrong root"))
-                default: return p_.au($[0])
+                default: return p_.exhaustive($[0])
             }
         }
     ),
