@@ -1,6 +1,6 @@
 import * as p_ from 'pareto-core/interface/query'
 
-import * as actions_queries_pareto_common from "pareto-common/interface/query_actions"
+import type * as actions_queries_pareto_common from "pareto-common/interface/query_actions"
 import * as queries_typescript_parser from "pareto-untyped-syntax-tree-api/interface/queries"
 
 export namespace functions {
