@@ -1,7 +1,7 @@
 import * as p_ from 'pareto-core/interface/data'
 import * as p_di from 'pareto-core/interface/data'
 
-import * as d_primitives from "./primitives.js"
+import type * as d_primitives from "./primitives.js"
 
 import * as h from "../../temp_helper_types.js"
 

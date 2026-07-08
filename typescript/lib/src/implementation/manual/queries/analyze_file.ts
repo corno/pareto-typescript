@@ -6,9 +6,9 @@ import p_text_from_list from 'pareto-core/implementation/transformer/specials/te
 import * as interface_ from "../../../interface/declarations/queries.js"
 
 //data  types
-import * as d_process_file_data from "pareto-common/interface/data/process_file_data"
-import * as d_parse_typescript_file from "pareto-untyped-syntax-tree-api/interface/data/parse_file"
-import * as d_prose from "pareto-fountain-pen/interface/generated/liana/schemas/prose/data"
+import type * as d_process_file_data from "pareto-common/interface/data/process_file_data"
+import type * as d_parse_typescript_file from "pareto-untyped-syntax-tree-api/interface/data/parse_file"
+import type * as d_prose from "pareto-fountain-pen/interface/generated/liana/schemas/prose/data"
 
 //dependencies
 import * as t_prose_to_loc from "pareto-fountain-pen/implementation/manual/transformers/prose/list_of_characters"

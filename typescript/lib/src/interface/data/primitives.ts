@@ -1,4 +1,4 @@
-import * as d_ast from "pareto-untyped-syntax-tree-api/interface/data/untyped_syntax_tree"
+import type * as d_ast from "pareto-untyped-syntax-tree-api/interface/data/untyped_syntax_tree"
 
 export type Keyword = null
 
