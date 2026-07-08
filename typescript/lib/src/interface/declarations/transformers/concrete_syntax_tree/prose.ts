@@ -1,11 +1,11 @@
-import * as p_ from 'pareto-core/implementation/transformer'
+
 import type * as p_i from 'pareto-core/interface/transformer'
 
 //data types
 import type * as d_in from "../../../data/concrete_syntax_tree.js"
 import type * as d_out from "pareto-fountain-pen/interface/generated/liana/schemas/prose/data"
 
-export namespace interface_ {
+
     export type Arguments = p_i.Transformer<d_in.Arguments, d_out.Phrase>
     export type As_Alias = p_i.Transformer<d_in.As_Alias, d_out.Phrase>
     export type Binding_Pattern = p_i.Transformer<d_in.Binding_Pattern, d_out.Phrase>
@@ -42,4 +42,4 @@ export namespace interface_ {
     export type Type = p_i.Transformer<d_in.Type, d_out.Phrase>
     export type Variable_Declaration_List = p_i.Transformer<d_in.Variable_Declaration_List, d_out.Phrase>
     export type Variable_Declaration = p_i.Transformer<d_in.Variable_Declaration, d_out.Phrase>
-}
+
