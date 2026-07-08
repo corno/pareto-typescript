@@ -3,7 +3,7 @@ import * as p_temp from 'pareto-core/implementation/transformer'
 import p_super_query_result from 'pareto-core/implementation/query/super_query_result'
 import p_text_from_list from 'pareto-core/implementation/transformer/specials/text_from_list'
 
-import * as interface_ from "../../../interface/queries.js"
+import * as interface_ from "../../../interface/declarations/queries.js"
 
 //data  types
 import * as d_process_file_data from "pareto-common/interface/data/process_file_data"
