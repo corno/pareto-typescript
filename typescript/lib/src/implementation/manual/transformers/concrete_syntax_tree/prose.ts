@@ -43,6 +43,7 @@ export namespace interface_ {
     export type Variable_Declaration_List = p_i.Transformer<d_in.Variable_Declaration_List, d_out.Phrase>
     export type Variable_Declaration = p_i.Transformer<d_in.Variable_Declaration, d_out.Phrase>
 }
+import * as temp_interface_ from "../../../../interface/declarations/transformers/concrete_syntax_tree/prose.js"
 
 //shorthands
 import * as sh from "pareto-fountain-pen/shorthands/prose/target"

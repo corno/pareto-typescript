@@ -11,6 +11,7 @@ export namespace interface_ {
         d_out.Phrase
     >
 }
+import * as temp_interface_ from "../../../../interface/declarations/transformers/concrete_syntax_tree_from_untyped_syntax_tree_refiner/prose.js"
 
 //dependencies
 import * as t_path_to_text from "pareto-resources/implementation/manual/transformers/unrestricted_path/text"
