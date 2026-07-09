@@ -6,7 +6,7 @@ import * as rs_filesystem_unrestricted from "pareto-resource-filesystem-unrestri
 import * as rs_stream from "pareto-resource-stream/index"
 import * as rs_typescript_parser from "pareto-resource-typescript-parser/index"
 
-import { $$ as c_command } from "lib/implementation/manual/commands/analyze_file"
+import { $$ as c_command } from "lib/implementation/commands/analyze_file"
 
 
 p_h.run_main_command(
