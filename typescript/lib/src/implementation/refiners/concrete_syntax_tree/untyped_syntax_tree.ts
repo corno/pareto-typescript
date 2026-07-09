@@ -1,4 +1,4 @@
-import * as h from "../../../temp_helpers.js"
+import * as h from "../../to_be_generated/temp_helpers.js"
 
 //data types
 import type * as d_out from "../../../interface/data/concrete_syntax_tree.js"
