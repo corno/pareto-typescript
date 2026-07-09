@@ -4,7 +4,7 @@ import * as p_ from 'pareto-core/interface/command_implementation'
 import * as queries_typescript_parser from "pareto-untyped-syntax-tree-api/interface/queries"
 import type * as actions_commands_pareto_stream_api from "pareto-stream-api/interface/commands"
 import type * as actions_queries_filesystem_unrestricted_api from "pareto-filesystem-unrestricted-api/interface/queries"
-import * as command_interfaces from "../interface/commands.js"
+import type * as command_interfaces from "../interface/commands.js"
 
 export type analyse_file = p_.Command_Implementation<
     command_interfaces.analyse_file,
