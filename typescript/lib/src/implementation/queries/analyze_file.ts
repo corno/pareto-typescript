@@ -11,7 +11,7 @@ import type * as d_parse_typescript_file from "pareto-untyped-syntax-tree-api/in
 import type * as d_prose from "pareto-fountain-pen/interface/generated/liana/schemas/prose/data"
 
 //dependencies
-import * as t_prose_to_loc from "pareto-fountain-pen/implementation/manual/transformers/prose/list_of_characters"
+import * as t_prose_to_loc from "pareto-fountain-pen/implementation/transformers/prose/list_of_characters"
 import * as r_typed_ast_from_ast from "../refiners/concrete_syntax_tree/temp_wrapper.js"
 import * as t_typed_ast_from_ast_to_prose from "../transformers/concrete_syntax_tree_from_untyped_syntax_tree_refiner/prose.js"
 

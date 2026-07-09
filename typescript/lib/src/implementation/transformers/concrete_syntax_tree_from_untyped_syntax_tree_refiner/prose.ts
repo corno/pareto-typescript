@@ -3,8 +3,8 @@ import * as p_ from 'pareto-core/implementation/transformer'
 import type * as interface_ from "../../../declarations/transformers/concrete_syntax_tree_from_untyped_syntax_tree_refiner/prose.js"
 
 //dependencies
-import * as t_path_to_text from "pareto-resources/implementation/manual/transformers/unrestricted_path/text"
-import * as t_ast_to_prose from "pareto-untyped-syntax-tree-api/implementation/manual/transformers/untyped_syntax_tree/prose"
+import * as t_path_to_text from "pareto-resources/implementation/transformers/unrestricted_path/text"
+import * as t_ast_to_prose from "pareto-untyped-syntax-tree-api/implementation/transformers/untyped_syntax_tree/prose"
 
 //shorthands
 import * as sh from "pareto-fountain-pen/shorthands/prose/deprecated"
