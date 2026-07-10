@@ -931,125 +931,123 @@ export const Module_Body: interface_.Module_Body = ($) => p_.from.state($).decid
 export const Object_Type: interface_.Object_Type = ($) => sh.ph.composed(p_.literal.list([
     sh.ph.literal("{"),
     sh.ph.indent(
-        sh.pg.deprecated_composed(p_.literal.list([
-            sh.pg.sentences(
-                p_.from.list($['signatures']).map(
-                    ($) => sh.sentence(p_.literal.list([
-                        p_.from.state($).decide(
-                            ($) => {
-                                switch ($[0]) {
-                                    case 'call': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
-                                        JSDoc($['jsdoc']),
-                                        Type_Parameters($['type parameters']),
-                                        Parameters($.parameters),
-                                        Optional_Type($.type),
-                                        Semi_Colon($.semicolon),
-                                        p_.from.optional($['comma']).decide(() => sh.ph.literal(","), () => sh.ph.nothing()),
-                                    ])))
-                                    case 'construct': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
-                                        JSDoc($['jsdoc']),
-                                        sh.ph.literal("new "),
-                                        Type_Parameters($['type parameters']),
-                                        Parameters($.parameters),
-                                        Optional_Type($.type),
-                                        Semi_Colon($.semicolon),
-                                        p_.from.optional($['comma']).decide(() => sh.ph.literal(","), () => sh.ph.nothing()),
-                                    ])))
+        sh.pg.sentences(
+            p_.from.list($['signatures']).map(
+                ($) => sh.sentence(p_.literal.list([
+                    p_.from.state($).decide(
+                        ($) => {
+                            switch ($[0]) {
+                                case 'call': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
+                                    JSDoc($['jsdoc']),
+                                    Type_Parameters($['type parameters']),
+                                    Parameters($.parameters),
+                                    Optional_Type($.type),
+                                    Semi_Colon($.semicolon),
+                                    p_.from.optional($['comma']).decide(() => sh.ph.literal(","), () => sh.ph.nothing()),
+                                ])))
+                                case 'construct': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
+                                    JSDoc($['jsdoc']),
+                                    sh.ph.literal("new "),
+                                    Type_Parameters($['type parameters']),
+                                    Parameters($.parameters),
+                                    Optional_Type($.type),
+                                    Semi_Colon($.semicolon),
+                                    p_.from.optional($['comma']).decide(() => sh.ph.literal(","), () => sh.ph.nothing()),
+                                ])))
 
-                                    case 'get accessor': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
-                                        JSDoc($['jsdoc']),
-                                        sh.ph.literal("get "),
-                                        Property_Name($['name']),
-                                        Parameters($['parameters']),
-                                        Return_Type_Annotation($['return type']),
-                                        p_.from.optional($['body']).decide(($) => Block($), () => sh.ph.nothing()),
-                                        Semi_Colon($['semicolon']),
-                                        p_.from.optional($['comma']).decide(() => sh.ph.literal(","), () => sh.ph.nothing()),
-                                    ])))
-                                    case 'set accessor': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
-                                        JSDoc($['jsdoc']),
-                                        sh.ph.literal("set "),
-                                        Property_Name($['name']),
-                                        Parameters($['parameters']),
-                                        Return_Type_Annotation($['return type']),
-                                        p_.from.optional($['body']).decide(($) => Block($), () => sh.ph.nothing()),
-                                        Semi_Colon($['semicolon']),
-                                        p_.from.optional($['comma']).decide(() => sh.ph.literal(","), () => sh.ph.nothing()),
-                                    ])))
+                                case 'get accessor': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
+                                    JSDoc($['jsdoc']),
+                                    sh.ph.literal("get "),
+                                    Property_Name($['name']),
+                                    Parameters($['parameters']),
+                                    Return_Type_Annotation($['return type']),
+                                    p_.from.optional($['body']).decide(($) => Block($), () => sh.ph.nothing()),
+                                    Semi_Colon($['semicolon']),
+                                    p_.from.optional($['comma']).decide(() => sh.ph.literal(","), () => sh.ph.nothing()),
+                                ])))
+                                case 'set accessor': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
+                                    JSDoc($['jsdoc']),
+                                    sh.ph.literal("set "),
+                                    Property_Name($['name']),
+                                    Parameters($['parameters']),
+                                    Return_Type_Annotation($['return type']),
+                                    p_.from.optional($['body']).decide(($) => Block($), () => sh.ph.nothing()),
+                                    Semi_Colon($['semicolon']),
+                                    p_.from.optional($['comma']).decide(() => sh.ph.literal(","), () => sh.ph.nothing()),
+                                ])))
 
-                                    case 'index': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
-                                        JSDoc($['jsdoc']),
-                                        Signature_Modifiers($.modifiers),
-                                        sh.ph.literal("["),
-                                        sh.ph.composed(p_.from.list($['parameter']).map(
-                                            ($) => p_.from.state($).decide(
-                                                ($) => {
-                                                    switch ($[0]) {
-                                                        case 'separator': return p_.option($, ($) => sh.ph.literal(", "))
-                                                        case 'entry': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
-                                                            Signature_Modifiers($.modifiers),
-                                                            p_.from.optional($['dot dot dot token']).decide(() => sh.ph.literal("..."), () => sh.ph.nothing()),
-                                                            sh.ph.literal($.identifier.text),
-                                                            p_.from.optional($['question token']).decide(() => sh.ph.literal("?"), () => sh.ph.nothing()),
-                                                            p_.from.optional($.annotation).decide(
-                                                                ($) => sh.ph.composed(p_.literal.list([
-                                                                    sh.ph.literal(": "),
-                                                                    Type($['type']),
-                                                                ])),
-                                                                () => sh.ph.nothing()
-                                                            ),
-                                                        ])))
-                                                        default: return p_.exhaustive($[0])
-                                                    }
+                                case 'index': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
+                                    JSDoc($['jsdoc']),
+                                    Signature_Modifiers($.modifiers),
+                                    sh.ph.literal("["),
+                                    sh.ph.composed(p_.from.list($['parameter']).map(
+                                        ($) => p_.from.state($).decide(
+                                            ($) => {
+                                                switch ($[0]) {
+                                                    case 'separator': return p_.option($, ($) => sh.ph.literal(", "))
+                                                    case 'entry': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
+                                                        Signature_Modifiers($.modifiers),
+                                                        p_.from.optional($['dot dot dot token']).decide(() => sh.ph.literal("..."), () => sh.ph.nothing()),
+                                                        sh.ph.literal($.identifier.text),
+                                                        p_.from.optional($['question token']).decide(() => sh.ph.literal("?"), () => sh.ph.nothing()),
+                                                        p_.from.optional($.annotation).decide(
+                                                            ($) => sh.ph.composed(p_.literal.list([
+                                                                sh.ph.literal(": "),
+                                                                Type($['type']),
+                                                            ])),
+                                                            () => sh.ph.nothing()
+                                                        ),
+                                                    ])))
+                                                    default: return p_.exhaustive($[0])
                                                 }
-                                            )
-                                        )),
-                                        sh.ph.literal("]"),
-                                        Return_Type_Annotation($['return type']),
-                                        Semi_Colon($.semicolon),
-                                        p_.from.optional($['comma']).decide(() => sh.ph.literal(","), () => sh.ph.nothing()),
-                                    ])))
-                                    case 'method': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
-                                        JSDoc($['jsdoc']),
-                                        // Signature_Modifiers($.modifiers),
-                                        Property_Name($['identifier']),
-                                        Type_Parameters($['type parameters']),
-                                        p_.from.optional($['question token']).decide(
-                                            ($) => sh.ph.literal("?"),
-                                            () => sh.ph.nothing()
-                                        ),
-                                        Parameters($.parameters),
-                                        Return_Type_Annotation($['return type']),
-                                        Semi_Colon($['semicolon']),
-                                        p_.from.optional($['comma']).decide(
-                                            ($) => sh.ph.literal(","),
-                                            () => sh.ph.nothing()
-                                        ),
-                                    ])))
-                                    case 'property': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
-                                        JSDoc($['jsdoc']),
-                                        Signature_Modifiers($.modifiers),
-                                        Property_Name($['id']),
-                                        p_.from.optional($['question token']).decide(
-                                            ($) => sh.ph.literal("?"),
-                                            () => sh.ph.nothing()
-                                        ),
-                                        Optional_Type($['type annotation']),
-                                        Optional_Initializer($['initializer']),
-                                        p_.from.optional($['comma token']).decide(
-                                            ($) => sh.ph.literal(","),
-                                            () => sh.ph.nothing()
-                                        ),
-                                        Semi_Colon($['semicolon token']),
-                                    ])))
-                                    default: return p_.exhaustive($[0])
-                                }
+                                            }
+                                        )
+                                    )),
+                                    sh.ph.literal("]"),
+                                    Return_Type_Annotation($['return type']),
+                                    Semi_Colon($.semicolon),
+                                    p_.from.optional($['comma']).decide(() => sh.ph.literal(","), () => sh.ph.nothing()),
+                                ])))
+                                case 'method': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
+                                    JSDoc($['jsdoc']),
+                                    // Signature_Modifiers($.modifiers),
+                                    Property_Name($['identifier']),
+                                    Type_Parameters($['type parameters']),
+                                    p_.from.optional($['question token']).decide(
+                                        ($) => sh.ph.literal("?"),
+                                        () => sh.ph.nothing()
+                                    ),
+                                    Parameters($.parameters),
+                                    Return_Type_Annotation($['return type']),
+                                    Semi_Colon($['semicolon']),
+                                    p_.from.optional($['comma']).decide(
+                                        ($) => sh.ph.literal(","),
+                                        () => sh.ph.nothing()
+                                    ),
+                                ])))
+                                case 'property': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
+                                    JSDoc($['jsdoc']),
+                                    Signature_Modifiers($.modifiers),
+                                    Property_Name($['id']),
+                                    p_.from.optional($['question token']).decide(
+                                        ($) => sh.ph.literal("?"),
+                                        () => sh.ph.nothing()
+                                    ),
+                                    Optional_Type($['type annotation']),
+                                    Optional_Initializer($['initializer']),
+                                    p_.from.optional($['comma token']).decide(
+                                        ($) => sh.ph.literal(","),
+                                        () => sh.ph.nothing()
+                                    ),
+                                    Semi_Colon($['semicolon token']),
+                                ])))
+                                default: return p_.exhaustive($[0])
                             }
-                        ),
-                    ]))
-                )
-            ),
-        ])),
+                        }
+                    ),
+                ]))
+            )
+        ),
     ),
     sh.ph.literal("}")
 ]))
@@ -1246,32 +1244,30 @@ export const Statement: interface_.Statement = ($) => sh.ph.composed(p_.literal.
                     sh.ph.literal($['identifier'].text),
                     sh.ph.literal(" {"),
                     sh.ph.indent(
-                        sh.pg.deprecated_composed(p_.literal.list([
-                            sh.pg.sentences(
-                                p_.from.list($['members']).map(
-                                    ($) => sh.sentence(p_.literal.list([
-                                        p_.from.state($).decide(
-                                            ($) => {
-                                                switch ($[0]) {
-                                                    case 'separator': return p_.option($, ($) => sh.ph.literal(", "))
-                                                    case 'entry': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
-                                                        JSDoc($['jsdoc']),
-                                                        Property_Name($['name']),
-                                                        Optional_Initializer($['initializer']),
-                                                        // p_.from.optional($['initializer']).decide(
-                                                        //     ($) => Initializer($),
-                                                        //     () => sh.ph.nothing()
-                                                        // ),
+                        sh.pg.sentences(
+                            p_.from.list($['members']).map(
+                                ($) => sh.sentence(p_.literal.list([
+                                    p_.from.state($).decide(
+                                        ($) => {
+                                            switch ($[0]) {
+                                                case 'separator': return p_.option($, ($) => sh.ph.literal(", "))
+                                                case 'entry': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
+                                                    JSDoc($['jsdoc']),
+                                                    Property_Name($['name']),
+                                                    Optional_Initializer($['initializer']),
+                                                    // p_.from.optional($['initializer']).decide(
+                                                    //     ($) => Initializer($),
+                                                    //     () => sh.ph.nothing()
+                                                    // ),
 
-                                                    ])))
-                                                    default: return p_.exhaustive($[0])
-                                                }
+                                                ])))
+                                                default: return p_.exhaustive($[0])
                                             }
-                                        ),
-                                    ]))
-                                )
-                            ),
-                        ]))
+                                        }
+                                    ),
+                                ]))
+                            )
+                        ),
                     ),
                     sh.ph.literal("}"),
                     Semi_Colon($['semicolon']),
