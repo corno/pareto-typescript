@@ -908,7 +908,7 @@ export const Module_Body: interface_.Module_Body = ($) => p_.from.state($).decid
             case 'module block': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                 sh.ph.literal(" {"),
                 sh.ph.indent(
-                    sh.pg.composed(p_.literal.list([
+                    sh.pg.deprecated_composed(p_.literal.list([
                         sh.pg.sentences(p_.literal.list([
                             sh.sentence(p_.literal.list([])),
                         ])),
@@ -931,7 +931,7 @@ export const Module_Body: interface_.Module_Body = ($) => p_.from.state($).decid
 export const Object_Type: interface_.Object_Type = ($) => sh.ph.composed(p_.literal.list([
     sh.ph.literal("{"),
     sh.ph.indent(
-        sh.pg.composed(p_.literal.list([
+        sh.pg.deprecated_composed(p_.literal.list([
             sh.pg.sentences(
                 p_.from.list($['signatures']).map(
                     ($) => sh.sentence(p_.literal.list([
@@ -1180,7 +1180,7 @@ export const Signature_Modifiers: interface_.Signature_Modifiers = ($) => p_.fro
     () => sh.ph.nothing()
 )
 
-export const Source_File: interface_.Source_File = ($) => sh.pg.composed(p_.literal.list([
+export const Source_File: interface_.Source_File = ($) => sh.pg.deprecated_composed(p_.literal.list([
     Statements($['statements']),
     sh.pg.sentences(p_.literal.list([
         sh.sentence(p_.literal.list([
@@ -1246,7 +1246,7 @@ export const Statement: interface_.Statement = ($) => sh.ph.composed(p_.literal.
                     sh.ph.literal($['identifier'].text),
                     sh.ph.literal(" {"),
                     sh.ph.indent(
-                        sh.pg.composed(p_.literal.list([
+                        sh.pg.deprecated_composed(p_.literal.list([
                             sh.pg.sentences(
                                 p_.from.list($['members']).map(
                                     ($) => sh.sentence(p_.literal.list([
@@ -1890,7 +1890,7 @@ export const Statement: interface_.Statement = ($) => sh.ph.composed(p_.literal.
     // )
 ]))
 
-export const Statements: interface_.Statements = ($) => sh.pg.composed(
+export const Statements: interface_.Statements = ($) => sh.pg.deprecated_composed(
     p_.from.list($).map(
         ($) => sh.pg.sentences(p_.literal.list([
             sh.sentence(p_.literal.list([

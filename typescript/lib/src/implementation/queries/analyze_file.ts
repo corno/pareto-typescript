@@ -61,7 +61,7 @@ export const $$: interface_.functions.analyze_typescript_file = p_.query(
             )
 
 
-            return sh.pg.composed([
+            return sh.pg.deprecated_composed([
                 // t_ast_to_prose.AST($.ast),
                 // t_typed_ast_to_prose.Source_File(
                 //     typed,
