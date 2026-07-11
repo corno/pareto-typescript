@@ -6,9 +6,9 @@ import p_text_from_list from 'pareto-core/implementation/transformer/specials/te
 import type * as interface_ from "../../declarations/queries.js"
 
 //data  types
-import type * as d_process_file_data from "pareto-common/interface/data/process_file_data"
-import type * as d_parse_typescript_file from "pareto-untyped-syntax-tree-api/interface/data/parse_file"
-import type * as d_prose from "pareto-fountain-pen/interface/data/prose"
+import type * as s_process_file_data from "pareto-common/interface/data/process_file_data"
+import type * as s_parse_typescript_file from "pareto-untyped-syntax-tree-api/interface/data/parse_file"
+import type * as s_prose from "pareto-fountain-pen/interface/data/prose"
 
 //dependencies
 import * as t_prose_to_loc from "pareto-fountain-pen/implementation/transformers/prose/list_of_characters"
@@ -19,7 +19,7 @@ import * as t_typed_ast_from_ast_to_prose from "../transformers/concrete_syntax_
 import * as sh from "pareto-fountain-pen/shorthands/prose/deprecated"
 
 export const $$: interface_.functions.analyze_typescript_file = p_.query(
-    ($d, $s, $q) => p_super_query_result<d_parse_typescript_file.Result, d_process_file_data.Error>($q['parse file'](
+    ($d, $s, $q) => p_super_query_result<s_parse_typescript_file.Result, s_process_file_data.Error>($q['parse file'](
         {
             'data': p_text_from_list(
                 $d.data,
@@ -27,7 +27,7 @@ export const $$: interface_.functions.analyze_typescript_file = p_.query(
             ),
             // 'path': t_path_to_string.Node_Path($d.path),
         },
-        ($): d_process_file_data.Error => p_temp.from.state($).decide(
+        ($): s_process_file_data.Error => p_temp.from.state($).decide(
             ($) => {
                 switch ($[0]) {
                     case 'syntax errors': return p_temp.ss($, ($) => sh.ph.composed(p_.literal.segmented_list([
@@ -47,7 +47,7 @@ export const $$: interface_.functions.analyze_typescript_file = p_.query(
             }
         )
     )).refine(
-        ($, abort): d_prose.Paragraph => {
+        ($, abort): s_prose.Paragraph => {
             const typed = r_typed_ast_from_ast.Source_File(
                 $['untyped syntax tree'].root,
                 ($) => abort(
@@ -69,7 +69,7 @@ export const $$: interface_.functions.analyze_typescript_file = p_.query(
             ])
         }
     ).transform(
-        ($): d_process_file_data.Result => ({
+        ($): s_process_file_data.Result => ({
             'data': t_prose_to_loc.Paragraph(
                 $,
                 {

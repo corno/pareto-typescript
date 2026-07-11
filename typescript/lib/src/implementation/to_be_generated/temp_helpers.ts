@@ -8,9 +8,9 @@ import * as h_i from './temp_helper_types.js'
 import { type Iterator } from 'pareto-core/interface/__internal/refiner/Iterator'
 
 //data types
-import type * as d_in from "pareto-untyped-syntax-tree-api/interface/data/untyped_syntax_tree"
-import type * as d_function from "../../interface/schemas/concrete_syntax_tree_from_ast.js"
-import type * as d_primitives from "../../interface/schemas/primitives.js"
+import type * as s_in from "pareto-untyped-syntax-tree-api/interface/data/untyped_syntax_tree"
+import type * as s_function from "../../interface/schemas/concrete_syntax_tree_from_ast.js"
+import type * as s_primitives from "../../interface/schemas/primitives.js"
 import { type Abort } from 'pareto-core/interface/__internal/Abort'
 
 /*
@@ -22,36 +22,36 @@ A pointer on how to use this API:
 
 export type Production_Parameters = {
     'location description': string
-    'parent': d_in.Node
+    'parent': s_in.Node
 }
 
 export type Refiner_Parameters = {
-    'parent': d_in.Node
+    'parent': s_in.Node
     'path': string
 }
 
 export type Helper_Parameters = {
     'path': string
-    'parent': d_in.Node
+    'parent': s_in.Node
 }
 
 export type Root<T extends p_di.Value> = p_ri.Refiner<
     T,
-    d_function.Error_Inner,
-    d_in.Node
+    s_function.Error_Inner,
+    s_in.Node
 >
 
 export type Refiner<T extends p_di.Value> = p_ri.Refiner_With_Parameter<
     T,
-    d_function.Error_Inner,
-    d_in.Node,
+    s_function.Error_Inner,
+    s_in.Node,
     Refiner_Parameters
 >
 
 export type Production<T extends p_di.Value> = p_ri.Production_With_Parameter<
     T,
-    d_function.Error_Inner,
-    d_in.Node,
+    s_function.Error_Inner,
+    s_in.Node,
     null,
     Production_Parameters
 >
@@ -168,20 +168,20 @@ export type Iterator_Context = {
      * to consume a node that has no value and no children
      */
     consume_keyword: (
-    ) => d_primitives.Keyword
+    ) => s_primitives.Keyword
 
     /**
      * Consumes the next node and discards its contents (including children). Use only when the content is irrelevant
      * and you explicitly do not want to process it. Avoid in favour of properly typed consume_* calls.
      */
     consume_blob: (
-    ) => d_primitives.Blob
+    ) => s_primitives.Blob
 
     /**
      * to consume a node that has a value and no children
      */
     consume_literal: (
-    ) => d_primitives.Literal
+    ) => s_primitives.Literal
 
     /**
      * use this to consume a list of nodes, where the list is terminated by a node that is not part of the list. The callback is called for each node in the list, and must consume it via a consume_* call. The callback must return a value for each node, which will be collected into a list and returned.
@@ -221,8 +221,8 @@ export type Iterator_Context = {
 }
 
 const internal_create_node_context = (
-    context_node: d_in.Node,
-    abort: Abort<d_function.Error_Inner>,
+    context_node: s_in.Node,
+    abort: Abort<s_function.Error_Inner>,
     path: string,
 ): Node_Context => {
     return {
@@ -274,8 +274,8 @@ const internal_create_node_context = (
 }
 
 export const create_node_context = <T>(
-    context_node: d_in.Node,
-    abort: Abort<d_function.Error_Inner>,
+    context_node: s_in.Node,
+    abort: Abort<s_function.Error_Inner>,
     $p: Refiner_Parameters,
     expected_kind: string,
     callback: (context: Node_Context) => T
@@ -302,8 +302,8 @@ export const create_node_context = <T>(
 }
 
 export const create_root_node_context = <T>(
-    context_node: d_in.Node,
-    abort: Abort<d_function.Error_Inner>,
+    context_node: s_in.Node,
+    abort: Abort<s_function.Error_Inner>,
     expected_kind: string,
     callback: (context: Node_Context) => T
 ): T => {
@@ -326,13 +326,13 @@ export const create_root_node_context = <T>(
 }
 
 const internal_create_iterator_context = (
-    iterator: Iterator<d_in.Node, null>,
-    abort: Abort<d_function.Error_Inner>,
-    parent: d_in.Node,
+    iterator: Iterator<s_in.Node, null>,
+    abort: Abort<s_function.Error_Inner>,
+    parent: s_in.Node,
     path: string,
 ): Iterator_Context => {
 
-    const consume_internal = (): d_in.Node => iterator.consume(
+    const consume_internal = (): s_in.Node => iterator.consume(
         ($) => abort({
             'context node': parent,
             'path': path,
@@ -648,8 +648,8 @@ const internal_create_iterator_context = (
 }
 
 export const create_iterator_context = <T extends p_di.Value>(
-    iterator: Iterator<d_in.Node, null>,
-    abort: Abort<d_function.Error_Inner>,
+    iterator: Iterator<s_in.Node, null>,
+    abort: Abort<s_function.Error_Inner>,
     $p: Production_Parameters,
     name: string,
     callback: (context: Iterator_Context) => T

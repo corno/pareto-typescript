@@ -3,7 +3,7 @@ import * as p_ from 'pareto-core/implementation/command'
 import type * as interface_ from "../../declarations/commands.js"
 
 //data types
-import type * as d_main from "pareto-application-api/interface/data/main"
+import type * as s_main from "pareto-application-api/interface/data/main"
 
 //dependencies
 // import * as c_file_to_file from "pareto-common/implementation/commands/file_to_file"
@@ -11,8 +11,8 @@ import * as c_file_to_file from "pareto-common/implementation/commands/file_to_s
 import * as q_analyze_typescript_file from "../queries/analyze_file.js"
 
 // type MyError =
-//     | ['parse node path', d_parse_node_path.Error]
-//     | ['parse file', d_parse_file.Error]
+//     | ['parse node path', s_parse_node_path.Error]
+//     | ['parse file', s_parse_file.Error]
 //     | ['write to stdout', null]
 
 export const $$: interface_.analyse_file = p_.command(
@@ -37,7 +37,7 @@ export const $$: interface_.analyse_file = p_.command(
             {
                 'arguments': $d.arguments
             },
-            ($): d_main.Error => $
+            ($): s_main.Error => $
         ),
 
     ]

@@ -3,7 +3,7 @@ import * as p_ from 'pareto-core/implementation/transformer'
 import type * as interface_ from "../../../declarations/transformers/concrete_syntax_tree/prose.js"
 
 //data types
-import type * as d_out from "pareto-fountain-pen/interface/data/prose"
+import type * as s_out from "pareto-fountain-pen/interface/data/prose"
 
 //shorthands
 import * as sh from "pareto-fountain-pen/shorthands/prose/target"
@@ -378,7 +378,7 @@ export const Entity_Name: interface_.Entity_Name = ($) => p_.from.state($).decid
 
 export const Error_Recovery: interface_.Error_Recovery = ($) => p_.from.optional($).decide(
     ($) => sh.ph.composed(p_.from.list($['entries']).map(
-        ($): d_out.Phrase => p_.from.state($).decide(
+        ($): s_out.Phrase => p_.from.state($).decide(
             ($) => {
                 switch ($[0]) {
                     case 'separator': return p_.option($, ($) => sh.ph.literal(", "))
@@ -1537,7 +1537,7 @@ export const Statement: interface_.Statement = ($) => sh.ph.composed(p_.literal.
                                                                     sh.ph.literal("{"),
                                                                     sh.ph.composed(
                                                                         p_.from.list($.entries).map(
-                                                                            ($): d_out.Phrase => p_.from.state($).decide(
+                                                                            ($): s_out.Phrase => p_.from.state($).decide(
                                                                                 ($) => {
                                                                                     switch ($[0]) {
                                                                                         case 'separator': return p_.option($, ($) => sh.ph.literal(", "))
@@ -1576,7 +1576,7 @@ export const Statement: interface_.Statement = ($) => sh.ph.composed(p_.literal.
                                             sh.ph.literal("{"),
                                             sh.ph.composed(
                                                 p_.from.list($.entries).map(
-                                                    ($): d_out.Phrase => p_.from.state($).decide(
+                                                    ($): s_out.Phrase => p_.from.state($).decide(
                                                         ($) => {
                                                             switch ($[0]) {
                                                                 case 'separator': return p_.option($, ($) => sh.ph.literal(", "))
@@ -1616,7 +1616,7 @@ export const Statement: interface_.Statement = ($) => sh.ph.composed(p_.literal.
                                                         case 'named imports': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                                                             sh.ph.literal("{"),
                                                             sh.ph.composed(p_.from.list($.entries).map(
-                                                                ($): d_out.Phrase => p_.from.state($).decide(
+                                                                ($): s_out.Phrase => p_.from.state($).decide(
                                                                     ($) => {
                                                                         switch ($[0]) {
                                                                             case 'separator': return p_.option($, ($) => sh.ph.literal(", "))
@@ -1780,7 +1780,7 @@ export const Statement: interface_.Statement = ($) => sh.ph.composed(p_.literal.
                     sh.ph.indent(
                         sh.pg.sentences(
                             p_.from.list($['case block']['clauses']).map(
-                                ($): d_out.Sentence => sh.sentence(p_.literal.list([
+                                ($): s_out.Sentence => sh.sentence(p_.literal.list([
                                     p_.from.state($).decide(
                                         ($) => {
                                             switch ($[0]) {
