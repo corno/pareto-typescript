@@ -1,6 +1,10 @@
 import * as p_ from 'pareto-core/implementation/command'
 
-import type * as interface_ from "../../declarations/commands.js"
+//interface dependencies
+import type * as command_interfaces from "../../interface/commands.js"
+import type * as command_interfaces_pareto_stream_api from "pareto-stream-api/interface/commands"
+import type * as query_interfaces_filesystem_unrestricted_api from "pareto-filesystem-unrestricted-api/interface/queries"
+import type * as query_interfaces_typescript_parser from "pareto-untyped-syntax-tree-api/interface/queries"
 
 //schemas
 import type * as s_main from "pareto-application-api/interface/data/main"
@@ -15,7 +19,18 @@ import * as q_analyze_typescript_file from "../queries/analyze_file.js"
 //     | ['parse file', s_parse_file.Error]
 //     | ['write to stdout', null]
 
-export const $$: interface_.analyse_file = p_.command(
+export const $$: p_.Command_Implementation<
+    command_interfaces.analyse_file,
+    null,
+    {
+        'parse file': query_interfaces_typescript_parser.queries.parse_file
+        'read file': query_interfaces_filesystem_unrestricted_api.read_file
+    },
+    {
+        'write to stdout': command_interfaces_pareto_stream_api.write_to_stdout
+        'log error': command_interfaces_pareto_stream_api.log_error
+    }
+> = p_.command(
     ($d, $s, $q, $c) => [
 
         c_file_to_file.$$(
