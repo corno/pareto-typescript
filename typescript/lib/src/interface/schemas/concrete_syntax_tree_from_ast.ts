@@ -1,6 +1,6 @@
 import * as p_di from "pareto-core/interface/data"
 
-//data types
+//schemas
 import type * as s_path from "pareto-resources/interface/data/fs_unrestricted_path"
 import type * as s_ast from "pareto-untyped-syntax-tree-api/interface/data/untyped_syntax_tree"
 

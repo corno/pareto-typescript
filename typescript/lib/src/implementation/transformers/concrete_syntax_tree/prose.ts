@@ -2,7 +2,7 @@ import * as p_ from 'pareto-core/implementation/transformer'
 
 import type * as interface_ from "../../../declarations/transformers/concrete_syntax_tree/prose.js"
 
-//data types
+//schemas
 import type * as s_out from "pareto-fountain-pen/interface/data/prose"
 
 //shorthands

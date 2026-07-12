@@ -1,6 +1,6 @@
 import * as p_ from 'pareto-core/interface/command_interface'
 
-//data types
+//schemas
 import type * as s_main from "pareto-application-api/interface/data/main"
 
 

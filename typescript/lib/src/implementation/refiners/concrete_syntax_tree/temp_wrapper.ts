@@ -1,7 +1,7 @@
 
 import * as p_i from "pareto-core/interface/refiner"
 
-//data types
+//schemas
 import type * as s_in from "pareto-untyped-syntax-tree-api/interface/data/untyped_syntax_tree"
 import type * as s_out from "../../../interface/schemas/concrete_syntax_tree.js"
 import type * as s_path from "pareto-resources/interface/data/fs_unrestricted_path"
