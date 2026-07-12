@@ -3,7 +3,8 @@ import * as p_temp from 'pareto-core/implementation/transformer'
 import p_super_query_result from 'pareto-core/implementation/query/super_query_result'
 import p_text_from_list from 'pareto-core/implementation/transformer/specials/text_from_list'
 
-import type * as interface_ from "../../declarations/queries.js"
+import type * as query_interfaces_pareto_common from "pareto-common/interface/queries"
+import * as queries_typescript_parser from "pareto-untyped-syntax-tree-api/interface/queries"
 
 //data  types
 import type * as s_process_file_data from "pareto-common/interface/data/process_file_data"
@@ -18,7 +19,13 @@ import * as t_typed_ast_from_ast_to_prose from "../transformers/concrete_syntax_
 //shorthands
 import * as sh from "pareto-fountain-pen/shorthands/prose/deprecated"
 
-export const $$: interface_.functions.analyze_typescript_file = p_.query(
+export const $$: p_.Query_Implementation<
+    query_interfaces_pareto_common.process_file_data,
+    null,
+    {
+        'parse file': queries_typescript_parser.queries.parse_file
+    }
+> = p_.query(
     ($d, $s, $q) => p_super_query_result<s_parse_typescript_file.Result, s_process_file_data.Error>($q['parse file'](
         {
             'data': p_text_from_list(
