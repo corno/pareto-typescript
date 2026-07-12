@@ -7,7 +7,7 @@ import type * as query_interfaces_filesystem_unrestricted_api from "pareto-files
 import type * as query_interfaces_typescript_parser from "pareto-untyped-syntax-tree-api/interface/queries"
 
 //schemas
-import type * as s_main from "pareto-application-api/interface/data/main"
+import type * as s_main from "../../interface/schemas/main.js"
 
 //dependencies
 // import * as c_file_to_file from "pareto-common/implementation/commands/file_to_file"

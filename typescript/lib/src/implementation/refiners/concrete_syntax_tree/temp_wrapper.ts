@@ -2,10 +2,10 @@
 import * as p_i from "pareto-core/interface/refiner"
 
 //schemas
-import type * as s_in from "pareto-untyped-syntax-tree-api/interface/data/untyped_syntax_tree"
-import type * as s_out from "../../../interface/schemas/concrete_syntax_tree.js"
-import type * as s_path from "pareto-resources/interface/data/fs_unrestricted_path"
+import type * as s_in from "../../../interface/schemas/untyped_syntax_tree.js"
+import type * as s_path from "../../../interface/schemas/fs_unrestricted_path.js"
 import type * as s_function from "../../../interface/schemas/concrete_syntax_tree_from_ast.js"
+import type * as s_out from "../../../interface/schemas/concrete_syntax_tree.js"
 
 //dependencies
 import * as r_from_ast from "./untyped_syntax_tree.js"

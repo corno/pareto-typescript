@@ -1,14 +1,162 @@
 import * as p_ from 'pareto-core/implementation/transformer'
 
-import type * as interface_ from "../../../declarations/transformers/concrete_syntax_tree/prose.js"
+//schemas
+import type * as s_in from "../../../interface/schemas/concrete_syntax_tree.js"
+import type * as s_out from "../../../interface/schemas/prose.js"
+
+namespace declarations {
+    export type Arguments = p_.Transformer<
+        s_in.Arguments,
+        s_out.Phrase
+    >
+    export type As_Alias = p_.Transformer<
+        s_in.As_Alias,
+        s_out.Phrase
+    >
+    export type Binding_Pattern = p_.Transformer<
+        s_in.Binding_Pattern,
+        s_out.Phrase
+    >
+    export type Block = p_.Transformer<
+        s_in.Block,
+        s_out.Phrase
+    >
+    export type Class_Body = p_.Transformer<
+        s_in.Class_Body,
+        s_out.Phrase
+    >
+    export type Class = p_.Transformer<
+        s_in.Class,
+        s_out.Phrase
+    >
+    export type Entity_Name = p_.Transformer<
+        s_in.Entity_Name,
+        s_out.Phrase
+    >
+    export type Error_Recovery = p_.Transformer<
+        s_in.Error_Recovery,
+        s_out.Phrase
+    >
+    export type Expression_With_Type_Arguments = p_.Transformer<
+        s_in.Expression_With_Type_Arguments,
+        s_out.Phrase
+    >
+    export type Expression = p_.Transformer<
+        s_in.Expression,
+        s_out.Phrase
+    >
+    export type Heritage = p_.Transformer<
+        s_in.Heritage,
+        s_out.Phrase
+    >
+    export type Identifier = p_.Transformer<
+        s_in.Identifier,
+        s_out.Phrase
+    >
+    export type Initializer = p_.Transformer<
+        s_in.Initializer,
+        s_out.Phrase
+    >
+    export type JSDoc = p_.Transformer<
+        s_in.JSDoc,
+        s_out.Phrase
+    >
+    export type Module_Body = p_.Transformer<
+        s_in.Module_Body,
+        s_out.Phrase
+    >
+    export type Numeric_Literal = p_.Transformer<
+        s_in.Numeric_Literal,
+        s_out.Phrase
+    >
+    export type Object_Type = p_.Transformer<
+        s_in.Object_Type,
+        s_out.Phrase
+    >
+    export type Optional_Initializer = p_.Transformer<
+        s_in.Optional_Initializer,
+        s_out.Phrase
+    >
+    export type Optional_Type = p_.Transformer<
+        s_in.Optional_Type,
+        s_out.Phrase
+    >
+    export type Parameters = p_.Transformer<
+        s_in.Parameters,
+        s_out.Phrase
+    >
+    export type Property_Name = p_.Transformer<
+        s_in.Property_Name,
+        s_out.Phrase
+    >
+    export type Qualified_Name = p_.Transformer<
+        s_in.Qualified_Name,
+        s_out.Phrase
+    >
+    export type Return_Type_Annotation = p_.Transformer<
+        s_in.Return_Type_Annotation,
+        s_out.Phrase
+    >
+    export type Semi_Colon = p_.Transformer<
+        s_in.Semi_Colon,
+        s_out.Phrase
+    >
+    export type Signature_Modifiers = p_.Transformer<
+        s_in.Signature_Modifiers,
+        s_out.Phrase
+    >
+    export type Source_File = p_.Transformer<
+        s_in.Source_File,
+        s_out.Paragraph
+    >
+    export type Statement_Modifiers = p_.Transformer<
+        s_in.Statement_Modifiers,
+        s_out.Phrase
+    >
+    export type Statement = p_.Transformer<
+        s_in.Statement,
+        s_out.Phrase
+    >
+    export type Statements = p_.Transformer<
+        s_in.Statements,
+        s_out.Paragraph
+    >
+    export type String_Literal = p_.Transformer<
+        s_in.String_Literal,
+        s_out.Phrase
+    >
+    export type Type_Arguments = p_.Transformer<
+        s_in.Type_Arguments,
+        s_out.Phrase
+    >
+    export type Type_Parameters = p_.Transformer<
+        s_in.Type_Parameters,
+        s_out.Phrase
+    >
+    export type Type_Predicate = p_.Transformer<
+        s_in.Type_Predicate,
+        s_out.Phrase
+    >
+    export type Type = p_.Transformer<
+        s_in.Type,
+        s_out.Phrase
+    >
+    export type Variable_Declaration_List = p_.Transformer<
+        s_in.Variable_Declaration_List,
+        s_out.Phrase
+    >
+    export type Variable_Declaration = p_.Transformer<
+        s_in.Variable_Declaration,
+        s_out.Phrase
+    >
+}
 
 //schemas
-import type * as s_out from "pareto-fountain-pen/interface/data/prose"
 
 //shorthands
 import * as sh from "pareto-fountain-pen/shorthands/prose/target"
 
-export const Arguments: interface_.Arguments = ($) => sh.ph.composed(p_.literal.list([
+export const Arguments: declarations.Arguments = ($) => sh.ph.composed(p_.literal.list([
     p_.from.optional($['question dot token']).decide(
         () => sh.ph.literal("?."),
         () => sh.ph.nothing()
@@ -48,7 +196,7 @@ export const Arguments: interface_.Arguments = ($) => sh.ph.composed(p_.literal.
     sh.ph.literal(")"),
 ]))
 
-export const As_Alias: interface_.As_Alias = ($) => sh.ph.composed(p_.literal.list([
+export const As_Alias: declarations.As_Alias = ($) => sh.ph.composed(p_.literal.list([
     sh.ph.literal(" as "),
     p_.from.state($.identifier).decide(
         ($) => {
@@ -61,7 +209,7 @@ export const As_Alias: interface_.As_Alias = ($) => sh.ph.composed(p_.literal.li
     ),
 ]))
 
-export const Binding_Pattern: interface_.Binding_Pattern = ($) => sh.ph.composed(p_.literal.list([
+export const Binding_Pattern: declarations.Binding_Pattern = ($) => sh.ph.composed(p_.literal.list([
     JSDoc($['jsdoc']),
     p_.from.optional($['modifiers']).decide(
         ($) => sh.ph.composed(
@@ -175,7 +323,7 @@ export const Binding_Pattern: interface_.Binding_Pattern = ($) => sh.ph.composed
     )
 ]))
 
-export const Block: interface_.Block = ($) => sh.ph.composed(p_.literal.list([
+export const Block: declarations.Block = ($) => sh.ph.composed(p_.literal.list([
     JSDoc($['jsdoc']),
     sh.ph.literal("{"),
     sh.ph.indent(
@@ -184,7 +332,7 @@ export const Block: interface_.Block = ($) => sh.ph.composed(p_.literal.list([
     sh.ph.literal("}"),
 ]))
 
-export const Class: interface_.Class = ($) => sh.ph.composed(p_.literal.list([
+export const Class: declarations.Class = ($) => sh.ph.composed(p_.literal.list([
     JSDoc($['jsdoc']),
     p_.from.optional($['modifiers']).decide(
         ($) => sh.ph.composed(p_.from.list($).map(
@@ -214,7 +362,7 @@ export const Class: interface_.Class = ($) => sh.ph.composed(p_.literal.list([
     Class_Body($['body']),
 ]))
 
-export const Class_Body: interface_.Class_Body = ($) => sh.ph.composed(p_.literal.list([
+export const Class_Body: declarations.Class_Body = ($) => sh.ph.composed(p_.literal.list([
     sh.ph.literal("{"),
     sh.ph.indent(
         sh.pg.sentences(
@@ -366,7 +514,7 @@ export const Class_Body: interface_.Class_Body = ($) => sh.ph.composed(p_.litera
     sh.ph.literal("}"),
 ]))
 
-export const Entity_Name: interface_.Entity_Name = ($) => p_.from.state($).decide(
+export const Entity_Name: declarations.Entity_Name = ($) => p_.from.state($).decide(
     ($) => {
         switch ($[0]) {
             case 'identifier': return p_.option($, ($) => sh.ph.literal($.text))
@@ -376,7 +524,7 @@ export const Entity_Name: interface_.Entity_Name = ($) => p_.from.state($).decid
     }
 )
 
-export const Error_Recovery: interface_.Error_Recovery = ($) => p_.from.optional($).decide(
+export const Error_Recovery: declarations.Error_Recovery = ($) => p_.from.optional($).decide(
     ($) => sh.ph.composed(p_.from.list($['entries']).map(
         ($): s_out.Phrase => p_.from.state($).decide(
             ($) => {
@@ -391,7 +539,7 @@ export const Error_Recovery: interface_.Error_Recovery = ($) => p_.from.optional
     () => sh.ph.nothing()
 )
 
-export const Expression: interface_.Expression = ($) => p_.from.state($).decide(
+export const Expression: declarations.Expression = ($) => p_.from.state($).decide(
     ($) => {
         switch ($[0]) {
             case 'array literal': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
@@ -850,12 +998,12 @@ export const Expression: interface_.Expression = ($) => p_.from.state($).decide(
     }
 )
 
-export const Expression_With_Type_Arguments: interface_.Expression_With_Type_Arguments = ($) => sh.ph.composed(p_.literal.list([
+export const Expression_With_Type_Arguments: declarations.Expression_With_Type_Arguments = ($) => sh.ph.composed(p_.literal.list([
     Expression($['expression']),
     Type_Arguments($['type arguments'])
 ]))
 
-export const Heritage: interface_.Heritage = ($) => p_.from.optional($).decide(
+export const Heritage: declarations.Heritage = ($) => p_.from.optional($).decide(
     ($) => sh.ph.composed(p_.from.list($).map(
         ($) => sh.ph.composed(
             p_.literal.list([
@@ -885,14 +1033,14 @@ export const Heritage: interface_.Heritage = ($) => p_.from.optional($).decide(
     () => sh.ph.nothing(),
 )
 
-export const Identifier: interface_.Identifier = ($) => sh.ph.literal($.text)
+export const Identifier: declarations.Identifier = ($) => sh.ph.literal($.text)
 
-export const Initializer: interface_.Initializer = ($) => sh.ph.composed(p_.literal.list([
+export const Initializer: declarations.Initializer = ($) => sh.ph.composed(p_.literal.list([
     sh.ph.literal(" = "),
     Expression($['expression']),
 ]))
 
-export const JSDoc: interface_.JSDoc = ($) => sh.ph.composed(
+export const JSDoc: declarations.JSDoc = ($) => sh.ph.composed(
     p_.from.list($).map(
         ($) => sh.ph.composed(p_.literal.list([
             sh.ph.literal("/**"),
@@ -902,7 +1050,7 @@ export const JSDoc: interface_.JSDoc = ($) => sh.ph.composed(
     )
 )
 
-export const Module_Body: interface_.Module_Body = ($) => p_.from.state($).decide(
+export const Module_Body: declarations.Module_Body = ($) => p_.from.state($).decide(
     ($) => {
         switch ($[0]) {
             case 'module block': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
@@ -928,7 +1076,7 @@ export const Module_Body: interface_.Module_Body = ($) => p_.from.state($).decid
     }
 )
 
-export const Object_Type: interface_.Object_Type = ($) => sh.ph.composed(p_.literal.list([
+export const Object_Type: declarations.Object_Type = ($) => sh.ph.composed(p_.literal.list([
     sh.ph.literal("{"),
     sh.ph.indent(
         sh.pg.sentences(
@@ -1052,14 +1200,14 @@ export const Object_Type: interface_.Object_Type = ($) => sh.ph.composed(p_.lite
     sh.ph.literal("}")
 ]))
 
-export const Optional_Initializer: interface_.Optional_Initializer = ($) => p_.from.optional($).decide(
+export const Optional_Initializer: declarations.Optional_Initializer = ($) => p_.from.optional($).decide(
     ($) => sh.ph.composed(p_.literal.list([
         Initializer($),
     ])),
     () => sh.ph.nothing()
 )
 
-export const Optional_Type: interface_.Optional_Type = ($) => p_.from.optional($).decide(
+export const Optional_Type: declarations.Optional_Type = ($) => p_.from.optional($).decide(
     ($) => sh.ph.composed(p_.literal.list([
         sh.ph.literal(": "),
         Type($['type']),
@@ -1067,9 +1215,9 @@ export const Optional_Type: interface_.Optional_Type = ($) => p_.from.optional($
     () => sh.ph.nothing()
 )
 
-export const Numeric_Literal: interface_.Numeric_Literal = ($) => sh.ph.literal($.text)
+export const Numeric_Literal: declarations.Numeric_Literal = ($) => sh.ph.literal($.text)
 
-export const Parameters: interface_.Parameters = ($) => sh.ph.composed(p_.literal.list([
+export const Parameters: declarations.Parameters = ($) => sh.ph.composed(p_.literal.list([
     sh.ph.literal("("),
     sh.ph.composed(
         p_.from.list($.entries).map(
@@ -1099,7 +1247,7 @@ export const Parameters: interface_.Parameters = ($) => sh.ph.composed(p_.litera
     sh.ph.literal(")"),
 ]))
 
-export const Property_Name: interface_.Property_Name = ($) => p_.from.state($.type).decide(
+export const Property_Name: declarations.Property_Name = ($) => p_.from.state($.type).decide(
     ($) => {
         switch ($[0]) {
             case 'computed': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
@@ -1117,13 +1265,13 @@ export const Property_Name: interface_.Property_Name = ($) => p_.from.state($.ty
     }
 )
 
-export const Qualified_Name: interface_.Qualified_Name = ($) => sh.ph.composed(p_.literal.list([
+export const Qualified_Name: declarations.Qualified_Name = ($) => sh.ph.composed(p_.literal.list([
     Entity_Name($['first']),
     sh.ph.literal("."),
     sh.ph.literal($['second'].text),
 ]))
 
-export const Return_Type_Annotation: interface_.Return_Type_Annotation = ($) => p_.from.optional($).decide(
+export const Return_Type_Annotation: declarations.Return_Type_Annotation = ($) => p_.from.optional($).decide(
     ($) => sh.ph.composed(p_.literal.list([
         sh.ph.literal(": "),
         p_.from.state($['kind']).decide(
@@ -1139,12 +1287,12 @@ export const Return_Type_Annotation: interface_.Return_Type_Annotation = ($) => 
     () => sh.ph.nothing()
 )
 
-export const Semi_Colon: interface_.Semi_Colon = ($) => p_.from.optional($).decide(
+export const Semi_Colon: declarations.Semi_Colon = ($) => p_.from.optional($).decide(
     ($) => sh.ph.literal(";"),
     () => sh.ph.nothing()
 )
 
-export const Signature_Modifiers: interface_.Signature_Modifiers = ($) => p_.from.optional($).decide(
+export const Signature_Modifiers: declarations.Signature_Modifiers = ($) => p_.from.optional($).decide(
     ($) => sh.ph.composed(
         p_.from.list($).map(
             ($) => p_.from.state($).decide(
@@ -1178,7 +1326,7 @@ export const Signature_Modifiers: interface_.Signature_Modifiers = ($) => p_.fro
     () => sh.ph.nothing()
 )
 
-export const Source_File: interface_.Source_File = ($) => sh.pg.deprecated_composed(p_.literal.list([
+export const Source_File: declarations.Source_File = ($) => sh.pg.deprecated_composed(p_.literal.list([
     Statements($['statements']),
     sh.pg.sentences(p_.literal.list([
         sh.sentence(p_.literal.list([
@@ -1187,7 +1335,7 @@ export const Source_File: interface_.Source_File = ($) => sh.pg.deprecated_compo
     ]))
 ]))
 
-export const Statement: interface_.Statement = ($) => sh.ph.composed(p_.literal.list([
+export const Statement: declarations.Statement = ($) => sh.ph.composed(p_.literal.list([
     p_.from.state($).decide(
         ($) => {
             switch ($[0]) {
@@ -1886,7 +2034,7 @@ export const Statement: interface_.Statement = ($) => sh.ph.composed(p_.literal.
     // )
 ]))
 
-export const Statements: interface_.Statements = ($) => sh.pg.deprecated_composed(
+export const Statements: declarations.Statements = ($) => sh.pg.deprecated_composed(
     p_.from.list($).map(
         ($) => sh.pg.sentences(p_.literal.list([
             sh.sentence(p_.literal.list([
@@ -1897,7 +2045,7 @@ export const Statements: interface_.Statements = ($) => sh.pg.deprecated_compose
     )
 )
 
-export const Statement_Modifiers: interface_.Statement_Modifiers = ($) => p_.from.optional($).decide(
+export const Statement_Modifiers: declarations.Statement_Modifiers = ($) => p_.from.optional($).decide(
     ($) => sh.ph.composed(
         p_.from.list($).map(
             ($) => p_.from.state($).decide(
@@ -1929,10 +2077,10 @@ export const Statement_Modifiers: interface_.Statement_Modifiers = ($) => p_.fro
     () => sh.ph.nothing()
 )
 
-export const String_Literal: interface_.String_Literal = ($) => sh.ph.literal($.text)
+export const String_Literal: declarations.String_Literal = ($) => sh.ph.literal($.text)
 
 
-export const Type_Predicate: interface_.Type_Predicate = ($) => sh.ph.composed(p_.literal.list([
+export const Type_Predicate: declarations.Type_Predicate = ($) => sh.ph.composed(p_.literal.list([
     p_.from.optional($['asserts keyword']).decide(
         () => sh.ph.literal("asserts "),
         () => sh.ph.nothing()
@@ -1955,7 +2103,7 @@ export const Type_Predicate: interface_.Type_Predicate = ($) => sh.ph.composed(p
     ),
 ]))
 
-export const Type: interface_.Type = ($) => p_.from.state($).decide(
+export const Type: declarations.Type = ($) => p_.from.state($).decide(
     ($) => {
         switch ($[0]) {
             case 'any': return p_.option($, ($) => sh.ph.literal("any"))
@@ -2276,7 +2424,7 @@ export const Type: interface_.Type = ($) => p_.from.state($).decide(
     }
 )
 
-export const Type_Arguments: interface_.Type_Arguments = ($) => p_.from.optional($).decide(
+export const Type_Arguments: declarations.Type_Arguments = ($) => p_.from.optional($).decide(
     ($) => sh.ph.composed(p_.literal.list([
         sh.ph.literal("<"),
         sh.ph.composed(
@@ -2297,7 +2445,7 @@ export const Type_Arguments: interface_.Type_Arguments = ($) => p_.from.optional
     () => sh.ph.nothing()
 )
 
-export const Type_Parameters: interface_.Type_Parameters = ($) => p_.from.optional($).decide(
+export const Type_Parameters: declarations.Type_Parameters = ($) => p_.from.optional($).decide(
     ($) => sh.ph.rich(
         p_.from.list($['entries']).map(
             ($) => p_.from.state($).decide(
@@ -2350,7 +2498,7 @@ export const Type_Parameters: interface_.Type_Parameters = ($) => p_.from.option
     () => sh.ph.nothing()
 )
 
-export const Variable_Declaration: interface_.Variable_Declaration = ($) => sh.ph.composed(
+export const Variable_Declaration: declarations.Variable_Declaration = ($) => sh.ph.composed(
     p_.literal.list([
         Binding_Pattern($.name),
         p_.from.optional($['exclamation token']).decide(
@@ -2367,7 +2515,7 @@ export const Variable_Declaration: interface_.Variable_Declaration = ($) => sh.p
     ])
 )
 
-export const Variable_Declaration_List: interface_.Variable_Declaration_List = ($) => sh.ph.composed(
+export const Variable_Declaration_List: declarations.Variable_Declaration_List = ($) => sh.ph.composed(
     p_.literal.list([
         p_.from.state($.mutability).decide(
             ($) => {

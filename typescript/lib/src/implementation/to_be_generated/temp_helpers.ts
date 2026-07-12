@@ -8,7 +8,7 @@ import * as h_i from './temp_helper_types.js'
 import { type Iterator } from 'pareto-core/interface/__internal/refiner/Iterator'
 
 //schemas
-import type * as s_in from "pareto-untyped-syntax-tree-api/interface/data/untyped_syntax_tree"
+import type * as s_in from "../../interface/schemas/untyped_syntax_tree.js"
 import type * as s_function from "../../interface/schemas/concrete_syntax_tree_from_ast.js"
 import type * as s_primitives from "../../interface/schemas/primitives.js"
 import { type Abort } from 'pareto-core/interface/__internal/Abort'

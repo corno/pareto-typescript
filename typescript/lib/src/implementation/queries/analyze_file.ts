@@ -7,9 +7,9 @@ import type * as query_interfaces_pareto_common from "pareto-common/interface/qu
 import * as queries_typescript_parser from "pareto-untyped-syntax-tree-api/interface/queries"
 
 //data  types
-import type * as s_process_file_data from "pareto-common/interface/data/process_file_data"
-import type * as s_parse_typescript_file from "pareto-untyped-syntax-tree-api/interface/data/parse_file"
-import type * as s_prose from "pareto-fountain-pen/interface/data/prose"
+import type * as s_process_file_data from "../../interface/schemas/process_file_data.js"
+import type * as s_parse_typescript_file from "../../interface/schemas/parse_file.js"
+import type * as s_prose from "../../interface/schemas/prose.js"
 
 //dependencies
 import * as t_prose_to_loc from "pareto-fountain-pen/implementation/transformers/prose/list_of_characters"

@@ -1,4 +1,4 @@
-import type * as s_ast from "pareto-untyped-syntax-tree-api/interface/data/untyped_syntax_tree"
+import type * as s_ast from "./untyped_syntax_tree.js"
 
 export type Keyword = null
 

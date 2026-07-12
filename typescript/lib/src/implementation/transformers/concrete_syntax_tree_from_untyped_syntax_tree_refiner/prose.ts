@@ -1,6 +1,15 @@
 import * as p_ from 'pareto-core/implementation/transformer'
 
-import type * as interface_ from "../../../declarations/transformers/concrete_syntax_tree_from_untyped_syntax_tree_refiner/prose.js"
+//schemas
+import type * as s_in from "../../../interface/schemas/concrete_syntax_tree_from_ast.js"
+import type * as s_out from "../../../interface/schemas/prose.js"
+
+namespace declarations {
+    export type Error = p_.Transformer<
+        s_in.Error,
+        s_out.Phrase
+    >
+}
 
 //dependencies
 import * as t_path_to_text from "pareto-resources/implementation/transformers/unrestricted_path/text"
@@ -9,7 +18,7 @@ import * as t_ast_to_prose from "pareto-untyped-syntax-tree-api/implementation/t
 //shorthands
 import * as sh from "pareto-fountain-pen/shorthands/prose/deprecated"
 
-export const Error: interface_.Error = ($) => sh.ph.composed([
+export const Error: declarations.Error = ($) => sh.ph.composed([
     sh.ph.literal($.inner.path),
     sh.ph.literal(": "),
     p_.from.state($.inner.type).decide(
