@@ -2446,7 +2446,7 @@ export const Type_Arguments: declarations.Type_Arguments = ($) => p_.from.option
 )
 
 export const Type_Parameters: declarations.Type_Parameters = ($) => p_.from.optional($).decide(
-    ($) => sh.ph.rich(
+    ($) => sh.ph.rich_phrase(
         p_.from.list($['entries']).map(
             ($) => p_.from.state($).decide(
                 ($) => {

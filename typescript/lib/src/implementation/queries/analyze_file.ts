@@ -7,7 +7,7 @@ import type * as query_interfaces_pareto_common from "pareto-common/interface/qu
 import * as queries_typescript_parser from "pareto-untyped-syntax-tree-api/interface/queries"
 
 //data  types
-import type * as s_process_file_data from "../../interface/schemas/process_file_data.js"
+import type * as s_process_file_data from "../../interface/schemas/file_in_file_out_query.js"
 import type * as s_parse_typescript_file from "../../interface/schemas/parse_file.js"
 import type * as s_prose from "../../interface/schemas/prose.js"
 
@@ -20,7 +20,7 @@ import * as t_typed_ast_from_ast_to_prose from "../transformers/concrete_syntax_
 import * as sh from "pareto-fountain-pen/shorthands/prose/deprecated"
 
 export const $$: p_.Query_Implementation<
-    query_interfaces_pareto_common.process_file_data,
+    query_interfaces_pareto_common.file_in_file_out,
     null,
     {
         'parse file': queries_typescript_parser.queries.parse_file

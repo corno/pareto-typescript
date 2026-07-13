@@ -1,5 +1,5 @@
-import * as p_ from 'pareto-core/interface/data'
-import * as p_di from 'pareto-core/interface/data'
+import * as p_ from 'pareto-core/interface/schema'
+import * as p_di from 'pareto-core/interface/schema'
 
 import type * as s_primitives from "./primitives.js"
 
