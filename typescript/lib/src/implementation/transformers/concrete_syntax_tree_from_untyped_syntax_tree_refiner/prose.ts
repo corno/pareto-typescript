@@ -2,7 +2,7 @@ import * as p_ from 'pareto-core/implementation/transformer'
 
 //schemas
 import type * as s_in from "../../../interface/schemas/concrete_syntax_tree_from_ast.js"
-import type * as s_out from "../../../interface/schemas/prose.js"
+import type * as s_out from "../../../interface/schemas/paragraph.js"
 
 namespace declarations {
     export type Error = p_.Transformer<
@@ -12,11 +12,11 @@ namespace declarations {
 }
 
 //dependencies
-import * as t_path_to_text from "pareto-resources/implementation/transformers/unrestricted_path/text"
-import * as t_ast_to_prose from "pareto-untyped-syntax-tree-api/implementation/transformers/untyped_syntax_tree/prose"
+import * as t_path_to_text from "pareto-resources/implementation/serializers/unrestricted_path"
+import * as t_ast_to_paragraph from "pareto-untyped-syntax-tree-api/_implementation/transformers/untyped_syntax_tree/paragraph"
 
 //shorthands
-import * as sh from "pareto-fountain-pen/shorthands/prose_simple/deprecated"
+import * as sh from "pareto-fountain-pen/shorthands/paragraph/deprecated"
 
 export const Error: declarations.Error = ($) => sh.ph.composed([
     sh.ph.text($.inner.path),
@@ -83,7 +83,7 @@ export const Error: declarations.Error = ($) => sh.ph.composed([
             sh.ph.text("snippet:"),
         ]),
         sh.sentence([
-            t_ast_to_prose.Node(
+            t_ast_to_paragraph.Node(
                 $.inner['context node'],
                 {
                     'depth': 3,

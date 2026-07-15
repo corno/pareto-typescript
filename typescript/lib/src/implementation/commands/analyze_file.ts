@@ -21,20 +21,23 @@ import * as q_analyze_typescript_file from "../queries/analyze_file.js"
 
 export const $$: p_.Command_Implementation<
     command_interfaces.analyse_file,
-    null,
+    {
+        'indentation': string
+        'newline': string
+    },
     {
         'parse file': query_interfaces_typescript_parser.queries.parse_file
         'read file': query_interfaces_filesystem_unrestricted_api.read_file
     },
     {
         'write to stdout': command_interfaces_pareto_stream_api.write_to_stdout
-        'log error': command_interfaces_pareto_stream_api.log_error
+        'log error lines': command_interfaces_pareto_stream_api.log_error_lines
     }
 > = p_.command(
     ($d, $s, $q, $c) => [
 
         c_file_to_file.$$(
-            null,
+            $s,
             {
                 'read file': $q['read file'],
                 'process data': q_analyze_typescript_file.$$(
@@ -45,7 +48,7 @@ export const $$: p_.Command_Implementation<
                 )
             },
             {
-                'log error': $c['log error'],
+                'log error lines': $c['log error lines'],
                 'write to stdout': $c['write to stdout'],
             },
         ).execute(

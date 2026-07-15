@@ -2,7 +2,7 @@ import * as p_ from 'pareto-core/implementation/transformer'
 
 //schemas
 import type * as s_in from "../../../interface/schemas/concrete_syntax_tree.js"
-import type * as s_out from "../../../interface/schemas/prose.js"
+import type * as s_out from "../../../interface/schemas/paragraph.js"
 
 namespace declarations {
     export type Arguments = p_.Transformer<
@@ -154,7 +154,7 @@ namespace declarations {
 //schemas
 
 //shorthands
-import * as sh from "pareto-fountain-pen/shorthands/prose_simple/target"
+import * as sh from "pareto-fountain-pen/shorthands/paragraph/target"
 
 export const Arguments: declarations.Arguments = ($) => sh.ph.composed(p_.literal.list([
     p_.from.optional($['question dot token']).decide(
