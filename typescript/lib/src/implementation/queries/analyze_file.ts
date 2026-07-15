@@ -17,7 +17,7 @@ import * as r_typed_ast_from_ast from "../refiners/concrete_syntax_tree/temp_wra
 import * as t_typed_ast_from_ast_to_prose from "../transformers/concrete_syntax_tree_from_untyped_syntax_tree_refiner/prose.js"
 
 //shorthands
-import * as sh from "pareto-fountain-pen/shorthands/prose/deprecated"
+import * as sh from "pareto-fountain-pen/shorthands/prose_simple/deprecated"
 
 export const $$: p_.Query_Implementation<
     query_interfaces_pareto_common.file_in_file_out,
@@ -39,11 +39,11 @@ export const $$: p_.Query_Implementation<
                 switch ($[0]) {
                     case 'syntax errors': return p_temp.ss($, ($) => sh.ph.composed(p_.literal.segmented_list([
                         p_.literal.list([
-                            sh.ph.literal("Syntax errors:"),
+                            sh.ph.text("Syntax errors:"),
                             sh.ph.indent(
                                 sh.pg.sentences(p_temp.from.list($.messages).map(
                                     ($) => sh.sentence([
-                                        sh.ph.literal($)
+                                        sh.ph.text($)
                                     ])
                                 ))
                             )

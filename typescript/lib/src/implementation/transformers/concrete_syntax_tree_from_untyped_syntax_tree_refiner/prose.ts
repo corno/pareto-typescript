@@ -16,71 +16,71 @@ import * as t_path_to_text from "pareto-resources/implementation/transformers/un
 import * as t_ast_to_prose from "pareto-untyped-syntax-tree-api/implementation/transformers/untyped_syntax_tree/prose"
 
 //shorthands
-import * as sh from "pareto-fountain-pen/shorthands/prose/deprecated"
+import * as sh from "pareto-fountain-pen/shorthands/prose_simple/deprecated"
 
 export const Error: declarations.Error = ($) => sh.ph.composed([
-    sh.ph.literal($.inner.path),
-    sh.ph.literal(": "),
+    sh.ph.text($.inner.path),
+    sh.ph.text(": "),
     p_.from.state($.inner.type).decide(
         ($) => {
             switch ($[0]) {
                 case 'assertion failed': return p_.option($, ($) => sh.ph.composed([
-                    sh.ph.literal("assertion failed"),
-                    sh.ph.literal(" (expected: "),
-                    sh.ph.literal($.expected),
-                    sh.ph.literal(", found: "),
-                    sh.ph.literal($.found),
-                    sh.ph.literal(")"),
+                    sh.ph.text("assertion failed"),
+                    sh.ph.text(" (expected: "),
+                    sh.ph.text($.expected),
+                    sh.ph.text(", found: "),
+                    sh.ph.text($.found),
+                    sh.ph.text(")"),
                 ]))
                 case 'dangling child': return p_.option($, ($) => sh.ph.composed([
-                    sh.ph.literal("dangling child :"),
-                    sh.ph.literal($.found.kind),
+                    sh.ph.text("dangling child :"),
+                    sh.ph.text($.found.kind),
                 ]))
                 case 'not a leaf': return p_.option($, ($) => sh.ph.composed([
-                    sh.ph.literal("not a leaf: '"),
-                    sh.ph.literal($.found),
-                    sh.ph.literal("'"),
+                    sh.ph.text("not a leaf: '"),
+                    sh.ph.text($.found),
+                    sh.ph.text("'"),
                 ]))
                 case 'missing child': return p_.option($, ($) => sh.ph.composed([
-                    sh.ph.literal("missing"),
+                    sh.ph.text("missing"),
                     p_.from.optional($.kind).decide(
                         ($) => sh.ph.composed(
                             p_.literal.list([
-                                sh.ph.literal(": "),
-                                sh.ph.literal($)
+                                sh.ph.text(": "),
+                                sh.ph.text($)
                             ])
                         ),
                         () => sh.ph.nothing(),
                     ),
                 ]))
                 case 'refiner called for wrong kind': return p_.option($, ($) => sh.ph.composed([
-                    sh.ph.literal("refiner called for wrong kind"),
-                    sh.ph.literal(" (expected: "),
-                    sh.ph.literal($.expected),
-                    sh.ph.literal(", found: "),
-                    sh.ph.literal($.found),
-                    sh.ph.literal(")"),
+                    sh.ph.text("refiner called for wrong kind"),
+                    sh.ph.text(" (expected: "),
+                    sh.ph.text($.expected),
+                    sh.ph.text(", found: "),
+                    sh.ph.text($.found),
+                    sh.ph.text(")"),
                 ]))
                 case 'unknown option': return p_.option($, ($) => sh.ph.composed([
-                    sh.ph.literal("unknown option: '"),
-                    sh.ph.literal($.found),
-                    sh.ph.literal("'")
+                    sh.ph.text("unknown option: '"),
+                    sh.ph.text($.found),
+                    sh.ph.text("'")
                 ]))
-                case 'wrong root': return p_.option($, ($) => sh.ph.literal("wrong root"))
+                case 'wrong root': return p_.option($, ($) => sh.ph.text("wrong root"))
                 default: return p_.exhaustive($[0])
             }
         }
     ),
-    sh.ph.literal(" @ "),
-    sh.ph.literal(t_path_to_text.Node_Path($.path)),
-    sh.ph.literal(`:${$.inner['context node'].location.line}:${$.inner['context node'].location.column}`),
+    sh.ph.text(" @ "),
+    sh.ph.text(t_path_to_text.Node_Path($.path)),
+    sh.ph.text(`:${$.inner['context node'].location.line}:${$.inner['context node'].location.column}`),
 
 
 
-    sh.ph.literal(": "),
+    sh.ph.text(": "),
     sh.ph.indent(sh.pg.sentences([
         sh.sentence([
-            sh.ph.literal("snippet:"),
+            sh.ph.text("snippet:"),
         ]),
         sh.sentence([
             t_ast_to_prose.Node(
