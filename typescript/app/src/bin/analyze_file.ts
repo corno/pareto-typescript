@@ -11,14 +11,16 @@ import { $$ as c_command } from "lib/implementation/commands/analyze_file"
 
 p_h.run_main_command(
     () => c_command(
-        null,
+        {
+            'indentation': "    ",
+        },
         {
             'parse file': rs_typescript_parser.$.queries['parse file'],
             'read file': rs_filesystem_unrestricted.$.queries['read file'],
         },
         {
-            'write to stdout': rs_stream.$.commands['write to stdout'],
-            'log error': rs_stream.$.commands['log error'],
+            'log error lines': rs_stream.$.commands['log error lines'],
+            'log lines': rs_stream.$.commands['log lines'],
         },
     ),
 )

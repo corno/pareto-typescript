@@ -1,26 +1,24 @@
 import * as p_ from 'pareto-core/implementation/query'
 import * as p_temp from 'pareto-core/implementation/transformer'
 import p_super_query_result from 'pareto-core/implementation/query/super_query_result'
-import p_text_from_list from 'pareto-core/implementation/transformer/specials/text_from_list'
 
-import type * as query_interfaces_pareto_common from "pareto-common/interface/queries"
+import type * as query_interfaces_file_in_file_out from "pareto-common/modules/file_in_stream_out/interface/queries"
 import * as queries_typescript_parser from "pareto-untyped-syntax-tree-api/interface/queries"
 
 //data  types
-import type * as s_process_file_data from "../../interface/schemas/file_in_file_out_query.js"
+import type * as s_process_file_data from "../../interface/schemas/file_in_stream_out_query.js"
 import type * as s_parse_typescript_file from "../../interface/schemas/parse_file.js"
-import type * as s_prose from "../../interface/schemas/prose.js"
+import type * as s_paragraph from "../../interface/schemas/paragraph.js"
 
 //dependencies
-import * as t_prose_to_loc from "pareto-fountain-pen/implementation/transformers/prose/list_of_characters"
 import * as r_typed_ast_from_ast from "../refiners/concrete_syntax_tree/temp_wrapper.js"
-import * as t_typed_ast_from_ast_to_prose from "../transformers/concrete_syntax_tree_from_untyped_syntax_tree_refiner/prose.js"
+import * as t_concrete_syntax_tree_from_untyped_syntax_tree_refiner_to_paragraph from "../transformers/concrete_syntax_tree_from_untyped_syntax_tree_refiner/paragraph.js"
 
 //shorthands
-import * as sh from "pareto-fountain-pen/shorthands/prose_simple/deprecated"
+import * as sh from "pareto-fountain-pen/shorthands/paragraph/deprecated"
 
 export const $$: p_.Query_Implementation<
-    query_interfaces_pareto_common.file_in_file_out,
+    query_interfaces_file_in_file_out.operation,
     null,
     {
         'parse file': queries_typescript_parser.queries.parse_file
@@ -28,39 +26,40 @@ export const $$: p_.Query_Implementation<
 > = p_.query(
     ($d, $s, $q) => p_super_query_result<s_parse_typescript_file.Result, s_process_file_data.Error>($q['parse file'](
         {
-            'data': p_text_from_list(
-                $d.data,
-                ($) => $
-            ),
+            'data': $d.data,
             // 'path': t_path_to_string.Node_Path($d.path),
         },
-        ($): s_process_file_data.Error => p_temp.from.state($).decide(
-            ($) => {
-                switch ($[0]) {
-                    case 'syntax errors': return p_temp.ss($, ($) => sh.ph.composed(p_.literal.segmented_list([
-                        p_.literal.list([
-                            sh.ph.text("Syntax errors:"),
-                            sh.ph.indent(
-                                sh.pg.sentences(p_temp.from.list($.messages).map(
-                                    ($) => sh.sentence([
-                                        sh.ph.text($)
-                                    ])
-                                ))
-                            )
-                        ]),
-                    ])))
-                    default: return p_temp.exhaustive($[0])
+        ($): s_process_file_data.Error => ({
+            'message': p_temp.from.state($).decide(
+                ($) => {
+                    switch ($[0]) {
+                        case 'syntax errors': return p_temp.ss($, ($) => sh.ph.composed(p_.literal.segmented_list([
+                            p_.literal.list([
+                                sh.ph.text("Syntax errors:"),
+                                sh.ph.indent(
+                                    sh.pg.sentences(p_temp.from.list($.messages).map(
+                                        ($) => sh.sentence([
+                                            sh.ph.text($)
+                                        ])
+                                    ))
+                                )
+                            ]),
+                        ])))
+                        default: return p_temp.exhaustive($[0])
+                    }
                 }
-            }
-        )
+            )
+        })
     )).refine(
-        ($, abort): s_prose.Paragraph => {
+        ($, abort): s_paragraph.Paragraph => {
             const typed = r_typed_ast_from_ast.Source_File(
                 $['untyped syntax tree'].root,
                 ($) => abort(
-                    t_typed_ast_from_ast_to_prose.Error(
-                        $
-                    )
+                    {
+                        'message': t_concrete_syntax_tree_from_untyped_syntax_tree_refiner_to_paragraph.Error(
+                            $
+                        )
+                    }
                 ),
                 {
                     'path': $d.path,
@@ -77,13 +76,7 @@ export const $$: p_.Query_Implementation<
         }
     ).transform(
         ($): s_process_file_data.Result => ({
-            'data': t_prose_to_loc.Paragraph(
-                $,
-                {
-                    'indentation': "    ",
-                    'newline': "\n"
-                }
-            )
+            'data': $
         })
     )
 )
