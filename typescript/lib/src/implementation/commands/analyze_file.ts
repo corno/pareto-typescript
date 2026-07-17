@@ -11,7 +11,7 @@ import type * as s_main from "../../interface/schemas/main.js"
 
 //dependencies
 // import * as c_file_to_file from "pareto-common/implementation/commands/file_in_file_out"
-import * as c_file_in_stream_out from "pareto-common/modules/file_in_stream_out/implementation/command/operation"
+import * as c_file_in_stream_out from "pareto-common/modules/file_in_stream_out/implementation/commands/operation"
 import * as q_analyze_typescript_file from "../queries/analyze_file.js"
 
 // type MyError =
