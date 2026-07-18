@@ -12,7 +12,7 @@ namespace declarations {
 }
 
 //dependencies
-import * as t_path_to_text from "pareto-resources/implementation/serializers/unrestricted_path"
+import * as ser_path from "pareto-filesystem-unrestricted-api/modules/unrestricted/implementation/serializers/path"
 import * as t_ast_to_paragraph from "pareto-untyped-syntax-tree-api/_implementation/transformers/untyped_syntax_tree/paragraph"
 
 //shorthands
@@ -72,7 +72,7 @@ export const Error: declarations.Error = ($) => sh.ph.composed([
         }
     ),
     sh.ph.text(" @ "),
-    sh.ph.text(t_path_to_text.Node_Path($.path)),
+    sh.ph.text(ser_path.Node_Path($.path)),
     sh.ph.text(`:${$.inner['context node'].location.line}:${$.inner['context node'].location.column}`),
 
 
