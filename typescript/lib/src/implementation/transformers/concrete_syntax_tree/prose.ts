@@ -154,7 +154,7 @@ namespace declarations {
 //schemas
 
 //shorthands
-import * as sh from "pareto-fountain-pen/shorthands/paragraph/target"
+import * as sh from "pareto-fountain-pen/modules/paragraph/shorthands/target"
 
 export const Arguments: declarations.Arguments = ($) => sh.ph.composed(p_.literal.list([
     p_.from.optional($['question dot token']).decide(

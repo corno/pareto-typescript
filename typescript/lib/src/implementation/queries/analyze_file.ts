@@ -15,7 +15,7 @@ import * as r_typed_ast_from_ast from "../refiners/concrete_syntax_tree/temp_wra
 import * as t_concrete_syntax_tree_from_untyped_syntax_tree_refiner_to_paragraph from "../transformers/concrete_syntax_tree_from_untyped_syntax_tree_refiner/paragraph.js"
 
 //shorthands
-import * as sh from "pareto-fountain-pen/shorthands/paragraph/deprecated"
+import * as sh from "pareto-fountain-pen/modules/paragraph/shorthands/deprecated"
 
 export const $$: p_.Query_Implementation<
     query_interfaces_file_in_file_out.operation,

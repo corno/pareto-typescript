@@ -16,7 +16,7 @@ import * as ser_path from "pareto-filesystem-unrestricted-api/modules/unrestrict
 import * as t_ast_to_paragraph from "pareto-untyped-syntax-tree-api/_implementation/transformers/untyped_syntax_tree/paragraph"
 
 //shorthands
-import * as sh from "pareto-fountain-pen/shorthands/paragraph/deprecated"
+import * as sh from "pareto-fountain-pen/modules/paragraph/shorthands/deprecated"
 
 export const Error: declarations.Error = ($) => sh.ph.composed([
     sh.ph.text($.inner.path),
