@@ -1,8 +1,8 @@
 import * as p_ from 'pareto-core/implementation/transformer'
 
 //schemas
-import type * as s_in from "../../../interface/schemas/concrete_syntax_tree_from_ast.js"
-import type * as s_out from "../../../interface/schemas/paragraph.js"
+import type * as s_in from "../schema.js"
+import type * as s_out from "pareto-fountain-pen/modules/paragraph/schemas/paragraph/schema"
 
 namespace declarations {
     export type Error = p_.Transformer<
@@ -12,11 +12,11 @@ namespace declarations {
 }
 
 //dependencies
-import * as ser_path from "pareto-filesystem-unrestricted-api/modules/unrestricted/implementation/serializers/path"
-import * as t_ast_to_paragraph from "pareto-untyped-syntax-tree-api/_implementation/transformers/untyped_syntax_tree/paragraph"
+import * as ser_path from "pareto-filesystem-unrestricted-api/modules/unrestricted/schemas/path/serializers"
+import * as t_ast_to_paragraph from "pareto-untyped-syntax-tree-api/schemas/untyped_syntax_tree_serialization/transformers/paragraph"
 
 //shorthands
-import * as sh from "pareto-fountain-pen/modules/paragraph/shorthands/deprecated"
+import * as sh from "pareto-fountain-pen/modules/paragraph/schemas/paragraph/shorthands/deprecated"
 
 export const Error: declarations.Error = ($) => sh.ph.composed([
     sh.ph.text($.inner.path),

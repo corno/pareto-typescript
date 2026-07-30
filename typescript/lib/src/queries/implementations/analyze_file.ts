@@ -2,20 +2,20 @@ import * as p_ from 'pareto-core/implementation/query'
 import * as p_temp from 'pareto-core/implementation/transformer'
 import p_super_query_result from 'pareto-core/implementation/query/super_query_result'
 
-import type * as query_interfaces_file_in_file_out from "pareto-common/modules/file_in_stream_out/interface/queries"
-import * as queries_typescript_parser from "pareto-untyped-syntax-tree-api/interface/queries"
+import type * as query_interfaces_file_in_file_out from "pareto-common/modules/file_in_stream_out/queries/interfaces"
+import * as queries_typescript_parser from "pareto-untyped-syntax-tree-api/queries/interfaces"
 
 //data  types
-import type * as s_process_file_data from "../../interface/schemas/file_in_stream_out_query.js"
-import type * as s_parse_typescript_file from "../../interface/schemas/parse_file.js"
-import type * as s_paragraph from "../../interface/schemas/paragraph.js"
+import type * as s_process_file_data from "pareto-common/modules/file_in_stream_out/schemas/query/schema"
+import type * as s_parse_typescript_file from "pareto-untyped-syntax-tree-api/schemas/parse_file/schema"
+import type * as s_paragraph from "pareto-fountain-pen/modules/paragraph/schemas/paragraph/schema"
 
 //dependencies
-import * as r_typed_ast_from_ast from "../refiners/concrete_syntax_tree/temp_wrapper.js"
-import * as t_concrete_syntax_tree_from_untyped_syntax_tree_refiner_to_paragraph from "../transformers/concrete_syntax_tree_from_untyped_syntax_tree_refiner/paragraph.js"
+import * as r_typed_ast_from_ast from "../../schemas/concrete_syntax_tree/refiners/temp_wrapper.js"
+import * as t_concrete_syntax_tree_from_untyped_syntax_tree_refiner_to_paragraph from "../../schemas/concrete_syntax_tree_from_untyped_syntax_tree/transformers/paragraph.js"
 
 //shorthands
-import * as sh from "pareto-fountain-pen/modules/paragraph/shorthands/deprecated"
+import * as sh from "pareto-fountain-pen/modules/paragraph/schemas/paragraph/shorthands/deprecated"
 
 export const $$: p_.Query_Implementation<
     query_interfaces_file_in_file_out.operation,

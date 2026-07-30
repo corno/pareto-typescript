@@ -1,7 +1,7 @@
-import * as h from "../../to_be_generated/temp_helpers.js"
+import * as h from "../../../temp/temp_helpers.js"
 
 //schemas
-import type * as s_out from "../../../interface/schemas/concrete_syntax_tree.js"
+import type * as s_out from "../schema.js"
 
 export const Arguments: h.Production<s_out.Arguments> = ($, abort, $p) => h.create_iterator_context(
     $,

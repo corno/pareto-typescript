@@ -1,9 +1,9 @@
 import * as p_ from 'pareto-core/interface/schema'
 import * as p_di from 'pareto-core/interface/schema'
 
-import type * as s_primitives from "./primitives.js"
+import type * as s_primitives from "../primitives/schema.js"
 
-import * as h from "../../implementation/to_be_generated/temp_helper_types.js"
+import * as h from "../temp_helper_types/schema.js"
 
 export type Arguments = {
     'question dot token': p_.Optional_Value<s_primitives.Keyword>

@@ -1,8 +1,8 @@
 import * as p_di from "pareto-core/interface/data"
 
 //schemas
-import type * as s_path from "./fs_unrestricted_path.js"
-import type * as s_ast from "./untyped_syntax_tree.js"
+import type * as s_path from "pareto-filesystem-unrestricted-api/modules/unrestricted/schemas/path/schema"
+import type * as s_ast from "pareto-untyped-syntax-tree-api/schemas/untyped_syntax_tree/schema"
 
 export type Error = {
     'path': s_path.Node_Path

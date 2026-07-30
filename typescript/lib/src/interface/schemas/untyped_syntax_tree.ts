@@ -1,1 +1,0 @@
-export * from "pareto-untyped-syntax-tree-api/interface/schemas/untyped_syntax_tree"

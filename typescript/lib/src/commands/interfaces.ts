@@ -1,7 +1,7 @@
 import * as p_ from 'pareto-core/interface/command_interface'
 
 //schemas
-import type * as s_main from "./schemas/main.js"
+import type * as s_main from "pareto-application-api/schemas/main/schema"
 
 
 export type analyse_file = p_.Command_Interface<

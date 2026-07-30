@@ -4,13 +4,13 @@ import * as p_ri from 'pareto-core/interface/refiner'
 import * as p_di from 'pareto-core/interface/schema'
 import p_iterate from 'pareto-core/implementation/refiner/specials/iterate'
 import p_unreachable_code_path from 'pareto-core/implementation/transformer/specials/unreachable_code_path'
-import * as h_i from './temp_helper_types.js'
+import * as h_i from '../schemas/temp_helper_types/schema.js'
 import { type Iterator } from 'pareto-core/interface/__internal/refiner/Iterator'
 
 //schemas
-import type * as s_in from "../../interface/schemas/untyped_syntax_tree.js"
-import type * as s_function from "../../interface/schemas/concrete_syntax_tree_from_ast.js"
-import type * as s_primitives from "../../interface/schemas/primitives.js"
+import type * as s_in from "pareto-untyped-syntax-tree-api/schemas/untyped_syntax_tree/schema"
+import type * as s_function from "../schemas/concrete_syntax_tree_from_untyped_syntax_tree/schema.js"
+import type * as s_primitives from "../schemas/primitives/schema.js"
 import { type Abort } from 'pareto-core/interface/__internal/Abort'
 
 /*

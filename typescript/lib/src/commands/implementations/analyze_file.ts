@@ -1,18 +1,18 @@
 import * as p_ from 'pareto-core/implementation/command'
 
 //interface dependencies
-import type * as command_interfaces from "../../interface/commands.js"
-import type * as command_interfaces_pareto_stream_api from "pareto-stream-api/interface/commands"
-import type * as query_interfaces_filesystem_unrestricted_api from "pareto-filesystem-unrestricted-api/modules/unrestricted/interface/queries"
-import type * as query_interfaces_typescript_parser from "pareto-untyped-syntax-tree-api/interface/queries"
+import type * as command_interfaces from "../interfaces.js"
+import type * as command_interfaces_pareto_stream_api from "pareto-stream-api/commands/interfaces"
+import type * as query_interfaces_filesystem_unrestricted_api from "pareto-filesystem-unrestricted-api/modules/unrestricted/queries/interfaces"
+import type * as query_interfaces_typescript_parser from "pareto-untyped-syntax-tree-api/queries/interfaces"
 
 //schemas
-import type * as s_main from "../../interface/schemas/main.js"
+import type * as s_main from "pareto-application-api/schemas/main/schema"
 
 //dependencies
 // import * as c_file_to_file from "pareto-common/implementation/commands/file_in_file_out"
-import * as c_file_in_stream_out from "pareto-common/modules/file_in_stream_out/implementation/commands/operation"
-import * as q_analyze_typescript_file from "../queries/analyze_file.js"
+import * as c_file_in_stream_out from "pareto-common/modules/file_in_stream_out/commands/implementations/operation"
+import * as q_analyze_typescript_file from "../../queries/implementations/analyze_file.js"
 
 // type MyError =
 //     | ['parse node path', s_parse_node_path.Error]
