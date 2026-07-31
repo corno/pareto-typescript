@@ -10,7 +10,7 @@ import type * as query_interfaces_typescript_parser from "pareto-untyped-syntax-
 import type * as s_main from "pareto-application-api/schemas/main/schema"
 
 //dependencies
-// import * as c_file_to_file from "pareto-common/implementation/commands/file_in_file_out"
+// import * as c_file_to_file from "pareto-common/commands/implementations/file_in_file_out"
 import * as c_file_in_stream_out from "pareto-common/modules/file_in_stream_out/commands/implementations/operation"
 import * as q_analyze_typescript_file from "../../queries/implementations/analyze_file.js"
 
