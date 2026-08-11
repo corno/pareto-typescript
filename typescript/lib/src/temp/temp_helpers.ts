@@ -533,7 +533,10 @@ const internal_create_iterator_context = (
                 }),
                 () => null
             )
-            return null
+            return {
+                'comments': child.comments,
+                'location': child.location,
+            }
         },
         parse_partial_list: (
             has_more_items,
@@ -599,7 +602,10 @@ const internal_create_iterator_context = (
                                         ($) => p_unreachable_code_path("this callback is only called if there are more items"),
                                         ($) => null
                                     )
-                                    return ['separator', null]
+                                    return ['separator', {
+                                        'location': $.location,
+                                        'comments': $.comments,
+                                    }]
                                 } else {
                                     return ['entry', callback(internal_create_iterator_context(
                                         iterator,

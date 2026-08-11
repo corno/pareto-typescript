@@ -10,7 +10,7 @@ export type Arguments = {
     'type arguments': Type_Arguments
     'error recovery': Error_Recovery
     'open parenthesis token': s_primitives.Keyword
-    'arguments': Separated_List<Arguments.L>
+    'arguments': h.Separated_List<Arguments.L>
     'close parenthesis token': s_primitives.Keyword
 }
 
@@ -69,7 +69,7 @@ export namespace Binding_Pattern {
                 'name': Binding_Pattern
                 'initializer': Optional_Initializer
             }]
-            | ['omitted expression', null] //synthetic node, used for array destructuring, e.g. [,,a] = [1,2,3]
+            | ['omitted expression', s_primitives.Keyword] //synthetic node, used for array destructuring, e.g. [,,a] = [1,2,3]
     }
     export type Object = {
         'open brace token': s_primitives.Keyword
@@ -199,7 +199,7 @@ export type Entity_Name =
     | ['qualified name', Qualified_Name]
 
 export type Error_Recovery = p_.Optional_Value<{
-    'entries': Separated_List<Type>
+    'entries': h.Separated_List<Type>
     'greater than token': p_.Optional_Value<s_primitives.Keyword>
 }>
 
@@ -247,7 +247,7 @@ export type Expression =
     | ['null keyword', s_primitives.Keyword]
     | ['numeric literal', s_primitives.Literal]
     | ['object literal', Expression.Object_Literal]
-    | ['omitted expression', null]
+    | ['omitted expression', s_primitives.Keyword]
     | ['parenthesized', {
         'jsdoc': JSDoc
         'open parenthesis token': s_primitives.Keyword
@@ -748,11 +748,6 @@ export type Return_Type_Annotation = p_.Optional_Value<{
 }>
 
 export type Semi_Colon = p_.Optional_Value<s_primitives.Keyword>
-
-export type Separated_List<T extends p_di.Value> = p_.List<
-    | ['entry', T]
-    | ['separator', s_primitives.Keyword]
->
 
 export type Signature_Modifiers = p_.Optional_Value<p_.List<Signature_Modifiers.L>>
 
