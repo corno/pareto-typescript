@@ -24,13 +24,13 @@ export const $$: p_.Query_Implementation<
         {
             'data': $d.data,
         },
-        ($): s_parse_typescript_file.Error => ['untyped', null]
+        ($): s_parse_typescript_file.Error => ['untyped', $]
     )).refine(
         ($, abort): s_parse_typescript_file.Result => {
             const typed = r_cst_from_ust.Source_File(
                 $['untyped syntax tree'].root,
                 ($) => abort(
-                    ['untyped', null]
+                    ['typed', $]
                 ),
             )
 
