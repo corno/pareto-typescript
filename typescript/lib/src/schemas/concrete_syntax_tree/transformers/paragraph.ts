@@ -171,7 +171,7 @@ export const Arguments: declarations.Arguments = ($) => sh.ph.composed(p_.litera
                     p_.from.state($).decide(
                         ($) => {
                             switch ($[0]) {
-                                case 'entry': return p_.ss($, ($) => p_.from.state($).decide(
+                                case 'entry': return p_.option($, ($) => p_.from.state($).decide(
                                     ($) => {
                                         switch ($[0]) {
 
@@ -201,8 +201,8 @@ export const As_Alias: declarations.As_Alias = ($) => sh.ph.composed(p_.literal.
     p_.from.state($.identifier).decide(
         ($) => {
             switch ($[0]) {
-                case 'identifier': return p_.ss($, ($) => Identifier($))
-                case 'string literal': return p_.ss($, ($) => String_Literal($))
+                case 'identifier': return p_.option($, ($) => Identifier($))
+                case 'string literal': return p_.option($, ($) => String_Literal($))
                 default: return p_.exhaustive($[0])
             }
         }
@@ -254,7 +254,7 @@ export const Binding_Pattern: declarations.Binding_Pattern = ($) => sh.ph.compos
                                 ($) => {
                                     switch ($[0]) {
                                         case 'separator': return p_.option($, ($) => sh.ph.text(", "))
-                                        case 'entry': return p_.ss($, ($) => p_.from.state($).decide(
+                                        case 'entry': return p_.option($, ($) => p_.from.state($).decide(
                                             ($) => {
                                                 switch ($[0]) {
                                                     case 'binding element': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
@@ -760,7 +760,7 @@ export const Expression: declarations.Expression = ($) => p_.from.state($).decid
                             ($) => {
                                 switch ($[0]) {
                                     case 'separator': return p_.option($, ($) => sh.ph.text(", "))
-                                    case 'entry': return p_.ss($, ($) => p_.from.state($).decide(
+                                    case 'entry': return p_.option($, ($) => p_.from.state($).decide(
                                         ($) => {
                                             switch ($[0]) {
                                                 case 'method': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
@@ -2322,7 +2322,7 @@ export const Type: declarations.Type = ($) => p_.from.state($).decide(
                                     case 'entry': return p_.option($, ($) => p_.from.state($).decide(
                                         ($) => {
                                             switch ($[0]) {
-                                                case 'named': return p_.ss($, ($) => sh.ph.composed(p_.literal.list([
+                                                case 'named': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                                                     JSDoc($['jsdoc']),
                                                     p_.from.optional($['dot dot dot token']).decide(
                                                         () => sh.ph.text("..."),
@@ -2336,7 +2336,7 @@ export const Type: declarations.Type = ($) => p_.from.state($).decide(
                                                     sh.ph.text(": "),
                                                     Type($['type']),
                                                 ])))
-                                                case 'regular': return p_.ss($, ($) => Type($))
+                                                case 'regular': return p_.option($, ($) => Type($))
                                                 default: return p_.exhaustive($[0])
                                             }
                                         }
