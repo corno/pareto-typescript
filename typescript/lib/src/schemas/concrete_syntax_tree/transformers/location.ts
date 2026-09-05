@@ -1,5 +1,6 @@
 import * as p_ from 'pareto-core/transformer'
 import p_unreachable_code_path from 'pareto-core/transformer/specials/unreachable_code_path'
+import p_implement_me from 'pareto-core-dev/implement_me'
 
 import type * as s_out from "pareto-untyped-syntax-tree-api/schemas/untyped_syntax_tree/schema"
 import type * as s_in from "../schema.js"
@@ -208,64 +209,64 @@ export const Statement: p_.Transformer<s_in.Statement, s_out.Node['location']> =
     }
 }
 
-// export const Type: p_.Transformer<s_in.Type, s_out.Node['location']> = ($) => {
-//     switch ($[0]) {
-//         case 'any': return p_.option($, ($) => $.location)
-//         case 'array': return p_.option($, ($) => $['open bracket token'].location)
-//         case 'big int': return p_.option($, ($) => $.location)
-//         case 'boolean': return p_.option($, ($) => $.location)
-//         case 'conditional': return p_.option($, ($) => $['question token'].location)
-//         case 'constructor': return p_.option($, ($) => $['new keyword'].location)
-//         case 'function': return p_.option($, ($) => $['equals greater than token'].location)
-//         case 'import type': return p_.option($, ($) => $['import keyword'].location)
-//         case 'indexed access': return p_.option($, ($) => $['open bracket token'].location)
-//         case 'infer': return p_.option($, ($) => $['infer keyword'].location)
-//         case 'intersection': return p_.option($, ($) => $.location)
-//         case 'intrinsic': return p_.option($, ($) => $.location)
-//         case 'jsdoc all': return p_.option($, ($) => $['asterisk token'].location)
-//         case 'jsdoc function': return p_.option($, ($) => $['function keyword'].location)
-//         case 'jsdoc non nullable': return p_.option($, ($) => $['exclamation token after'].location)
-//         case 'jsdoc nullable': return p_.option($, ($) => Type($.type))
-//         case 'jsdoc unknown': return p_.option($, ($) => $['question token'].location)
-//         case 'literal type': return p_.option($, ($) => xxx)
-//         case 'mapped': return p_.option($, ($) => $['open brace token'].location)
-//         case 'never': return p_.option($, ($) => $.location)
-//         case 'number': return p_.option($, ($) => $.location)
-//         case 'object': return p_.option($, ($) => $.location)
-//         case 'optional type': return p_.option($, ($) => $['question token'].location)
-//         case 'parenthesized': return p_.option($, ($) => $['open parenthesis token'].location)
-//         case 'query': return p_.option($, ($) => $['typeof keyword'].location)
-//         case 'rest type': return p_.option($, ($) => $['dot dot dot token'].location)
-//         case 'string': return p_.option($, ($) => $.location)
-//         case 'symbol': return p_.option($, ($) => $.location)
-//         case 'template literal type': return p_.option($, ($) => $.head.location)
-//         case 'this': return p_.option($, ($) => $.location)
-//         case 'tuple type': return p_.option($, ($) => $['open bracket token'].location)
-//         case 'type literal': return p_.option($, ($) => $['open brace token'].location)
-//         case 'type operator': return p_.option($, ($) => p_.from.state($.operator).decide(
-//             ($) => {
-//                 switch ($[0]) {
-//                     case 'key of': return p_.option($, ($) => $.location)
-//                     case 'unique': return p_.option($, ($) => $.location)
-//                     case 'readonly': return p_.option($, ($) => $.location)
-//                     default: return p_.exhaustive($[0])
-//                 }
-//             }
-//         ))
-//         case 'type predicate': return p_.option($, ($) => $..location)
-//         case 'type reference': return p_.option($, ($) => p_.from.state($['entity name']).decide(
-//             ($) => {
-//                 switch ($[0]) {
-//                     case 'identifier': return p_.option($, ($) => $.location)
-//                     case 'qualified name': return p_.option($, ($) => $['dot token'].location)
-//                     default: return p_.exhaustive($[0])
-//                 }
-//             }
-//         ))
-//         case 'undefined': return p_.option($, ($) => $.location)
-//         case 'union type': return p_.option($, ($) => $.location)
-//         case 'unknown': return p_.option($, ($) => $.location)
-//         case 'void': return p_.option($, ($) => $.location)
-//         default: return p_.exhaustive($[0])
-//     }
-// }
+export const Type: p_.Transformer<s_in.Type, s_out.Node['location']> = ($) => {
+    switch ($[0]) {
+        case 'any': return p_.option($, ($) => $.location)
+        case 'array': return p_.option($, ($) => $['open bracket token'].location)
+        case 'big int': return p_.option($, ($) => $.location)
+        case 'boolean': return p_.option($, ($) => $.location)
+        case 'conditional': return p_.option($, ($) => $['question token'].location)
+        case 'constructor': return p_.option($, ($) => $['new keyword'].location)
+        case 'function': return p_.option($, ($) => $['equals greater than token'].location)
+        case 'import type': return p_.option($, ($) => $['import keyword'].location)
+        case 'indexed access': return p_.option($, ($) => $['open bracket token'].location)
+        case 'infer': return p_.option($, ($) => $['infer keyword'].location)
+        case 'intersection': return p_.option($, ($) => p_implement_me("intersection"))
+        case 'intrinsic': return p_.option($, ($) => $.location)
+        case 'jsdoc all': return p_.option($, ($) => $['asterisk token'].location)
+        case 'jsdoc function': return p_.option($, ($) => $['function keyword'].location)
+        case 'jsdoc non nullable': return p_.option($, ($) => p_implement_me("jsdoc non nullable"))
+        case 'jsdoc nullable': return p_.option($, ($) => Type($.type))
+        case 'jsdoc unknown': return p_.option($, ($) => $['question token'].location)
+        case 'literal type': return p_.option($, ($) => p_implement_me("literal type"))
+        case 'mapped': return p_.option($, ($) => $['open brace token'].location)
+        case 'never': return p_.option($, ($) => $.location)
+        case 'number': return p_.option($, ($) => $.location)
+        case 'object': return p_.option($, ($) => $.location)
+        case 'optional type': return p_.option($, ($) => $['question token'].location)
+        case 'parenthesized': return p_.option($, ($) => $['open parenthesis token'].location)
+        case 'query': return p_.option($, ($) => $['typeof keyword'].location)
+        case 'rest type': return p_.option($, ($) => $['dot dot dot token'].location)
+        case 'string': return p_.option($, ($) => $.location)
+        case 'symbol': return p_.option($, ($) => $.location)
+        case 'template literal type': return p_.option($, ($) => $.head.location)
+        case 'this': return p_.option($, ($) => $.location)
+        case 'tuple type': return p_.option($, ($) => $['open bracket token'].location)
+        case 'type literal': return p_.option($, ($) => $['open brace token'].location)
+        case 'type operator': return p_.option($, ($) => p_.from.state($.operator).decide(
+            ($) => {
+                switch ($[0]) {
+                    case 'key of': return p_.option($, ($) => $.location)
+                    case 'unique': return p_.option($, ($) => $.location)
+                    case 'readonly': return p_.option($, ($) => $.location)
+                    default: return p_.exhaustive($[0])
+                }
+            }
+        ))
+        case 'type predicate': return p_.option($, ($) => p_implement_me("type predicate"))
+        case 'type reference': return p_.option($, ($) => p_.from.state($['entity name']).decide(
+            ($) => {
+                switch ($[0]) {
+                    case 'identifier': return p_.option($, ($) => $.location)
+                    case 'qualified name': return p_.option($, ($) => $['dot token'].location)
+                    default: return p_.exhaustive($[0])
+                }
+            }
+        ))
+        case 'undefined': return p_.option($, ($) => $.location)
+        case 'union type': return p_.option($, ($) => p_implement_me("union type"))
+        case 'unknown': return p_.option($, ($) => $.location)
+        case 'void': return p_.option($, ($) => $.location)
+        default: return p_.exhaustive($[0])
+    }
+}
