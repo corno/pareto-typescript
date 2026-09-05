@@ -1,4 +1,4 @@
-import * as p_ from 'pareto-core/implementation/command'
+import * as p_ from 'pareto-core/command'
 
 //interface dependencies
 import type * as command_interfaces from "../interfaces.js"
@@ -25,7 +25,7 @@ export const $$: p_.Command_Implementation<
         'indentation': string
     },
     {
-        'parse file': query_interfaces_typescript_parser.queries.parse_file
+        'parse file': query_interfaces_typescript_parser.parse_file
         'read file': query_interfaces_filesystem_unrestricted_api.read_file
     },
     {

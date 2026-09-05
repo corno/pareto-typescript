@@ -1,5 +1,5 @@
-import * as p_ from 'pareto-core/implementation/transformer'
-import p_unreachable_code_path from 'pareto-core/implementation/transformer/specials/unreachable_code_path'
+import * as p_ from 'pareto-core/transformer'
+import p_unreachable_code_path from 'pareto-core/transformer/specials/unreachable_code_path'
 
 import type * as s_out from "pareto-untyped-syntax-tree-api/schemas/untyped_syntax_tree/schema"
 import type * as s_in from "../schema.js"

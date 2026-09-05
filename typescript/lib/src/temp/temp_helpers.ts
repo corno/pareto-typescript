@@ -1,9 +1,9 @@
-import * as p_ from 'pareto-core/implementation/refiner'
-import * as p_t from 'pareto-core/implementation/transformer'
-import * as p_ri from 'pareto-core/interface/refiner'
-import * as p_di from 'pareto-core/interface/schema'
-import p_iterate from 'pareto-core/implementation/refiner/specials/iterate'
-import p_unreachable_code_path from 'pareto-core/implementation/transformer/specials/unreachable_code_path'
+import * as p_ from 'pareto-core/refiner'
+import * as p_t from 'pareto-core/transformer'
+import * as p_ri from 'pareto-core/refiner'
+import * as p_di from 'pareto-core/schema'
+import p_iterate from 'pareto-core/refiner/specials/iterate'
+import p_unreachable_code_path from 'pareto-core/transformer/specials/unreachable_code_path'
 import * as h_i from '../schemas/temp_helper_types/schema.js'
 import { type Iterator } from 'pareto-core/interface/__internal/refiner/Iterator'
 
@@ -11,7 +11,7 @@ import { type Iterator } from 'pareto-core/interface/__internal/refiner/Iterator
 import type * as s_in from "pareto-untyped-syntax-tree-api/schemas/untyped_syntax_tree/schema"
 import type * as s_function from "../schemas/concrete_syntax_tree_from_untyped_syntax_tree/schema.js"
 import type * as s_primitives from "../schemas/primitives/schema.js"
-import { type Abort } from 'pareto-core/interface/__internal/Abort'
+import { type Abort } from 'pareto-core/__internal/Abort'
 
 /*
 

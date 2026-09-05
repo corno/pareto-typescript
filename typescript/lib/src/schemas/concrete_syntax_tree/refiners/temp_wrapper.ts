@@ -1,5 +1,5 @@
 
-import * as p_i from "pareto-core/interface/refiner"
+import * as p_i from "pareto-core/refiner"
 
 //schemas
 import type * as s_in from "pareto-untyped-syntax-tree-api/schemas/untyped_syntax_tree/schema"

@@ -1,4 +1,4 @@
-import * as p_ from 'pareto-core/implementation/query'
+import * as p_ from 'pareto-core/query'
 
 import type * as query_interfaces from "../interfaces.js"
 import * as queries_typescript_parser from "pareto-untyped-syntax-tree-api/queries/interfaces"
@@ -14,7 +14,7 @@ export const $$: p_.Query_Implementation<
     query_interfaces.parse_file,
     null,
     {
-        'parse file': queries_typescript_parser.queries.parse_file
+        'parse file': queries_typescript_parser.parse_file
     }
 > = p_.query(
     (e, $s, $q) => e.query(

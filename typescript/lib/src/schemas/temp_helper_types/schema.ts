@@ -1,4 +1,4 @@
-import * as p_di from 'pareto-core/interface/schema'
+import * as p_di from 'pareto-core/schema'
 
 import type * as s_primitives from "../primitives/schema.js"
 

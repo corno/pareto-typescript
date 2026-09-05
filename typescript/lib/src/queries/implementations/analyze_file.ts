@@ -1,5 +1,5 @@
-import * as p_ from 'pareto-core/implementation/query'
-import * as p_temp from 'pareto-core/implementation/transformer'
+import * as p_ from 'pareto-core/query'
+import * as p_temp from 'pareto-core/transformer'
 
 import type * as query_interfaces_file_in_file_out from "pareto-common/modules/file_in_stream_out/queries/interfaces"
 import * as queries_typescript_parser from "pareto-untyped-syntax-tree-api/queries/interfaces"
@@ -19,7 +19,7 @@ export const $$: p_.Query_Implementation<
     query_interfaces_file_in_file_out.operation,
     null,
     {
-        'parse file': queries_typescript_parser.queries.parse_file
+        'parse file': queries_typescript_parser.parse_file
     }
 > = p_.query(
     (e, $s, $q, $d) => e.query(

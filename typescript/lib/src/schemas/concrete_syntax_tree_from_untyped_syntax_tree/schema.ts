@@ -1,4 +1,4 @@
-import * as p_di from "pareto-core/interface/data"
+import * as p_di from 'pareto-core/schema'
 
 //schemas
 import type * as s_path from "pareto-filesystem-unrestricted-api/modules/unrestricted/schemas/path/schema"

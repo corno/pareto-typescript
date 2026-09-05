@@ -1,4 +1,4 @@
-import * as p_ from 'pareto-core/interface/schema'
+import * as p_ from 'pareto-core/schema'
 
 //schemas
 import type * as s_ust from "../concrete_syntax_tree/schema.js"
