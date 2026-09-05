@@ -1502,16 +1502,14 @@ export const Source_File: h.Root<s_out.Source_File> = ($, abort) => h.create_roo
     abort,
     "SourceFile",
     (context): s_out.Source_File => context.parse_children_as_type(
-        (context) => {
-            return {
-                'statements': context.prop("statements").consume_component(Statements),
-                'end of file': context.prop("end of file").assert_kind("EndOfFileToken").consume_and_parse_children_as_type(
-                    (context) => ({
-                        'jsdoc': context.prop("jsdoc").defer_parsing_to_component(JSDoc),
-                    })
-                ),
-            }
-        }
+        (context) => ({
+            'statements': context.prop("statements").consume_component(Statements),
+            'end of file': context.prop("end of file").assert_kind("EndOfFileToken").consume_and_parse_children_as_type(
+                (context) => ({
+                    'jsdoc': context.prop("jsdoc").defer_parsing_to_component(JSDoc),
+                })
+            ),
+        })
     )
 )
 

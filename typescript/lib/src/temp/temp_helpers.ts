@@ -590,34 +590,43 @@ const internal_create_iterator_context = (
             return p_iterate({
                 list: child.children,
                 end_info: null,
-                assign: (iterator) => iterator.build_list({
-                    has_more_items: ($) => true,
-                    handle: () => {
+                assign: (iterator) => ({
+                    'separator before': iterator.peek(
+                        ($) => p_.literal.not_set(),
+                        ($) => $.kind === separator_kind
+                            ? p_.literal.set(iterator.consume(
+                                ($) => p_unreachable_code_path("just peeked"),
+                                ($) => $
+                            ))
+                            : p_.literal.not_set(),
+                    ),
+                    'entries': iterator.build_list({
+                        has_more_items: ($) => true,
+                        handle: () => {
 
-                        return iterator.peek(
-                            ($) => p_unreachable_code_path("this callback is only called if there are more items"),
-                            ($) => {
-                                if ($.kind === separator_kind) {
-                                    iterator.consume(
-                                        ($) => p_unreachable_code_path("this callback is only called if there are more items"),
-                                        ($) => null
-                                    )
-                                    return ['separator', {
-                                        'location': $.location,
-                                        'comments': $.comments,
-                                    }]
-                                } else {
-                                    return ['entry', callback(internal_create_iterator_context(
-                                        iterator,
-                                        abort,
-                                        child,
-                                        path
-                                    ))]
-                                }
-                            },
-                        )
-                    },
-                    on_no_progression: () => p_unreachable_code_path("'handle' is expected to consume at least one item"),
+                            return iterator.peek(
+                                ($) => p_unreachable_code_path("this callback is only called if there are more items"),
+                                ($) => {
+                                    return {
+                                        'data': callback(internal_create_iterator_context(
+                                            iterator,
+                                            abort,
+                                            child,
+                                            path
+                                        )),
+                                        'separator': iterator.peek(
+                                            ($) => p_.literal.not_set(),
+                                            ($) => $.kind === separator_kind ? iterator.consume(
+                                                ($) => p_unreachable_code_path("just peeked"),
+                                                ($) => p_.literal.set($)
+                                            ) : p_.literal.not_set(),
+                                        ),
+                                    }
+                                },
+                            )
+                        },
+                        on_no_progression: () => p_unreachable_code_path("'handle' is expected to consume at least one item"),
+                    })
                 }),
                 on_dangling_item: ($) => p_unreachable_code_path("build_list processes all items"),
             })
