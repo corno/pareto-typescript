@@ -616,10 +616,12 @@ const internal_create_iterator_context = (
                                         )),
                                         'separator': iterator.peek(
                                             ($) => p_.literal.not_set(),
-                                            ($) => $.kind === separator_kind ? iterator.consume(
-                                                ($) => p_unreachable_code_path("just peeked"),
-                                                ($) => p_.literal.set($)
-                                            ) : p_.literal.not_set(),
+                                            ($) => $.kind === separator_kind
+                                                ? iterator.consume(
+                                                    ($) => p_unreachable_code_path("just peeked"),
+                                                    ($) => p_.literal.set($)
+                                                )
+                                                : p_.literal.not_set(),
                                         ),
                                     }
                                 },

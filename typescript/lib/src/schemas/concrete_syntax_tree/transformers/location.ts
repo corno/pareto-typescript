@@ -5,7 +5,7 @@ import p_implement_me from 'pareto-core-dev/implement_me'
 import type * as s_out from "pareto-untyped-syntax-tree-api/schemas/untyped_syntax_tree/schema"
 import type * as s_in from "../schema.js"
 
-export const Expression: p_.Transformer<s_in.Expression, s_out.Node['location']> = ($): s_out.Node['location'] => {
+export const Expression: p_.Transformer<s_in.Expression, s_out.Location> = ($) => {
     switch ($[0]) {
         case 'array literal': return p_.option($, ($) => $['open bracket token'].location)
         case 'arrow function': return p_.option($, ($) => $['equals greater than token'].location)
@@ -69,7 +69,7 @@ export const Expression: p_.Transformer<s_in.Expression, s_out.Node['location']>
         case 'delete': return p_.option($, ($) => $['delete keyword'].location)
         case 'element access': return p_.option($, ($) => $['open bracket token'].location)
         case 'external module reference': return p_.option($, ($) => $['require keyword'].location)
-        case 'false': return p_.option($, ($) => $.location)
+        case 'false keyword': return p_.option($, ($) => $.location)
         case 'function': return p_.option($, ($) => $['function keyword'].location)
         case 'identifier': return p_.option($, ($) => $.location)
         case 'import keyword': return p_.option($, ($) => $.location)

@@ -686,7 +686,7 @@ export const Expression: declarations.Expression = ($) => p_.from.state($).decid
                 String_Literal($['module name']),
                 sh.ph.text(")"),
             ])))
-            case 'false': return p_.option($, ($) => sh.ph.text("false"))
+            case 'false keyword': return p_.option($, ($) => sh.ph.text("false"))
             case 'function': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
                 JSDoc($['jsdoc']),
                 p_.from.optional($['modifiers']).decide(
@@ -2173,7 +2173,10 @@ export const Type: declarations.Type = ($) => p_.from.state($).decide(
                     switch ($[0]) {
                         case 'bigint literal': return p_.option($, ($) => sh.ph.text($.text))
                         case 'false keyword': return p_.option($, ($) => sh.ph.text("false"))
-                        case 'negative numeric literal': return p_.option($, ($) => sh.ph.text("-" + $['value'].text))
+                        case 'negative numeric literal': return p_.option($, ($) => sh.ph.composed(p_.literal.list([
+                            sh.ph.text("-"),
+                            sh.ph.text($['value'].text),
+                        ])))
                         case 'no substitution template literal': return p_.option($, ($) => sh.ph.text($.text))
                         case 'null': return p_.option($, ($) => sh.ph.text("null"))
                         case 'numeric literal': return p_.option($, ($) => Numeric_Literal($))

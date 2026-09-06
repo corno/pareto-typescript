@@ -48,15 +48,16 @@ export type Binding_Pattern = {
         | ['static', s_primitives.Keyword]
     >>
     'dot dot dot token': p_.Optional_Value<s_primitives.Keyword>
-    'type':
-    | ['array binding pattern', Binding_Pattern.Array]
-    | ['identifier', Identifier]
-    | ['number keyword', s_primitives.Keyword]
-    | ['object binding pattern', Binding_Pattern.Object]
-    | ['string keyword', s_primitives.Keyword]
+    'type': Binding_Pattern.type
 }
 
 export namespace Binding_Pattern {
+    export type type =
+        | ['array binding pattern', Binding_Pattern.Array]
+        | ['identifier', Identifier]
+        | ['number keyword', s_primitives.Keyword]
+        | ['object binding pattern', Binding_Pattern.Object]
+        | ['string keyword', s_primitives.Keyword]
     export type Array = {
         'open bracket token': s_primitives.Keyword
         'elements': h.Separated_List<Array.Element>
@@ -133,14 +134,17 @@ export namespace Class_Body {
         export type Constructor = {
             'jsdoc': JSDoc
             'modifiers': Signature_Modifiers
-            'constructor keyword':
-            | ['constructor keyword', s_primitives.Keyword]
-            | ['constructor keyword as string literal', s_primitives.Keyword]
+            'constructor keyword': Constructor.Constructor_Keyword
             'type parameters': Type_Parameters
             'parameters': Parameters
             'return type': Return_Type_Annotation
             'body': p_.Optional_Value<Block>
             'semicolon': Semi_Colon
+        }
+        export namespace Constructor {
+            export type Constructor_Keyword =
+                | ['constructor keyword', s_primitives.Keyword]
+                | ['constructor keyword as string literal', s_primitives.Keyword]
         }
         export type Get_Accessor = {
             'jsdoc': JSDoc
@@ -228,7 +232,7 @@ export type Expression =
         'module name': String_Literal
         'close parenthesis token': s_primitives.Keyword
     }]
-    | ['false', s_primitives.Keyword]
+    | ['false keyword', s_primitives.Keyword]
     | ['function', Expression.Function]
     | ['identifier', Identifier]
     | ['import keyword', s_primitives.Keyword]
@@ -885,21 +889,7 @@ export namespace Statement {
         'modifiers': Statement_Modifiers
         'export keyword': s_primitives.Keyword
         'type keyword': p_.Optional_Value<s_primitives.Keyword>
-        'type':
-        | ['all', {
-            'asterisk token': s_primitives.Keyword
-            'as': p_.Optional_Value<As_Alias>
-        }]
-        | ['named', {
-            'open brace token': s_primitives.Keyword
-            'exports': h.Separated_List<Export_Declaration.Entry>
-            'close brace token': s_primitives.Keyword
-        }]
-        | ['namespace', {
-            'asterisk token': s_primitives.Keyword
-            'as keyword': s_primitives.Keyword
-            'identifier': Identifier
-        }]
+        'type': Export_Declaration.type
         'from clause': p_.Optional_Value<{
             'from keyword': s_primitives.Keyword
             'module specifier': Module_Specifier
@@ -917,7 +907,22 @@ export namespace Statement {
         'semicolon': Semi_Colon
     }
     export namespace Export_Declaration {
-        export type Entry = {
+        export type type =
+            | ['all', {
+                'asterisk token': s_primitives.Keyword
+                'as': p_.Optional_Value<As_Alias>
+            }]
+            | ['named', {
+                'open brace token': s_primitives.Keyword
+                'exports': h.Separated_List<Export_Declaration.type_named_exports>
+                'close brace token': s_primitives.Keyword
+            }]
+            | ['namespace', {
+                'asterisk token': s_primitives.Keyword
+                'as keyword': s_primitives.Keyword
+                'identifier': Identifier
+            }]
+        export type type_named_exports = {
             'type keyword': p_.Optional_Value<s_primitives.Keyword>
             'identifier': Identifier
             'as': p_.Optional_Value<As_Alias>
@@ -948,14 +953,17 @@ export namespace Statement {
         'jsdoc': JSDoc
         'for keyword': s_primitives.Keyword
         'open parenthesis token': s_primitives.Keyword
-        'initializer':
-        | ['variable declaration list', Variable_Declaration_List]
-        | ['expression', Expression]
+        'initializer': For_In.initializer
         'in keyword': s_primitives.Keyword
         'expression': Expression
         'close parenthesis token': s_primitives.Keyword
         'statement': Statement
         'semicolon': Semi_Colon
+    }
+    export namespace For_In {
+        export type initializer =
+            | ['variable declaration list', Variable_Declaration_List]
+            | ['expression', Expression]
     }
     export type For_Of = {
         'jsdoc': JSDoc

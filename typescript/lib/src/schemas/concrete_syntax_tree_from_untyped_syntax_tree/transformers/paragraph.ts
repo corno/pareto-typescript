@@ -14,6 +14,7 @@ namespace declarations {
 //dependencies
 import * as ser_path from "pareto-filesystem-unrestricted-api/modules/unrestricted/schemas/path/serializers"
 import * as t_ast_to_paragraph from "pareto-untyped-syntax-tree-api/schemas/untyped_syntax_tree_serialization/transformers/paragraph"
+import * as ser_location from "../../location/serializers.js"
 
 //shorthands
 import * as sh from "pareto-fountain-pen/modules/paragraph/schemas/paragraph/shorthands/deprecated"
@@ -73,7 +74,8 @@ export const Error: declarations.Error = ($) => sh.ph.composed([
     ),
     sh.ph.text(" @ "),
     sh.ph.text(ser_path.Node_Path($.path)),
-    sh.ph.text(`:${$.inner['context node'].location.line}:${$.inner['context node'].location.column}`),
+    sh.ph.text(":"),
+    sh.ph.text(ser_location.Location($.inner['context node'].location)),
 
 
 
