@@ -10,12 +10,12 @@ export type Arguments = {
     'type arguments': Type_Arguments
     'error recovery': Error_Recovery
     'open parenthesis token': s_primitives.Keyword
-    'arguments': h.Separated_List<Arguments.L>
+    'arguments': h.Separated_List<Arguments.l>
     'close parenthesis token': s_primitives.Keyword
 }
 
 export namespace Arguments {
-    export type L =
+    export type l =
         ['expression', Expression]
         | ['spread', {
             'dot dot dot token': s_primitives.Keyword
@@ -48,23 +48,23 @@ export type Binding_Pattern = {
         | ['static', s_primitives.Keyword]
     >>
     'dot dot dot token': p_.Optional_Value<s_primitives.Keyword>
-    'type': Binding_Pattern.type
+    'type': Binding_Pattern.type_
 }
 
 export namespace Binding_Pattern {
-    export type type =
-        | ['array binding pattern', Binding_Pattern.Array]
+    export type type_ =
+        | ['array binding pattern', Binding_Pattern.array]
         | ['identifier', Identifier]
         | ['number keyword', s_primitives.Keyword]
-        | ['object binding pattern', Binding_Pattern.Object]
+        | ['object binding pattern', Binding_Pattern.object_]
         | ['string keyword', s_primitives.Keyword]
-    export type Array = {
+    export type array = {
         'open bracket token': s_primitives.Keyword
-        'elements': h.Separated_List<Array.Element>
+        'elements': h.Separated_List<array.element>
         'close bracket token': s_primitives.Keyword
     }
-    export namespace Array {
-        export type Element =
+    export namespace array {
+        export type element =
             | ['binding element', {
                 'dot dot dot token': p_.Optional_Value<s_primitives.Keyword>
                 'name': Binding_Pattern
@@ -72,13 +72,13 @@ export namespace Binding_Pattern {
             }]
             | ['omitted expression', s_primitives.Keyword] //synthetic node, used for array destructuring, e.g. [,,a] = [1,2,3]
     }
-    export type Object = {
+    export type object_ = {
         'open brace token': s_primitives.Keyword
-        'elements': h.Separated_List<Object.Element>
+        'elements': h.Separated_List<object_.element>
         'close brace token': s_primitives.Keyword
     }
-    export namespace Object {
-        export type Element = {
+    export namespace object_ {
+        export type element = {
             'dot dot dot token': p_.Optional_Value<s_primitives.Keyword>
             'property name': Property_Name
             'binding': p_.Optional_Value<{
@@ -116,37 +116,37 @@ export type Class = {
 
 export type Class_Body = {
     'open brace token': s_primitives.Keyword
-    'members': p_.List<Class_Body.Member>
+    'members': p_.List<Class_Body.member>
     'close brace token': s_primitives.Keyword
 }
 
 export namespace Class_Body {
-    export type Member =
-        | ['constructor', Member.Constructor]
-        | ['get accessor', Member.Get_Accessor]
-        | ['index signature', Object_Type.Signature.Index]
-        | ['method', Member.Method]
-        | ['property', Member.Property]
+    export type member =
+        | ['constructor', member.constructor_]
+        | ['get accessor', member.get_accessor]
+        | ['index signature', Object_Type.signature.index]
+        | ['method', member.method]
+        | ['property', member.property]
         | ['semicolon element', { 'jsdoc': JSDoc }]
-        | ['set accessor', Member.Set_Accessor]
-        | ['static block', Member.Static_Block]
-    export namespace Member {
-        export type Constructor = {
+        | ['set accessor', member.set_accessor]
+        | ['static block', member.static_block]
+    export namespace member {
+        export type constructor_ = {
             'jsdoc': JSDoc
             'modifiers': Signature_Modifiers
-            'constructor keyword': Constructor.Constructor_Keyword
+            'constructor keyword': constructor_.constructor_keyword
             'type parameters': Type_Parameters
             'parameters': Parameters
             'return type': Return_Type_Annotation
             'body': p_.Optional_Value<Block>
             'semicolon': Semi_Colon
         }
-        export namespace Constructor {
-            export type Constructor_Keyword =
+        export namespace constructor_ {
+            export type constructor_keyword =
                 | ['constructor keyword', s_primitives.Keyword]
                 | ['constructor keyword as string literal', s_primitives.Keyword]
         }
-        export type Get_Accessor = {
+        export type get_accessor = {
             'jsdoc': JSDoc
             'modifiers': Signature_Modifiers
             'get keyword': s_primitives.Keyword
@@ -157,7 +157,7 @@ export namespace Class_Body {
             'body': p_.Optional_Value<Block>
             'semicolon': Semi_Colon
         }
-        export type Method = {
+        export type method = {
             'jsdoc': JSDoc
             'modifiers': Signature_Modifiers
             'asterisk token': p_.Optional_Value<s_primitives.Keyword>
@@ -169,7 +169,7 @@ export namespace Class_Body {
             'body': p_.Optional_Value<Block>
             'semicolon': Semi_Colon
         }
-        export type Property = {
+        export type property = {
             'jsdoc': JSDoc
             'modifiers': Signature_Modifiers
             'name': Property_Name
@@ -179,7 +179,7 @@ export namespace Class_Body {
             'initializer': Optional_Initializer
             'semicolon': Semi_Colon
         }
-        export type Set_Accessor = {
+        export type set_accessor = {
             'jsdoc': JSDoc
             'modifiers': Signature_Modifiers
             'set keyword': s_primitives.Keyword
@@ -190,7 +190,7 @@ export namespace Class_Body {
             'body': p_.Optional_Value<Block>
             'semicolon': Semi_Colon
         }
-        export type Static_Block = {
+        export type static_block = {
             'modifiers': Statement_Modifiers
             'static keyword': s_primitives.Keyword
             'body': Block
@@ -208,36 +208,25 @@ export type Error_Recovery = p_.Optional_Value<{
 }>
 
 export type Expression =
-    | ['array literal', Expression.Array_Literal]
-    | ['arrow function', Expression.Arrow_Function]
-    | ['assertion', Expression.Assertion]
-    | ['as expression', Expression.As]
-    | ['await', Expression.Await]
+    | ['array literal', Expression.array_literal]
+    | ['arrow function', Expression.arrow_function]
+    | ['assertion', Expression.assertion]
+    | ['as expression', Expression.as_]
+    | ['await', Expression.await_]
     | ['big int literal', s_primitives.Literal]
-    | ['binary', Expression.Binary]
-    | ['call', Expression.Call]
+    | ['binary', Expression.binary]
+    | ['call', Expression.call]
     | ['class', Class]
-    | ['conditional', Expression.Conditional]
-    | ['delete', Expression.Delete]
-    | ['element access', {
-        'expression': Expression
-        'question dot token': p_.Optional_Value<s_primitives.Keyword>
-        'open bracket token': s_primitives.Keyword
-        'argument expression': Expression
-        'close bracket token': s_primitives.Keyword
-    }]
-    | ['external module reference', {
-        'require keyword': s_primitives.Keyword
-        'open parenthesis token': s_primitives.Keyword
-        'module name': String_Literal
-        'close parenthesis token': s_primitives.Keyword
-    }]
+    | ['conditional', Expression.conditional]
+    | ['delete', Expression.delete_]
+    | ['element access', Expression.element_access]
+    | ['external module reference', Expression.external_module_reference]
     | ['false keyword', s_primitives.Keyword]
-    | ['function', Expression.Function]
+    | ['function', Expression.function_]
     | ['identifier', Identifier]
     | ['import keyword', s_primitives.Keyword]
     | ['jsdoc', s_primitives.Blob]
-    | ['meta property', Expression.Meta_Property]
+    | ['meta property', Expression.meta_property]
     | ['new', {
         'new keyword': s_primitives.Keyword
         'expression': Expression
@@ -250,7 +239,7 @@ export type Expression =
     }]
     | ['null keyword', s_primitives.Keyword]
     | ['numeric literal', s_primitives.Literal]
-    | ['object literal', Expression.Object_Literal]
+    | ['object literal', Expression.object_literal]
     | ['omitted expression', s_primitives.Keyword]
     | ['parenthesized', {
         'jsdoc': JSDoc
@@ -276,14 +265,14 @@ export type Expression =
         'operand': Expression
     }]
     | ['private identifier', s_primitives.Literal]
-    | ['property access', Expression.Property_Access]
+    | ['property access', Expression.property_access]
     | ['qualified name', Qualified_Name]
     | ['regular expression literal', s_primitives.Literal]
-    | ['satisfies', Expression.Satisfies]
+    | ['satisfies', Expression.satisfies_]
     | ['string literal', String_Literal]
     | ['super', s_primitives.Keyword]
-    | ['tagged template', Expression.Tagged_Template]
-    | ['template', Expression.Template]
+    | ['tagged template', Expression.tagged_template]
+    | ['template', Expression.template]
     | ['this', s_primitives.Keyword]
     | ['true keyword', s_primitives.Keyword]
     | ['type of', {
@@ -305,27 +294,27 @@ export type Expression =
     | ['with type arguments', Expression_With_Type_Arguments]
 
 export namespace Expression {
-    export type Array_Literal = {
+    export type array_literal = {
         'open bracket token': s_primitives.Keyword
         'elements': h.Separated_List<Expression>
         'close bracket token': s_primitives.Keyword
     }
-    export type Arrow_Function = {
+    export type arrow_function = {
         'jsdoc': JSDoc
         'parameters':
         | ['with parentheses', {
             'type parameters': Type_Parameters
             'parameters': Parameters
         }]
-        | ['without parentheses', Arrow_Function.Without_Parentheses]
+        | ['without parentheses', arrow_function.without_parentheses]
         'type': Return_Type_Annotation
         'equals greater than token': s_primitives.Keyword
         'body':
         | ['block', Block]
         | ['expression', Expression]
     }
-    export namespace Arrow_Function {
-        export type Without_Parentheses = {
+    export namespace arrow_function {
+        export type without_parentheses = {
             'parameter': {
                 'jsdoc': JSDoc
                 'name': Binding_Pattern
@@ -333,22 +322,22 @@ export namespace Expression {
             }
         }
     }
-    export type As = {
+    export type as_ = {
         'expression': Expression
         'as keyword': s_primitives.Keyword
         'type': Type
     }
-    export type Assertion = {
+    export type assertion = {
         'less than token': s_primitives.Keyword
         'type': Type
         'greater than token': s_primitives.Keyword
         'expression': Expression
     }
-    export type Await = {
+    export type await_ = {
         'await keyword': s_primitives.Keyword
         'expression': Expression
     }
-    export type Binary = {
+    export type binary = {
         'left': Expression
         'operator token':
         | ['^', s_primitives.Keyword]
@@ -395,7 +384,7 @@ export namespace Expression {
         | [',', s_primitives.Keyword]
         'right': Expression
     }
-    export type Call = {
+    export type call = {
         'callee':
         | ['import', s_primitives.Keyword]
         | ['expression', Expression] //the normal case, e.g. `foo()`
@@ -403,18 +392,31 @@ export namespace Expression {
         'type arguments': Type_Arguments
         'arguments': Arguments
     }
-    export type Conditional = {
+    export type conditional = {
         'condition': Expression
         'question token': s_primitives.Keyword
         'when true': Expression
         'colon token': s_primitives.Keyword
         'when false': Expression
     }
-    export type Delete = {
+    export type delete_ = {
         'delete keyword': s_primitives.Keyword
         'expression': Expression
     }
-    export type Function = {
+    export type element_access = {
+        'expression': Expression
+        'question dot token': p_.Optional_Value<s_primitives.Keyword>
+        'open bracket token': s_primitives.Keyword
+        'argument expression': Expression
+        'close bracket token': s_primitives.Keyword
+    }
+    export type external_module_reference = {
+        'require keyword': s_primitives.Keyword
+        'open parenthesis token': s_primitives.Keyword
+        'module name': String_Literal
+        'close parenthesis token': s_primitives.Keyword
+    }
+    export type function_ = {
         jsdoc: JSDoc
         'modifiers': p_.Optional_Value<p_di.List<
             | ['async', s_primitives.Keyword]
@@ -427,38 +429,38 @@ export namespace Expression {
         'return type': Return_Type_Annotation
         'body': Block
     }
-    export type Meta_Property = {
+    export type meta_property = {
         'new keyword':
         | ['new keyword', s_primitives.Keyword]
         | ['import keyword', s_primitives.Keyword]
         'dot token': s_primitives.Keyword
         'identifier': Identifier
     }
-    export type Object_Literal = {
+    export type object_literal = {
         'open brace token': s_primitives.Keyword
-        'properties': h.Separated_List<Object_Literal.Property>
+        'properties': h.Separated_List<object_literal.property>
         'close brace token': s_primitives.Keyword
     }
-    export namespace Object_Literal {
-        export type Property =
-            | ['property', Property.Assignment]
-            | ['shorthand property', Property.Shorthand_Property]
-            | ['method', Property.Method]
+    export namespace object_literal {
+        export type property =
+            | ['property', property.assignment]
+            | ['shorthand property', property.shorthand_property]
+            | ['method', property.method]
             | ['spread', {
                 'dot dot dot token': s_primitives.Keyword
                 'expression': Expression
             }]
-            | ['get accessor', Property.Get_Accessor]
-            | ['set accessor', Property.Set_Accessor]
-        export namespace Property {
-            export type Assignment = {
+            | ['get accessor', property.get_accessor]
+            | ['set accessor', property.set_accessor]
+        export namespace property {
+            export type assignment = {
                 'jsdoc': JSDoc
                 'name': Property_Name
                 'question token': p_.Optional_Value<s_primitives.Keyword>
                 'colon token': s_primitives.Keyword
                 'initializer': Expression
             }
-            export type Get_Accessor = {
+            export type get_accessor = {
                 'jsdoc': JSDoc
                 'modifiers': Signature_Modifiers
                 'get keyword': s_primitives.Keyword
@@ -467,7 +469,7 @@ export namespace Expression {
                 'return type': Return_Type_Annotation
                 'body': p_.Optional_Value<Block>
             }
-            export type Method = {
+            export type method = {
                 'jsdoc': JSDoc
                 'modifiers': Signature_Modifiers
                 'asterisk token': p_.Optional_Value<s_primitives.Keyword>
@@ -480,7 +482,7 @@ export namespace Expression {
                 'body': p_.Optional_Value<Block>
                 'semicolon': Semi_Colon
             }
-            export type Set_Accessor = {
+            export type set_accessor = {
                 'jsdoc': JSDoc
                 // 'modifiers': Signature_Modifiers
                 'set keyword': s_primitives.Keyword
@@ -489,7 +491,7 @@ export namespace Expression {
                 'return type': Return_Type_Annotation
                 'body': p_.Optional_Value<Block>
             }
-            export type Shorthand_Property = {
+            export type shorthand_property = {
                 'jsdoc': JSDoc
                 'name': Identifier
                 'initializer': p_.Optional_Value<{
@@ -501,7 +503,7 @@ export namespace Expression {
             }
         }
     }
-    export type Property_Access = {
+    export type property_access = {
         'expression': Expression
         'dot token':
         | ['.', s_primitives.Keyword]
@@ -510,24 +512,24 @@ export namespace Expression {
         | ['named', Identifier]
         | ['private', Identifier]
     }
-    export type Satisfies = {
+    export type satisfies_ = {
         'expression': Expression
         'satisfies keyword': s_primitives.Keyword
         'type': Type
     }
-    export type Tagged_Template = {
+    export type tagged_template = {
         'tag': Expression
         'question dot token': p_.Optional_Value<s_primitives.Keyword>
         'type arguments': Type_Arguments
         'template':
         | ['no substitution template literal', s_primitives.Literal]
-        | ['template', Template]
+        | ['template', template]
     }
-    export type Template = {
+    export type template = {
         'head': s_primitives.Literal
-        'template spans': p_.List<Template_Span>
+        'template spans': p_.List<template_span>
     }
-    export type Template_Span = {
+    export type template_span = {
         'expression': Expression
         'suffix':
         | ['middle', s_primitives.Literal]
@@ -540,10 +542,10 @@ export type Expression_With_Type_Arguments = {
     'type arguments': Type_Arguments
 }
 
-export type Heritage = p_.Optional_Value<p_.List<Heritage.Clause>>
+export type Heritage = p_.Optional_Value<p_.List<Heritage.clause>>
 
 export namespace Heritage {
-    export type Clause = {
+    export type clause = {
         'extends or implements keyword':
         | ['extends', s_primitives.Keyword]
         | ['implements', s_primitives.Keyword]
@@ -555,11 +557,11 @@ export type Identifier = s_primitives.Literal
 
 export type Import_Attributes = {
     'open brace token': s_primitives.Keyword
-    'entries': h.Separated_List<Import_Attributes.Entry>
+    'entries': h.Separated_List<Import_Attributes.entry>
     'close brace token': s_primitives.Keyword
 }
 export namespace Import_Attributes {
-    export type Entry = {
+    export type entry = {
         'name': Property_Name
         'colon token': s_primitives.Keyword
         'value': Expression
@@ -588,21 +590,21 @@ export type Numeric_Literal = s_primitives.Literal
 
 export type Object_Type = {
     'open brace token': s_primitives.Keyword
-    'signatures': p_.List<Object_Type.Signature>
+    'signatures': p_.List<Object_Type.signature>
     'close brace token': s_primitives.Keyword
 }
 
 export namespace Object_Type {
-    export type Signature =
-        | ['call', Signature.Call]
-        | ['construct', Signature.Construct]
-        | ['get accessor', Signature.Get_Accessor]
-        | ['index', Signature.Index]
-        | ['method', Signature.Method]
-        | ['property', Signature.Property]
-        | ['set accessor', Signature.Set_Accessor]
-    export namespace Signature {
-        export type Call = {
+    export type signature =
+        | ['call', signature.call]
+        | ['construct', signature.construct]
+        | ['get accessor', signature.get_accessor]
+        | ['index', signature.index]
+        | ['method', signature.method]
+        | ['property', signature.property]
+        | ['set accessor', signature.set_accessor]
+    export namespace signature {
+        export type call = {
             'jsdoc': JSDoc
             'type parameters': Type_Parameters
             'parameters': Parameters
@@ -610,7 +612,7 @@ export namespace Object_Type {
             'semicolon': Semi_Colon
             'comma': p_.Optional_Value<s_primitives.Keyword>
         }
-        export type Construct = {
+        export type construct = {
             'jsdoc': JSDoc
             'new keyword': s_primitives.Keyword
             'type parameters': Type_Parameters
@@ -619,7 +621,7 @@ export namespace Object_Type {
             'semicolon': Semi_Colon
             'comma': p_.Optional_Value<s_primitives.Keyword>
         }
-        export type Get_Accessor = {
+        export type get_accessor = {
             'jsdoc': JSDoc
             'get keyword': s_primitives.Keyword
             'name': Property_Name
@@ -629,7 +631,7 @@ export namespace Object_Type {
             'semicolon': Semi_Colon
             'comma': p_.Optional_Value<s_primitives.Keyword>
         }
-        export type Set_Accessor = {
+        export type set_accessor = {
             'jsdoc': JSDoc
             'set keyword': s_primitives.Keyword
             'name': Property_Name
@@ -639,7 +641,7 @@ export namespace Object_Type {
             'semicolon': Semi_Colon
             'comma': p_.Optional_Value<s_primitives.Keyword>
         }
-        export type Index = {
+        export type index = {
             'jsdoc': JSDoc
             'modifiers': Signature_Modifiers
             'open bracket token': s_primitives.Keyword
@@ -660,7 +662,7 @@ export namespace Object_Type {
             'semicolon': Semi_Colon
             'comma': p_.Optional_Value<s_primitives.Keyword>
         }
-        export type Method = {
+        export type method = {
             'jsdoc': JSDoc
             'identifier': Property_Name
             'question token': p_.Optional_Value<s_primitives.Keyword>
@@ -670,7 +672,7 @@ export namespace Object_Type {
             'semicolon': Semi_Colon
             'comma': p_.Optional_Value<s_primitives.Keyword>
         }
-        export type Property = {
+        export type property = {
             'jsdoc': JSDoc
             'modifiers': Signature_Modifiers
             'id': Property_Name
@@ -693,12 +695,12 @@ export type Optional_Type = p_.Optional_Value<{
 export type Parameters = {
     'jsdoc': JSDoc
     'open parenthesis token': s_primitives.Keyword
-    'entries': h.Separated_List<Parameters.Parameter>
+    'entries': h.Separated_List<Parameters.parameter>
     'close parenthesis token': s_primitives.Keyword
 }
 
 export namespace Parameters {
-    export type Parameter = {
+    export type parameter = {
         'jsdoc': JSDoc
 
         // 'modifiers': p_.Optional_Value<p_.List<Parameter.Modifier>>
@@ -723,7 +725,7 @@ export type Property_Name = {
     >>
     'type':
     | ['big int literal', s_primitives.Literal]
-    | ['computed', Property_Name.Computed]
+    | ['computed', Property_Name.computed]
     | ['identifier', Identifier]
     | ['numeric literal', Numeric_Literal]
     | ['private identifier', Identifier]
@@ -731,7 +733,7 @@ export type Property_Name = {
 }
 
 export namespace Property_Name {
-    export type Computed = {
+    export type computed = {
         'open bracket token': s_primitives.Keyword
         'expression': Expression
         'close bracket token': s_primitives.Keyword
@@ -753,10 +755,10 @@ export type Return_Type_Annotation = p_.Optional_Value<{
 
 export type Semi_Colon = p_.Optional_Value<s_primitives.Keyword>
 
-export type Signature_Modifiers = p_.Optional_Value<p_.List<Signature_Modifiers.L>>
+export type Signature_Modifiers = p_.Optional_Value<p_.List<Signature_Modifiers.l>>
 
 export namespace Signature_Modifiers {
-    export type L =
+    export type l =
         | ['abstract', s_primitives.Keyword]
         | ['accessor', s_primitives.Keyword]
         | ['async', s_primitives.Keyword]
@@ -786,61 +788,61 @@ export type Source_File = {
 
 export type Statement =
     | ['block', Block]
-    | ['break', Statement.Break]
-    | ['class', Statement.Class_Declaration]
-    | ['continue', Statement.Continue]
-    | ['debugger', Statement.Debugger]
-    | ['do', Statement.Do]
-    | ['empty', Statement.Empty]
-    | ['enum', Statement.Enum_Declaration]
-    | ['export assignment', Statement.Export_Assignment]
-    | ['export declaration', Statement.Export_Declaration]
-    | ['expression', Statement.Expr]
-    | ['for', Statement.For]
-    | ['for in', Statement.For_In]
-    | ['for of', Statement.For_Of]
-    | ['function', Statement.Function_Declaration]
-    | ['if', Statement.If]
-    | ['import', Statement.Import_Declaration]
-    | ['import equals', Statement.Import_Equals]
-    | ['interface', Statement.Interface]
-    | ['labeled', Statement.Labeled]
-    | ['module', Statement.Module_Declaration]
-    | ['namespace export', Statement.Namespace_Export]
-    | ['return', Statement.Return]
-    | ['switch', Statement.Switch]
-    | ['throw', Statement.Throw]
-    | ['try', Statement.Try]
-    | ['type alias', Statement.Type_Alias_Declaration]
-    | ['variable', Statement.Variable]
-    | ['while', Statement.While]
-    | ['with', Statement.With]
+    | ['break', Statement.break_]
+    | ['class', Statement.class_declaration]
+    | ['continue', Statement.continue_]
+    | ['debugger', Statement.debugger_]
+    | ['do', Statement.do_]
+    | ['empty', Statement.empty]
+    | ['enum', Statement.enum_declaration]
+    | ['export assignment', Statement.export_assignment]
+    | ['export declaration', Statement.export_declaration]
+    | ['expression', Statement.expr]
+    | ['for', Statement.for_]
+    | ['for in', Statement.for_in]
+    | ['for of', Statement.for_of]
+    | ['function', Statement.function_declaration]
+    | ['if', Statement.if_]
+    | ['import', Statement.import_declaration]
+    | ['import equals', Statement.import_equals]
+    | ['interface', Statement.interface_]
+    | ['labeled', Statement.labeled]
+    | ['module', Statement.module_declaration]
+    | ['namespace export', Statement.namespace_export]
+    | ['return', Statement.return_]
+    | ['switch', Statement.switch_]
+    | ['throw', Statement.throw_]
+    | ['try', Statement.try_]
+    | ['type alias', Statement.type_alias_declaration]
+    | ['variable', Statement.variable]
+    | ['while', Statement.while_]
+    | ['with', Statement.with_]
 
 export namespace Statement {
-    export type Break = {
+    export type break_ = {
         'jsdoc': JSDoc
         'break keyword': s_primitives.Keyword
         'identifier': p_.Optional_Value<Identifier>
         'semicolon': Semi_Colon
     }
-    export type Continue = {
+    export type continue_ = {
         'jsdoc': JSDoc
         'continue keyword': s_primitives.Keyword
         'label': p_.Optional_Value<Identifier>
         'semicolon': Semi_Colon
     }
-    export type Class_Declaration = {
+    export type class_declaration = {
         'jsdoc': JSDoc
         'modifiers': Statement_Modifiers
         'class': Class
         'semicolon': Semi_Colon
     }
-    export type Debugger = {
+    export type debugger_ = {
         'jsdoc': JSDoc
         'debugger keyword': s_primitives.Keyword
         'semicolon': Semi_Colon
     }
-    export type Do = {
+    export type do_ = {
         'jsdoc': JSDoc
         'do keyword': s_primitives.Keyword
         'statement': Statement
@@ -850,21 +852,29 @@ export namespace Statement {
         'close parenthesis token': s_primitives.Keyword
         'semicolon': Semi_Colon
     }
-    export type Empty = {
+    export type empty = {
         'jsdoc': JSDoc
         'semicolon token': s_primitives.Keyword
     }
-    export type Enum_Declaration = {
+    export type enum_declaration = {
         'jsdoc': JSDoc
         'modifiers': Statement_Modifiers
         'enum keyword': s_primitives.Keyword
         'identifier': Identifier
         'open brace token': s_primitives.Keyword
-        'members': h.Separated_List<Enum_Declaration.Member>
+        'members': h.Separated_List<enum_declaration.member>
         'close brace token': s_primitives.Keyword
         'semicolon': Semi_Colon
     }
-    export type Export_Assignment = {
+    export namespace enum_declaration {
+        export type member = {
+            'jsdoc': JSDoc
+            'name': Property_Name
+            'initializer': Optional_Initializer
+            // 'comma token': p_.Optional_Value<s_primitives.Keyword>
+        }
+    }
+    export type export_assignment = {
         'jsdoc': JSDoc
         'modifiers': Statement_Modifiers
         'export keyword': s_primitives.Keyword
@@ -876,20 +886,12 @@ export namespace Statement {
         | ['equals', Initializer]
         'semicolon': Semi_Colon
     }
-    export namespace Enum_Declaration {
-        export type Member = {
-            'jsdoc': JSDoc
-            'name': Property_Name
-            'initializer': Optional_Initializer
-            // 'comma token': p_.Optional_Value<s_primitives.Keyword>
-        }
-    }
-    export type Export_Declaration = {
+    export type export_declaration = {
         'jsdoc': JSDoc
         'modifiers': Statement_Modifiers
         'export keyword': s_primitives.Keyword
         'type keyword': p_.Optional_Value<s_primitives.Keyword>
-        'type': Export_Declaration.type
+        'type': export_declaration.type_
         'from clause': p_.Optional_Value<{
             'from keyword': s_primitives.Keyword
             'module specifier': Module_Specifier
@@ -906,15 +908,15 @@ export namespace Statement {
         }>
         'semicolon': Semi_Colon
     }
-    export namespace Export_Declaration {
-        export type type =
+    export namespace export_declaration {
+        export type type_ =
             | ['all', {
                 'asterisk token': s_primitives.Keyword
                 'as': p_.Optional_Value<As_Alias>
             }]
             | ['named', {
                 'open brace token': s_primitives.Keyword
-                'exports': h.Separated_List<Export_Declaration.type_named_exports>
+                'exports': h.Separated_List<export_declaration.type_named_exports>
                 'close brace token': s_primitives.Keyword
             }]
             | ['namespace', {
@@ -928,12 +930,12 @@ export namespace Statement {
             'as': p_.Optional_Value<As_Alias>
         }
     }
-    export type Expr = {
+    export type expr = {
         'jsdoc': JSDoc
         'expression': Expression
         'semicolon': Semi_Colon
     }
-    export type For = {
+    export type for_ = {
         'jsdoc': JSDoc
         'for keyword': s_primitives.Keyword
         'open parenthesis token': s_primitives.Keyword
@@ -949,23 +951,23 @@ export namespace Statement {
         'statement': Statement
         'semicolon': Semi_Colon
     }
-    export type For_In = {
+    export type for_in = {
         'jsdoc': JSDoc
         'for keyword': s_primitives.Keyword
         'open parenthesis token': s_primitives.Keyword
-        'initializer': For_In.initializer
+        'initializer': for_in.initializer
         'in keyword': s_primitives.Keyword
         'expression': Expression
         'close parenthesis token': s_primitives.Keyword
         'statement': Statement
         'semicolon': Semi_Colon
     }
-    export namespace For_In {
+    export namespace for_in {
         export type initializer =
             | ['variable declaration list', Variable_Declaration_List]
             | ['expression', Expression]
     }
-    export type For_Of = {
+    export type for_of = {
         'jsdoc': JSDoc
         'for keyword': s_primitives.Keyword
         'await keyword': p_.Optional_Value<s_primitives.Keyword>
@@ -979,7 +981,7 @@ export namespace Statement {
         'statement': Statement
         'semicolon': Semi_Colon
     }
-    export type Function_Declaration = {
+    export type function_declaration = {
         'jsdoc': JSDoc
         'modifiers': Statement_Modifiers
         'function keyword': s_primitives.Keyword
@@ -991,7 +993,7 @@ export namespace Statement {
         'body': p_.Optional_Value<Block>
         'semicolon': Semi_Colon
     }
-    export type If = {
+    export type if_ = {
         'jsdoc': JSDoc
         'if keyword': s_primitives.Keyword
         'open parenthesis token': s_primitives.Keyword
@@ -1004,30 +1006,30 @@ export namespace Statement {
         }>
         'semicolon': Semi_Colon
     }
-    export namespace Import {
-        export type Clause = {
+    export namespace import_ {
+        export type clause = {
             'type keyword': p_.Optional_Value<s_primitives.Keyword>
             'type':
-            | ['named imports', Named_Imports]
-            | ['namespace import', Namespace]
+            | ['named imports', named_imports]
+            | ['namespace import', namespace_]
             | ['identifier', {
                 'identifier': Identifier
                 'named': p_.Optional_Value<{
                     'comma token': s_primitives.Keyword
                     'bindings':
-                    | ['named imports', Named_Imports]
-                    | ['namespace import', Namespace]
+                    | ['named imports', named_imports]
+                    | ['namespace import', namespace_]
                 }>
             }]
             | ['defer', {
                 'defer keyword': s_primitives.Keyword
                 'import':
                 | ['identifier', Identifier]
-                | ['namespace import', Namespace]
-                | ['named imports', Named_Imports]
+                | ['namespace import', namespace_]
+                | ['named imports', named_imports]
             }]
         }
-        export type Named_Imports = {
+        export type named_imports = {
             'open brace token': s_primitives.Keyword
             'entries': h.Separated_List<{
                 'type keyword': p_.Optional_Value<s_primitives.Keyword>
@@ -1036,17 +1038,17 @@ export namespace Statement {
             }>
             'close brace token': s_primitives.Keyword
         }
-        export type Namespace = {
+        export type namespace_ = {
             'asterisk token': s_primitives.Keyword
             'as keyword': s_primitives.Keyword
             'identifier': Identifier
         }
     }
-    export type Import_Declaration = {
+    export type import_declaration = {
         'jsdoc': JSDoc
         'modifiers': Statement_Modifiers
         'import keyword': s_primitives.Keyword
-        'clause': p_.Optional_Value<Import.Clause>
+        'clause': p_.Optional_Value<import_.clause>
         'from keyword': p_.Optional_Value<s_primitives.Keyword>
         'module specifier': Module_Specifier
         'import attributes': p_.Optional_Value<{
@@ -1061,7 +1063,7 @@ export namespace Statement {
         }>
         'semicolon': Semi_Colon
     }
-    export type Import_Equals = {
+    export type import_equals = {
         'jsdoc': JSDoc
         'modifiers': Statement_Modifiers
         'import keyword': s_primitives.Keyword
@@ -1070,7 +1072,7 @@ export namespace Statement {
         'initializer': Initializer
         'semicolon': Semi_Colon
     }
-    export type Interface = {
+    export type interface_ = {
         'jsdoc': JSDoc
         'modifiers': Statement_Modifiers
         'interface keyword': s_primitives.Keyword
@@ -1082,18 +1084,18 @@ export namespace Statement {
         // 'body': Type_Literal
         'semicolon': Semi_Colon
     }
-    export type Labeled = {
+    export type labeled = {
         'jsdoc': JSDoc
         'identifier': Identifier
         'colon token': s_primitives.Keyword
         'statement': Statement
     }
-    export type Module_Declaration = {
+    export type module_declaration = {
         'jsdoc': JSDoc
         'modifiers': Statement_Modifiers
         'type':
         | ['global', Identifier]
-        | ['module', Module_Declaration.Module]
+        | ['module', module_declaration.module_]
         | ['namespace', {
             'keyword': s_primitives.Keyword
             'name': Identifier
@@ -1101,13 +1103,13 @@ export namespace Statement {
         'block': p_.Optional_Value<Module_Body>
         'semicolon': Semi_Colon
     }
-    export namespace Module_Declaration {
-        export type Module = {
+    export namespace module_declaration {
+        export type module_ = {
             'keyword': s_primitives.Keyword
             'name': Property_Name
         }
     }
-    export type Namespace_Export = {
+    export type namespace_export = {
         'jsdoc': JSDoc
         'export keyword': s_primitives.Keyword
         'as keyword': s_primitives.Keyword
@@ -1115,19 +1117,19 @@ export namespace Statement {
         'identifier': Identifier
         'semicolon': Semi_Colon
     }
-    export type Return = {
+    export type return_ = {
         'jsdoc': JSDoc
         'return keyword': s_primitives.Keyword
         'expression': p_.Optional_Value<Expression>
         'semicolon': Semi_Colon
     }
-    export type Throw = {
+    export type throw_ = {
         'jsdoc': JSDoc
         'throw keyword': s_primitives.Keyword
         'expression': Expression
         'semicolon': Semi_Colon
     }
-    export type Switch = {
+    export type switch_ = {
         'jsdoc': JSDoc
         'switch keyword': s_primitives.Keyword
         'open parenthesis token': s_primitives.Keyword
@@ -1135,13 +1137,13 @@ export namespace Statement {
         'close parenthesis token': s_primitives.Keyword
         'case block': {
             'open brace token': s_primitives.Keyword
-            'clauses': p_.List<Switch.Case_Clause>
+            'clauses': p_.List<switch_.case_clause>
             'close brace token': s_primitives.Keyword
         }
         'semicolon': Semi_Colon
     }
-    export namespace Switch {
-        export type Case_Clause =
+    export namespace switch_ {
+        export type case_clause =
             | ['case', {
                 'case keyword': s_primitives.Keyword
                 'expression': Expression
@@ -1154,19 +1156,19 @@ export namespace Statement {
                 'statements': Statements
             }]
     }
-    export type Try = {
+    export type try_ = {
         'jsdoc': JSDoc
         'try keyword': s_primitives.Keyword
         'try block': Block
-        'catch clause': p_.Optional_Value<Try.Catch_Clause>
+        'catch clause': p_.Optional_Value<try_.catch_clause>
         'finally block': p_.Optional_Value<{
             'finally keyword': s_primitives.Keyword
             'block': Block
         }>
         'semicolon': Semi_Colon
     }
-    export namespace Try {
-        export type Catch_Clause = {
+    export namespace try_ {
+        export type catch_clause = {
             'catch keyword': s_primitives.Keyword
             'binding': p_.Optional_Value<{
                 'open parenthesis token': s_primitives.Keyword
@@ -1176,7 +1178,7 @@ export namespace Statement {
             'block': Block
         }
     }
-    export type Type_Alias_Declaration = {
+    export type type_alias_declaration = {
         'jsdoc': JSDoc
         'modifiers': Statement_Modifiers
         'type keyword': s_primitives.Keyword
@@ -1186,13 +1188,13 @@ export namespace Statement {
         'type': Type
         'semicolon': Semi_Colon
     }
-    export type Variable = {
+    export type variable = {
         'jsdoc': JSDoc
         'modifiers': Statement_Modifiers
         'variable declaration list': Variable_Declaration_List
         'semicolon': Semi_Colon
     }
-    export type While = {
+    export type while_ = {
         'jsdoc': JSDoc
         'while keyword': s_primitives.Keyword
         'open parenthesis token': s_primitives.Keyword
@@ -1200,7 +1202,7 @@ export namespace Statement {
         'close parenthesis token': s_primitives.Keyword
         'statement': Statement
     }
-    export type With = {
+    export type with_ = {
         'jsdoc': JSDoc
         'with keyword': s_primitives.Keyword
         'open parenthesis token': s_primitives.Keyword
@@ -1210,10 +1212,10 @@ export namespace Statement {
     }
 }
 
-export type Statement_Modifiers = p_.Optional_Value<p_.List<Statement_Modifiers.L>>
+export type Statement_Modifiers = p_.Optional_Value<p_.List<Statement_Modifiers.l>>
 
 export namespace Statement_Modifiers {
-    export type L =
+    export type l =
         | ['abstract', s_primitives.Keyword]
         | ['accessor', s_primitives.Keyword]
         | ['async', s_primitives.Keyword]
@@ -1239,56 +1241,56 @@ export type String_Literal = s_primitives.Literal
 export type Module_Specifier =
     | ['identifier', Identifier]
     | ['string literal', String_Literal]
-    | ['template', Expression.Template]
+    | ['template', Expression.template]
 
 export type Type =
     | ['any', s_primitives.Keyword]
-    | ['array', Type.Array]
+    | ['array', Type.array]
     | ['big int', s_primitives.Keyword]
     | ['boolean', s_primitives.Keyword]
-    | ['conditional', Type.Conditional]
-    | ['constructor', Type.Constructor]
-    | ['function', Type.Function_Type]
-    | ['import type', Type.Import]
-    | ['indexed access', Type.Indexed_Access]
-    | ['infer', Type.Infer]
+    | ['conditional', Type.conditional]
+    | ['constructor', Type.constructor_]
+    | ['function', Type.function_type]
+    | ['import type', Type.import_]
+    | ['indexed access', Type.indexed_access]
+    | ['infer', Type.infer_]
     | ['intrinsic', s_primitives.Keyword]
-    | ['intersection', Type.Intersection]
-    | ['jsdoc all', Type.JSDoc_All]
-    | ['jsdoc function', Type.JSDoc_Function]
-    | ['jsdoc non nullable', Type.JSDoc_Non_Nullable]
-    | ['jsdoc nullable', Type.JSDoc_Nullable]
-    | ['jsdoc unknown', Type.JSDoc_Unknown]
-    | ['literal type', Type.Literal]
-    | ['mapped', Type.Mapped]
+    | ['intersection', Type.intersection]
+    | ['jsdoc all', Type.jsdoc_all]
+    | ['jsdoc function', Type.jsdoc_function]
+    | ['jsdoc non nullable', Type.jsdoc_non_nullable]
+    | ['jsdoc nullable', Type.jsdoc_nullable]
+    | ['jsdoc unknown', Type.jsdoc_unknown]
+    | ['literal type', Type.literal]
+    | ['mapped', Type.mapped]
     | ['never', s_primitives.Keyword]
     | ['number', s_primitives.Keyword]
     | ['object', s_primitives.Keyword]
-    | ['optional type', Type.Optional]
-    | ['parenthesized', Type.Parenthesized]
-    | ['query', Type.Query]
+    | ['optional type', Type.optional]
+    | ['parenthesized', Type.parenthesized]
+    | ['query', Type.query]
     | ['string', s_primitives.Keyword]
     | ['symbol', s_primitives.Keyword]
     | ['this', s_primitives.Keyword]
-    | ['tuple type', Type.Tuple]
-    | ['template literal type', Type.Template_Literal]
+    | ['tuple type', Type.tuple]
+    | ['template literal type', Type.template_literal]
     | ['type literal', Object_Type]
-    | ['type operator', Type.Type_Operator]
+    | ['type operator', Type.type_operator]
     | ['type predicate', Type_Predicate]
-    | ['type reference', Type.Type_Reference]
-    | ['rest type', Type.Rest]
-    | ['union type', Type.Union]
+    | ['type reference', Type.type_reference]
+    | ['rest type', Type.rest]
+    | ['union type', Type.union]
     | ['undefined', s_primitives.Keyword]
     | ['unknown', s_primitives.Keyword]
     | ['void', s_primitives.Keyword]
 
 export namespace Type {
-    export type Array = {
+    export type array = {
         'element type': Type
         'open bracket token': s_primitives.Keyword
         'close bracket token': s_primitives.Keyword
     }
-    export type Conditional = {
+    export type conditional = {
         'check type': Type
         'extends keyword': s_primitives.Keyword
         'extends type': Type
@@ -1297,7 +1299,7 @@ export namespace Type {
         'colon token': s_primitives.Keyword
         'false type': Type
     }
-    export type Constructor = {
+    export type constructor_ = {
         'modifiers': Signature_Modifiers
         'new keyword': s_primitives.Keyword
         'type parameters': Type_Parameters
@@ -1305,14 +1307,14 @@ export namespace Type {
         'equals greater than token': s_primitives.Keyword
         'type': Type
     }
-    export type Function_Type = {
+    export type function_type = {
         'type parameters': Type_Parameters
         'parameters': Parameters
         'type': Optional_Type
         'equals greater than token': s_primitives.Keyword
         'return type': Type
     }
-    export type Import = {
+    export type import_ = {
         'typeof keyword': p_.Optional_Value<s_primitives.Keyword>
         'import keyword': s_primitives.Keyword
         'open parenthesis token': s_primitives.Keyword
@@ -1333,13 +1335,13 @@ export namespace Type {
         'type arguments': Type_Arguments
         'error recovery': Error_Recovery
     }
-    export type Indexed_Access = {
+    export type indexed_access = {
         'object type': Type
         'open bracket token': s_primitives.Keyword
         'index type': Type
         'close bracket token': s_primitives.Keyword
     }
-    export type Infer = {
+    export type infer_ = {
         'infer keyword': s_primitives.Keyword
         'type parameter': {
             'identifier': Identifier
@@ -1349,29 +1351,29 @@ export namespace Type {
             }>
         }
     }
-    export type Intersection = h.Separated_List<Type>
-    export type JSDoc_All = {
+    export type intersection = h.Separated_List<Type>
+    export type jsdoc_all = {
         'asterisk token': s_primitives.Keyword
     }
-    export type JSDoc_Function = {
+    export type jsdoc_function = {
         'function keyword': s_primitives.Keyword
         'parameters': Parameters
         'type': Optional_Type
     }
-    export type JSDoc_Non_Nullable = {
+    export type jsdoc_non_nullable = {
         'exclamation token before': p_.Optional_Value<s_primitives.Keyword>
         'type': Type
         'exclamation token after': p_.Optional_Value<s_primitives.Keyword>
     }
-    export type JSDoc_Nullable = {
+    export type jsdoc_nullable = {
         'question token before': p_.Optional_Value<s_primitives.Keyword>
         'type': Type
         'question token after': p_.Optional_Value<s_primitives.Keyword>
     }
-    export type JSDoc_Unknown = {
+    export type jsdoc_unknown = {
         'question token': s_primitives.Keyword
     }
-    export type Literal = {
+    export type literal = {
         'type':
         | ['bigint literal', s_primitives.Literal]
         | ['false keyword', s_primitives.Keyword]
@@ -1382,7 +1384,7 @@ export namespace Type {
         | ['string literal', String_Literal]
         | ['true keyword', s_primitives.Keyword]
     }
-    export type Mapped = {
+    export type mapped = {
         'open brace token': s_primitives.Keyword
         'readonly modifier': p_.Optional_Value<{
             'modifier': p_.Optional_Value<s_primitives.Literal>
@@ -1407,24 +1409,24 @@ export namespace Type {
             'type': Type
             'semicolon': Semi_Colon
         }>
-        'dummy syntax list': p_.List<Object_Type.Signature>
+        'dummy syntax list': p_.List<Object_Type.signature>
         'close brace token': s_primitives.Keyword
     }
-    export type Optional = {
+    export type optional = {
         'type': Type
         'question token': s_primitives.Keyword
     }
-    export type Parenthesized = {
+    export type parenthesized = {
         'open parenthesis token': s_primitives.Keyword
         'type': Type
         'close parenthesis token': s_primitives.Keyword
     }
-    export type Query = {
+    export type query = {
         'typeof keyword': s_primitives.Keyword
         'name': Entity_Name
         'type arguments': Type_Arguments
     }
-    export type Template_Literal = {
+    export type template_literal = {
         'head': s_primitives.Literal
         'template spans': p_.List<{
             'type': Type
@@ -1433,17 +1435,17 @@ export namespace Type {
             | ['tail', s_primitives.Literal]
         }>
     }
-    export type Rest = {
+    export type rest = {
         'dot dot dot token': s_primitives.Keyword
         'type': Type
     }
-    export type Tuple = {
+    export type tuple = {
         readonly 'open bracket token': s_primitives.Keyword
-        'elements': h.Separated_List<Tuple.Element>
+        'elements': h.Separated_List<tuple.element>
         'close bracket token': s_primitives.Keyword
     }
-    export namespace Tuple {
-        export type Element =
+    export namespace tuple {
+        export type element =
             | ['named', {
                 'jsdoc': JSDoc
                 'dot dot dot token': p_.Optional_Value<s_primitives.Keyword>
@@ -1454,20 +1456,20 @@ export namespace Type {
             }]
             | ['regular', Type]
     }
-    export type Type_Operator = {
+    export type type_operator = {
         'operator':
         | ['key of', s_primitives.Keyword]
         | ['unique', s_primitives.Keyword]
         | ['readonly', s_primitives.Keyword]
         'type': Type
     }
-    export type Type_Reference = {
+    export type type_reference = {
         'entity name': Entity_Name
         'dot token': p_.Optional_Value<s_primitives.Keyword>
         'type arguments': Type_Arguments
         'error recovery': Error_Recovery
     }
-    export type Union = {
+    export type union = {
         'members': h.Separated_List<Type>
     }
 }
@@ -1491,12 +1493,12 @@ export type Type_Arguments = p_.Optional_Value<{
 
 export type Type_Parameters = p_.Optional_Value<{
     'less than token': s_primitives.Keyword
-    'entries': h.Separated_List<Type_Parameters.Entries>
+    'entries': h.Separated_List<Type_Parameters.entries>
     'greater than token': s_primitives.Keyword
 }>
 
 export namespace Type_Parameters {
-    export type Entries = {
+    export type entries = {
         'modifiers': p_.Optional_Value<p_.List<
             | ['const', s_primitives.Keyword]
             | ['in', s_primitives.Keyword]
@@ -1526,7 +1528,7 @@ export type Variable_Declaration = {
 
 export type Variable_Declaration_List = {
     'mutability':
-    | ['await using', Variable_Declaration_List.Mutability.Await_Using]
+    | ['await using', Variable_Declaration_List.mutability.await_using]
     | ['const', s_primitives.Keyword]
     | ['let', s_primitives.Keyword]
     | ['using', s_primitives.Keyword]
@@ -1535,8 +1537,8 @@ export type Variable_Declaration_List = {
 }
 
 export namespace Variable_Declaration_List {
-    export namespace Mutability {
-        export type Await_Using = {
+    export namespace mutability {
+        export type await_using = {
             'await keyword': s_primitives.Keyword
             'using keyword': s_primitives.Keyword
         }
