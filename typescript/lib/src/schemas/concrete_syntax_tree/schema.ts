@@ -402,11 +402,14 @@ export namespace Expression {
         'body': Block
     }
     export type meta_property = {
-        'new keyword':
-        | ['new keyword', s_primitives.Keyword]
-        | ['import keyword', s_primitives.Keyword]
+        'new keyword': meta_property.new_keyword
         'dot token': s_primitives.Keyword
         'identifier': Identifier
+    }
+    export namespace meta_property {
+        export type new_keyword =
+            | ['new keyword', s_primitives.Keyword]
+            | ['import keyword', s_primitives.Keyword]
     }
     export type new_ = {
         'new keyword': s_primitives.Keyword
@@ -529,9 +532,12 @@ export namespace Expression {
         'tag': Expression
         'question dot token': p_.Optional_Value<s_primitives.Keyword>
         'type arguments': Type_Arguments
-        'template':
+        'template': tagged_template.template
+    }
+    export namespace tagged_template {
+        export type template =
         | ['no substitution template literal', s_primitives.Literal]
-        | ['template', template]
+        | ['template', Expression.template]
     }
     export type template = {
         'head': s_primitives.Literal

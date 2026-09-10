@@ -659,7 +659,7 @@ export const Expression: h.Production<s_out.Expression> = ($, abort, $p) => h.cr
                 case "MetaProperty": return ['meta property', context.option("meta property").consume_and_parse_children_as_type(
                     (context) => ({
                         'new keyword': context.prop("new keyword").peek_for_state(
-                            (kind, abort): s_out.Expression.meta_property['new keyword'] => {
+                            (kind, abort): s_out.Expression.meta_property.new_keyword => {
                                 switch (kind) {
                                     case "NewKeyword": return ['new keyword', context.option("new keyword").assert_kind("NewKeyword").consume_keyword()]
                                     case "ImportKeyword": return ['import keyword', context.option("import keyword").assert_kind("ImportKeyword").consume_keyword()]
