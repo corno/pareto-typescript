@@ -900,7 +900,7 @@ export const Expression: h.Production<s_out.Expression> = ($, abort, $p) => h.cr
                         'question dot token': context.prop("question dot token").peek_for_optional("QuestionDotToken", (context) => context.consume_keyword()),
                         'type arguments': context.prop("type arguments").defer_parsing_to_component(Type_Arguments),
                         'template': context.prop("template").peek_for_state(
-                            (kind, abort): s_out.Expression.tagged_template['template'] => {
+                            (kind, abort): s_out.Expression.tagged_template.template => {
                                 switch (kind) {
                                     case "NoSubstitutionTemplateLiteral": return ['no substitution template literal', context.option("no substitution template literal").consume_literal()]
                                     case "TemplateExpression": return ['template', context.option("template").consume_and_parse_children_as_type(
